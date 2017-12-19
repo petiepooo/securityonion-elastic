@@ -1151,6 +1151,7 @@ rm -f /tmp/GeoIP.dat
 rm -f /tmp/GeoLiteCity.dat
 rm -f /tmp/GeoLiteCity.dat.gz
 rm -f /etc/nsm/crossclustertab
+[ -f /opt/bro/etc/node.cfg ] && rm -f /opt/bro/etc/node.cfg
 
 #########################################
 # Create files/dirs as necessary
