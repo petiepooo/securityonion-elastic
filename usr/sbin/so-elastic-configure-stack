@@ -135,19 +135,32 @@ done < $ELASTICONF
 # domain_stats and freq_server are now disabled by default
 # If running Setup in Evaluation Mode, enable freq_server and
 # check to see if we can safely enable domain_stats
-if pgrep sosetup >/dev/null && grep "^type=standalone$" /opt/bro/etc/node.cfg > /dev/null 2>&1; then
+if pgrep sosetup > /dev/null; then
+	if [ -f /opt/bro/etc/node.cfg ] &&  grep "^type=standalone$" /opt/bro/etc/node.cfg > /dev/null; then	
 	# Enable freq_server
-	sed -i 's/^FREQ_SERVER_ENABLED.*/FREQ_SERVER_ENABLED="yes"/' $SOCONF
-
-	# Check for whois connectivity to see if we can enable domain_stats
-	echo "Contacting WHOIS server for connectivity..."
-	echo
-	whois google.com | grep 'Domain Name'
-	if [ $? -eq 1 ]; then
-        	echo
-	        echo "Unable to reach WHOIS server...disabling DomainStats"
+		sed -i 's/^FREQ_SERVER_ENABLED.*/FREQ_SERVER_ENABLED="yes"/' $SOCONF
+		# Check for whois connectivity to see if we can enable domain_stats
+                echo "Contacting WHOIS server for connectivity..."
+                echo
+                whois google.com | grep 'Domain Name'
+                if [ $? -eq 1 ]; then
+                        echo
+                        echo "Unable to reach WHOIS server...disabling DomainStats"
+                        # Disable domain_stats
+			sed -i 's/^DOMAIN_STATS_ENABLED.*/DOMAIN_STATS_ENABLED="no"/' $SOCONF
+                else
+                        # Enable domain_stats
+			sed -i 's/^DOMAIN_STATS_ENABLED.*/DOMAIN_STATS_ENABLED="yes"/' $SOCONF
+                fi
 	else
-                sed -i 's/^DOMAIN_STATS_ENABLED.*/DOMAIN_STATS_ENABLED="yes"/' $SOCONF
+		# Disable freq_server and domain_stats
+		sed -i 's/^FREQ_SERVER_ENABLED.*/FREQ_SERVER_ENABLED="no"/' $SOCONF
+		sed -i 's/^DOMAIN_STATS_ENABLED.*/DOMAIN_STATS_ENABLED="no"/' $SOCONF
+		for i in so-domainstats so-freqserver; do
+			if docker ps | grep -q $i; then
+				docker stop $i
+			fi
+		done
 	fi
 fi
 
