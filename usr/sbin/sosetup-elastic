@@ -1059,8 +1059,25 @@ Would you like to enable the Elastic Stack?"
 				zenity --error --title "$TITLE" --text "Invalid log size limit! Please use integers greater than 0 and less than your disk size." 
 				fi
 			done
+			
 			let LOG_SIZE_LIMIT=LOG_SIZE_LIMIT_GB*1000000000
 			[ $DEBUG -eq 1 ] && echo "DEBUG: LOG_SIZE_LIMIT set to $LOG_SIZE_LIMIT."
+			
+			if [ $SERVER -ne 1 ]; then
+                                TEXT="Would you like to forward logs to Logstash on $SERVERNAME, instead of processing them locally?"
+                                YES="Yes, forward logs to Logstash on $SERVERNAME."
+                                NO="No, process logs on $HOSTNAME."
+                                zenity --question --title="$TITLE" --text="$TEXT" --ok-label="$YES" --cancel-label="$NO" --no-wrap
+                                ANSWER="$?"
+                                if [ $ANSWER -eq 0 ]; then
+                                        [ $DEBUG -eq 1 ] && echo "DEBUG: Forward logs to $SERVERNAME."
+                                        FORWARD="YES"
+                                        FORWARD_CONFIRM="- Forward logs from $HOSTNAME to Logstash on $SERVERNAME."
+                                else
+                                        [ $DEBUG -eq 1 ] && echo "DEBUG: Process logs locally."
+                                        FORWARD="NO"
+                                fi
+                   	fi
 		fi
 	fi
 fi
@@ -1123,6 +1140,7 @@ $BRO_LB_PROCS_CONFIRM\
 $IDS_RULESET_ACTION\
 $IDS_HOME_NET_CONFIRM\
 $ELASTIC_ACTION_CONFIRM\
+$FORWARD_CONFIRM\
 \n\
 We're about to make changes to your system!\n\
 \n\
@@ -1151,6 +1169,7 @@ rm -f /tmp/GeoIP.dat
 rm -f /tmp/GeoLiteCity.dat
 rm -f /tmp/GeoLiteCity.dat.gz
 rm -f /etc/nsm/crossclustertab
+[ -f /opt/bro/etc/node.cfg ] && rm -f /opt/bro/etc/node.cfg
 
 #########################################
 # Create files/dirs as necessary
@@ -1994,7 +2013,14 @@ EOF
 		echo "# Please wait while stopping Apache web server..." | tee -a $LOG
 		service apache2 stop >> $LOG 2>&1
 
-    		echo "90"
+    		if [ "$FORWARD" = "YES" ]; then
+                        echo "87"
+                        echo "# Please wait while stopping and disabling Logstash..." | tee -a $LOG
+                        docker stop so-logstash >> $LOG 2>&1
+                        sed -i 's|LOGSTASH_ENABLED="yes"|LOGSTASH_ENABLED="no"|g' $CONF
+                fi
+		
+		echo "90"
 		echo "# Please wait while stopping and disabling Kibana..." | tee -a $LOG
 		docker stop so-kibana >> $LOG 2>&1
 		sed -i 's|KIBANA_ENABLED="yes"|KIBANA_ENABLED="no"|g' $CONF
@@ -2051,6 +2077,15 @@ EOF
 		else
 			echo "REVERSE_PORT=$REVERSE_PORT" >> $SSH_CONF
 		fi
+		
+		if [ "$FORWARD" = "YES" ]; then
+                        # If AUTOSSH_OPTIONS is already in SSH_CONF, remove it and replace it with new value.
+                        if grep "AUTOSSH_OPTIONS=" $SSH_CONF >/dev/null 2>&1; then
+                                sed -i 's/AUTOSSH_OPTIONS.*/AUTOSSH_OPTIONS="-L 6050:localhost:6050"/' $SSH_CONF >> $LOG 2>&1
+                        else
+                                echo 'AUTOSSH_OPTIONS="-L 6050:localhost:6050"' >> $SSH_CONF
+                        fi
+                fi
 
 		# Configure Elasticsearch
 		ELASTIC_CONFIG="/etc/elasticsearch/elasticsearch.yml"

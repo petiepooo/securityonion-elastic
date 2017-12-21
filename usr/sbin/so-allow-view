@@ -1,0 +1,5 @@
+#!/bin/bash
+. /usr/sbin/so-common
+header "UFW Rules"
+ufw status | sed -n '1!p'
+/usr/sbin/so-allow-view-iptables
