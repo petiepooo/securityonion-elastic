@@ -1,0 +1,8 @@
+#!/bin/bash
+. /usr/sbin/so-common
+header "Docker IPTables Rules"
+echo
+echo "To  		 Action From"
+echo "--               ------ ----"
+iptables -vL DOCKER-USER |grep ACCEPT |grep -v "state RELATED,ESTABLISHED" |awk '{print substr($11,5) "/" $4,$7,$3,$6,$8}'
+echo

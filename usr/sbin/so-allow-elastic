@@ -108,23 +108,11 @@ case $input in
 	esac
 done
 
-iptbl_stats() {
-	echo "################"
-        echo "# Docker Rules #"
-        echo "################"
-        echo
-	echo "To                   Action From"
-	echo "--                   ------ ----"
-	iptables -vL DOCKER-USER |grep ACCEPT |grep -v "state RELATED,ESTABLISHED" |awk '{print $11,$4,$7,$3,$6,$8}'
-
-}
-
 #########################################
 # Status
 ########################################
 if [ "$device" == "status" ]; then
-        ufw status
-	iptbl_stats
+	/usr/sbin/so-allow-view
 	echo
 	exit 0
 fi
@@ -176,8 +164,7 @@ echo "Rule has been added."
 echo
 echo "Here is the entire firewall ruleset:"
 echo
-ufw status
-iptbl_stats
+/usr/sbin/so-allow-view
 echo
 	
 if [ "$device" == "analyst" ]; then
