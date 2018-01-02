@@ -25,13 +25,15 @@ done
 KIBANA_VERSION=$(curl -s http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT | jq .version.number | sed 's/"//g')
 
 # Apply Kibana template
-curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/kibana -H'Content-Type: application/json' -d'{"template" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
+echo "Applying Kibana template..."
+curl -s -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/kibana -H'Content-Type: application/json' -d'{"template" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
 echo
 
 # Check to see if Kibana is available
 wait_step=0
-until curl -s -XGET http://localhost:5601/ > /dev/null ; do
+until curl -s -XGET http://localhost:5601 > /dev/null ; do
 	wait_step=$(( ${wait_step} + 1 ))
+	echo "Waiting on Kibana...Attempt #$wait_step"
 	if [ ${wait_step} -gt ${MAX_WAIT} ]; then
 		echo "ERROR: Kibana not available for more than ${MAX_WAIT} seconds."
 		exit 5
@@ -39,14 +41,33 @@ until curl -s -XGET http://localhost:5601/ > /dev/null ; do
 	sleep 1s;
 done
 
+# Check to see if Kibana config is available, so we can update it
+wait_step=0
+until curl -s -XGET http://localhost:5601/api/saved_objects/config/$KIBANA_VERSION | grep -v 404 > /dev/null; do
+	wait_step=$(( ${wait_step} + 1 ))
+	echo "Waiting on Kibana config...Attempt #$wait_step"
+	if [ ${wait_step} -gt ${MAX_WAIT} ]; then
+                echo "ERROR: Kibana config not available for more than ${MAX_WAIT} seconds."
+                exit 5
+        fi
+        sleep 1s;
+done
+
 # Apply Kibana config
-curl -XPUT -H "Content-Type: application/json" -H "kbn-xsrf: $KIBANA_VERSION" http://localhost:5601/api/saved_objects/config/$KIBANA_VERSION -d@$SRC/kibana/config.json
+echo
+echo "Applying Kibana config..."
+curl -s -XPUT -H "Content-Type: application/json" -H "kbn-xsrf: $KIBANA_VERSION" http://localhost:5601/api/saved_objects/config/$KIBANA_VERSION -d@$SRC/kibana/config.json
 echo
 
 # Apply cross cluster search seed info for local Elasticsearch instance
 HOSTNAME=$(hostname)
-curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -H'Content-Type: application/json' -d "{\"persistent\": {\"search\": {\"remote\": {\"$HOSTNAME\": {\"seeds\": [\"127.0.0.1:9300\"]}}}}}"
+echo
+echo "Applying cross cluster search config..."
+curl -s -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -H'Content-Type: application/json' -d "{\"persistent\": {\"search\": {\"remote\": {\"$HOSTNAME\": {\"seeds\": [\"127.0.0.1:9300\"]}}}}}"
 echo
 
 # Finally, update KIBANA_VERSION in securityonion.conf to reflect the current Kibana version
+echo
+echo "Updating /etc/nsm/securityonion.conf with correct Kibana version ($KIBANA_VERSION)..."
 sed -i "s/KIBANA_VERSION=.*/KIBANA_VERSION=$KIBANA_VERSION/" /etc/nsm/securityonion.conf
+echo
