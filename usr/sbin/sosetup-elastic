@@ -2024,7 +2024,12 @@ EOF
 		echo "# Please wait while stopping and disabling Kibana..." | tee -a $LOG
 		docker stop so-kibana >> $LOG 2>&1
 		sed -i 's|KIBANA_ENABLED="yes"|KIBANA_ENABLED="no"|g' $CONF
-
+		
+		echo "91"
+                echo "# Please wait while stopping and disabling ElastAlert..." | tee -a $LOG
+                docker stop so-elastalert >> $LOG 2>&1
+                sed -i 's|ELASTALERT_ENABLED="yes"|ELASTALERT_ENABLED="no"|g' $CONF
+		
     		echo "93"
 		echo "# Please wait while stopping and disabling MySQL..." | tee -a $LOG
 		service mysql stop >> $LOG 2>&1
