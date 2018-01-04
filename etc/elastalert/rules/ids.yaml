@@ -3,7 +3,7 @@ es_host: elasticsearch
 es_port: 9200
 name: Security Onion ElastAlert - New IDS Event!
 type: frequency
-index: logstash-ids*
+index: "*:logstash-ids*"
 num_events: 1
 timeframe:
     minutes: 1
