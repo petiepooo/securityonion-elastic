@@ -24,23 +24,23 @@
     {
       "id": "60925490-34bf-11e7-9b32-bb903919ead9",
       "type": "visualization",
-      "version": 1,
+      "version": 3,
       "attributes": {
-        "visState": "{\"title\":\"Data Types\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"event_type.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
         "title": "Data Types",
+        "visState": "{\"title\":\"Data Types\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\",\"type\":\"table\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"event_type.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Data Type\"}}],\"listeners\":{}}",
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
-        "version": 1,
+        "description": "",
         "savedSearchId": "aa05e920-3433-11e7-8867-29a39c0f86b2",
+        "version": 1,
         "kibanaSavedObjectMeta": {
           "searchSourceJSON": "{\"filter\":[]}"
         }
       },
-      "col": 3,
+      "col": 4,
       "panelIndex": 2,
       "row": 1,
       "size_x": 3,
-      "size_y": 5
+      "size_y": 6
     },
     {
       "id": "e8e3b8a0-34c1-11e7-917c-af7a9d11771a",
@@ -57,11 +57,11 @@
           "searchSourceJSON": "{\"filter\":[]}"
         }
       },
-      "col": 3,
+      "col": 5,
       "panelIndex": 4,
-      "row": 9,
-      "size_x": 10,
-      "size_y": 7
+      "row": 25,
+      "size_x": 8,
+      "size_y": 6
     },
     {
       "id": "ae1f1fb0-3648-11e7-bf60-314364dd1cde",
@@ -78,9 +78,9 @@
           "searchSourceJSON": "{\"filter\":[]}"
         }
       },
-      "col": 3,
+      "col": 2,
       "panelIndex": 5,
-      "row": 19,
+      "row": 34,
       "size_x": 3,
       "size_y": 5
     },
@@ -99,9 +99,9 @@
           "searchSourceJSON": "{\"filter\":[]}"
         }
       },
-      "col": 6,
+      "col": 5,
       "panelIndex": 6,
-      "row": 19,
+      "row": 34,
       "size_x": 3,
       "size_y": 5
     },
@@ -120,9 +120,9 @@
           "searchSourceJSON": "{\"filter\":[]}"
         }
       },
-      "col": 3,
+      "col": 2,
       "panelIndex": 8,
-      "row": 24,
+      "row": 39,
       "size_x": 5,
       "size_y": 5
     },
@@ -140,32 +140,11 @@
           "searchSourceJSON": "{\"filter\":[],\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"\\\"application/x-dosexec\\\"\",\"analyze_wildcard\":true}}}"
         }
       },
-      "col": 8,
+      "col": 7,
       "panelIndex": 9,
-      "row": 24,
+      "row": 39,
       "size_x": 5,
       "size_y": 5
-    },
-    {
-      "id": "6ca12600-345e-11e7-8867-29a39c0f86b2",
-      "type": "visualization",
-      "version": 3,
-      "attributes": {
-        "visState": "{\"title\":\"Bro - Notices - Notice Types (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addLegend\":true,\"addTooltip\":true,\"isDonut\":false,\"legendPosition\":\"right\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"note.keyword\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Note\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"source_ip\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Source IP Address\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"destination_ip\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Destination IP Address\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "Bro - Notices - Notice Types (Pie Chart)",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "0a3bfbe0-342f-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      },
-      "col": 6,
-      "panelIndex": 11,
-      "row": 1,
-      "size_x": 7,
-      "size_y": 3
     },
     {
       "id": "c7eed4c0-3649-11e7-bf60-314364dd1cde",
@@ -182,11 +161,11 @@
           "searchSourceJSON": "{\"filter\":[]}"
         }
       },
-      "col": 6,
+      "col": 3,
       "panelIndex": 13,
-      "row": 4,
-      "size_x": 7,
-      "size_y": 5
+      "row": 7,
+      "size_x": 5,
+      "size_y": 6
     },
     {
       "id": "45a652b0-34c1-11e7-917c-af7a9d11771a",
@@ -203,11 +182,11 @@
           "searchSourceJSON": "{\"filter\":[]}"
         }
       },
-      "col": 3,
+      "col": 1,
       "panelIndex": 16,
-      "row": 6,
-      "size_x": 3,
-      "size_y": 3
+      "row": 25,
+      "size_x": 4,
+      "size_y": 5
     },
     {
       "id": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
@@ -231,15 +210,15 @@
           "description"
         ]
       },
-      "col": 1,
+      "col": 3,
       "columns": [
         "hostname",
         "alert_level",
         "description"
       ],
       "panelIndex": 18,
-      "row": 29,
-      "size_x": 12,
+      "row": 13,
+      "size_x": 8,
       "size_y": 6,
       "sort": [
         "@timestamp",
@@ -281,7 +260,7 @@
         "_id"
       ],
       "panelIndex": 19,
-      "row": 35,
+      "row": 44,
       "size_x": 12,
       "size_y": 6,
       "sort": [
@@ -304,9 +283,9 @@
           "searchSourceJSON": "{\"filter\":[]}"
         }
       },
-      "col": 3,
+      "col": 2,
       "panelIndex": 20,
-      "row": 16,
+      "row": 31,
       "size_x": 10,
       "size_y": 3
     },
@@ -325,11 +304,95 @@
           "searchSourceJSON": "{\"filter\":[]}"
         }
       },
-      "col": 9,
+      "col": 8,
       "panelIndex": 21,
-      "row": 19,
+      "row": 34,
       "size_x": 4,
       "size_y": 5
+    },
+    {
+      "id": "53ac63e0-365b-11e7-8bd0-1db2c55fb7a1",
+      "type": "visualization",
+      "version": 1,
+      "attributes": {
+        "visState": "{\"title\":\"SSL - Server\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"server_name.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Server\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "SSL - Server",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "savedSearchId": "c8f21de0-342e-11e7-9e93-53b62e1857b2",
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[]}"
+        }
+      },
+      "col": 2,
+      "panelIndex": 22,
+      "row": 19,
+      "size_x": 5,
+      "size_y": 6
+    },
+    {
+      "id": "6ef90c30-34c0-11e7-9b32-bb903919ead9",
+      "type": "visualization",
+      "version": 3,
+      "attributes": {
+        "title": "DNS - Server",
+        "visState": "{\"title\":\"DNS - Server\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\",\"type\":\"table\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"destination_ip\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Server\"}}],\"listeners\":{}}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "savedSearchId": "d46522e0-342d-11e7-9e93-53b62e1857b2",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[]}"
+        }
+      },
+      "col": 7,
+      "panelIndex": 23,
+      "row": 19,
+      "size_x": 5,
+      "size_y": 6
+    },
+    {
+      "id": "07fdf9e0-39ad-11e7-8472-0151e5b2b475",
+      "type": "visualization",
+      "version": 1,
+      "attributes": {
+        "visState": "{\"title\":\"Notices - Notice Type\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"note.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Type\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "Notices - Notice Type",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "version": 1,
+        "savedSearchId": "0a3bfbe0-342f-11e7-9e93-53b62e1857b2",
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[]}"
+        }
+      },
+      "col": 8,
+      "panelIndex": 24,
+      "row": 7,
+      "size_x": 5,
+      "size_y": 6
+    },
+    {
+      "id": "9c979ea0-345b-11e7-8867-29a39c0f86b2",
+      "type": "visualization",
+      "version": 2,
+      "attributes": {
+        "visState": "{\"title\":\"Sensors - Sensor and Services (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"sensor_name.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Sensor\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"service.keyword\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
+        "description": "",
+        "title": "Sensors - Sensor and Services (Pie Chart)",
+        "uiStateJSON": "{}",
+        "version": 1,
+        "savedSearchId": "aa05e920-3433-11e7-8867-29a39c0f86b2",
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[]}"
+        }
+      },
+      "size_x": 4,
+      "size_y": 6,
+      "panelIndex": 26,
+      "col": 7,
+      "row": 1
     },
     {
       "id": "*:logstash-*",
@@ -396,6 +459,57 @@
       }
     },
     {
+      "id": "9a5a35c0-342f-11e7-9e93-53b62e1857b2",
+      "type": "search",
+      "version": 3,
+      "attributes": {
+        "sort": [
+          "@timestamp",
+          "desc"
+        ],
+        "hits": 0,
+        "description": "",
+        "title": "NIDS - Alerts",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"event_type:snort\",\"analyze_wildcard\":true}}}"
+        },
+        "columns": [
+          "source_ip",
+          "source_port",
+          "destination_ip",
+          "destination_port",
+          "_id"
+        ]
+      }
+    },
+    {
+      "id": "c8f21de0-342e-11e7-9e93-53b62e1857b2",
+      "type": "search",
+      "version": 1,
+      "attributes": {
+        "sort": [
+          "@timestamp",
+          "desc"
+        ],
+        "hits": 0,
+        "description": "",
+        "title": "SSL - Logs",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"event_type:bro_ssl\",\"analyze_wildcard\":true}}}"
+        },
+        "columns": [
+          "source_ip",
+          "source_port",
+          "destination_ip",
+          "destination_port",
+          "uid",
+          "_id"
+        ]
+      }
+    },
+    {
       "id": "0a3bfbe0-342f-11e7-9e93-53b62e1857b2",
       "type": "search",
       "version": 3,
@@ -422,48 +536,23 @@
       }
     },
     {
-      "id": "9a5a35c0-342f-11e7-9e93-53b62e1857b2",
-      "type": "search",
-      "version": 3,
-      "attributes": {
-        "sort": [
-          "@timestamp",
-          "desc"
-        ],
-        "hits": 0,
-        "description": "",
-        "title": "NIDS - Alerts",
-        "version": 1,
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"event_type:snort\",\"analyze_wildcard\":true}}}"
-        },
-        "columns": [
-          "source_ip",
-          "source_port",
-          "destination_ip",
-          "destination_port",
-          "_id"
-        ]
-      }
-    },
-    {
       "id": "68563ed0-34bf-11e7-9b32-bb903919ead9",
       "type": "dashboard",
-      "version": 1,
+      "version": 10,
       "attributes": {
-        "hits": 0,
-        "timeFrom": "now-24h",
-        "timeRestore": true,
-        "description": "",
         "title": "Indicator",
-        "uiStateJSON": "{\"P-13\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-16\":{\"vis\":{\"legendOpen\":true}},\"P-2\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-4\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-5\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-6\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-8\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-9\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}}",
-        "panelsJSON": "[{\"col\":1,\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"panelIndex\":1,\"row\":1,\"size_x\":2,\"size_y\":11,\"type\":\"visualization\"},{\"col\":3,\"id\":\"60925490-34bf-11e7-9b32-bb903919ead9\",\"panelIndex\":2,\"row\":1,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"col\":3,\"id\":\"e8e3b8a0-34c1-11e7-917c-af7a9d11771a\",\"panelIndex\":4,\"row\":9,\"size_x\":10,\"size_y\":7,\"type\":\"visualization\"},{\"col\":3,\"id\":\"ae1f1fb0-3648-11e7-bf60-314364dd1cde\",\"panelIndex\":5,\"row\":19,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"col\":6,\"id\":\"d0f56da0-3648-11e7-bf60-314364dd1cde\",\"panelIndex\":6,\"row\":19,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"col\":3,\"id\":\"8ba31820-34c6-11e7-8360-0b86c90983fd\",\"panelIndex\":8,\"row\":24,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"col\":8,\"id\":\"7153e7f0-34c7-11e7-8360-0b86c90983fd\",\"panelIndex\":9,\"row\":24,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"col\":6,\"id\":\"6ca12600-345e-11e7-8867-29a39c0f86b2\",\"panelIndex\":11,\"row\":1,\"size_x\":7,\"size_y\":3,\"type\":\"visualization\"},{\"col\":6,\"id\":\"c7eed4c0-3649-11e7-bf60-314364dd1cde\",\"panelIndex\":13,\"row\":4,\"size_x\":7,\"size_y\":5,\"type\":\"visualization\"},{\"col\":3,\"id\":\"45a652b0-34c1-11e7-917c-af7a9d11771a\",\"panelIndex\":16,\"row\":6,\"size_x\":3,\"size_y\":3,\"type\":\"visualization\"},{\"col\":1,\"columns\":[\"hostname\",\"alert_level\",\"description\"],\"id\":\"d9096bb0-342f-11e7-9e93-53b62e1857b2\",\"panelIndex\":18,\"row\":29,\"size_x\":12,\"size_y\":6,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"col\":1,\"columns\":[\"source_ip\",\"source_port\",\"destination_ip\",\"destination_port\",\"uid\",\"_id\"],\"id\":\"aa05e920-3433-11e7-8867-29a39c0f86b2\",\"panelIndex\":19,\"row\":35,\"size_x\":12,\"size_y\":6,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"col\":3,\"id\":\"934fe550-6e08-11e7-9370-174c4785d3e1\",\"panelIndex\":20,\"row\":16,\"size_x\":10,\"size_y\":3,\"type\":\"visualization\"},{\"col\":9,\"id\":\"3f4abb40-6e0a-11e7-84cc-b363f104b3c7\",\"panelIndex\":21,\"row\":19,\"size_x\":4,\"size_y\":5,\"type\":\"visualization\"}]",
-        "timeTo": "now",
+        "hits": 0,
+        "description": "",
+        "panelsJSON": "[{\"col\":1,\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"panelIndex\":1,\"row\":1,\"size_x\":2,\"size_y\":11,\"type\":\"visualization\"},{\"col\":4,\"id\":\"60925490-34bf-11e7-9b32-bb903919ead9\",\"panelIndex\":2,\"row\":1,\"size_x\":3,\"size_y\":6,\"type\":\"visualization\"},{\"col\":5,\"id\":\"e8e3b8a0-34c1-11e7-917c-af7a9d11771a\",\"panelIndex\":4,\"row\":25,\"size_x\":8,\"size_y\":6,\"type\":\"visualization\"},{\"col\":2,\"id\":\"ae1f1fb0-3648-11e7-bf60-314364dd1cde\",\"panelIndex\":5,\"row\":34,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"col\":5,\"id\":\"d0f56da0-3648-11e7-bf60-314364dd1cde\",\"panelIndex\":6,\"row\":34,\"size_x\":3,\"size_y\":5,\"type\":\"visualization\"},{\"col\":2,\"id\":\"8ba31820-34c6-11e7-8360-0b86c90983fd\",\"panelIndex\":8,\"row\":39,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"col\":7,\"id\":\"7153e7f0-34c7-11e7-8360-0b86c90983fd\",\"panelIndex\":9,\"row\":39,\"size_x\":5,\"size_y\":5,\"type\":\"visualization\"},{\"col\":3,\"id\":\"c7eed4c0-3649-11e7-bf60-314364dd1cde\",\"panelIndex\":13,\"row\":7,\"size_x\":5,\"size_y\":6,\"type\":\"visualization\"},{\"col\":1,\"id\":\"45a652b0-34c1-11e7-917c-af7a9d11771a\",\"panelIndex\":16,\"row\":25,\"size_x\":4,\"size_y\":5,\"type\":\"visualization\"},{\"col\":3,\"columns\":[\"hostname\",\"alert_level\",\"description\"],\"id\":\"d9096bb0-342f-11e7-9e93-53b62e1857b2\",\"panelIndex\":18,\"row\":13,\"size_x\":8,\"size_y\":6,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"col\":1,\"columns\":[\"source_ip\",\"source_port\",\"destination_ip\",\"destination_port\",\"uid\",\"_id\"],\"id\":\"aa05e920-3433-11e7-8867-29a39c0f86b2\",\"panelIndex\":19,\"row\":44,\"size_x\":12,\"size_y\":6,\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\"},{\"col\":2,\"id\":\"934fe550-6e08-11e7-9370-174c4785d3e1\",\"panelIndex\":20,\"row\":31,\"size_x\":10,\"size_y\":3,\"type\":\"visualization\"},{\"col\":8,\"id\":\"3f4abb40-6e0a-11e7-84cc-b363f104b3c7\",\"panelIndex\":21,\"row\":34,\"size_x\":4,\"size_y\":5,\"type\":\"visualization\"},{\"col\":2,\"id\":\"53ac63e0-365b-11e7-8bd0-1db2c55fb7a1\",\"panelIndex\":22,\"row\":19,\"size_x\":5,\"size_y\":6,\"type\":\"visualization\"},{\"col\":7,\"id\":\"6ef90c30-34c0-11e7-9b32-bb903919ead9\",\"panelIndex\":23,\"row\":19,\"size_x\":5,\"size_y\":6,\"type\":\"visualization\"},{\"col\":8,\"id\":\"07fdf9e0-39ad-11e7-8472-0151e5b2b475\",\"panelIndex\":24,\"row\":7,\"size_x\":5,\"size_y\":6,\"type\":\"visualization\"},{\"size_x\":4,\"size_y\":6,\"panelIndex\":26,\"type\":\"visualization\",\"id\":\"9c979ea0-345b-11e7-8867-29a39c0f86b2\",\"col\":7,\"row\":1}]",
         "optionsJSON": "{\"darkTheme\":true}",
+        "uiStateJSON": "{\"P-13\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-16\":{\"vis\":{\"legendOpen\":true}},\"P-2\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-22\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-23\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-24\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-4\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-5\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-6\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-8\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-9\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}}",
         "version": 1,
+        "timeRestore": true,
+        "timeTo": "now",
+        "timeFrom": "now-24h",
         "refreshInterval": {
-          "pause": false,
           "display": "Off",
+          "pause": false,
           "value": 0
         },
         "kibanaSavedObjectMeta": {
