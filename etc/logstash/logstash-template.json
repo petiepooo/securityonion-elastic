@@ -7,7 +7,7 @@
     "index.refresh_interval" : "5s"
   },
   "mappings" : {
-    "_default_" : {
+    "doc" : {
       "_all" : {"enabled" : false, "norms" : false},
       "dynamic_templates" : [ {
         "message_field" : {
