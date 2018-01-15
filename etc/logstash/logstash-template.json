@@ -8,7 +8,6 @@
   },
   "mappings" : {
     "doc" : {
-      "_all" : {"enabled" : false, "norms" : false},
       "dynamic_templates" : [ {
         "message_field" : {
           "path_match" : "message",
