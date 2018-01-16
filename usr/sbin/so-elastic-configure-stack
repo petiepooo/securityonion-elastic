@@ -54,11 +54,11 @@ else
 	# Preserve custom settings, if present
 	# Transport settings
 	# https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-transport.html
-	grep transport $ES_YAML_BAK | while read -r line ; do echo "$line" >> $ES_YAML; done
+	grep transport $ES_YAML_BAK >> $ES_YAML
        
 	# Low/High watermark settings
 	# https://www.elastic.co/guide/en/elasticsearch/reference/current/disk-allocator.html#disk-allocator
-        grep watermark $ES_YAML_BAK | while read -r line ; do echo "$line" >> $ES_YAML; done
+        grep watermark $ES_YAML_BAK >> $ES_YAML
 fi
 
 # Set cluster name
