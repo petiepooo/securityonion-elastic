@@ -50,10 +50,15 @@ else
 	# If config exists, back it up, write the new config file, and then transfer transport settings
 	cp -av $ES_YAML $ES_YAML_BAK
 	cp -av $SRC/$ES_YAML $ES_YAML
-	# Preserve transport settings if present
-	for i in $(grep transport $ES_YAML_BAK); do
-		echo $i >> $ES_YAML
-	done
+	
+	# Preserve custom settings, if present
+	# Transport settings
+	# https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-transport.html
+	grep transport $ES_YAML_BAK >> $ES_YAML
+       
+	# Low/High watermark settings
+	# https://www.elastic.co/guide/en/elasticsearch/reference/current/disk-allocator.html#disk-allocator
+        grep watermark $ES_YAML_BAK >> $ES_YAML
 fi
 
 # Set cluster name
