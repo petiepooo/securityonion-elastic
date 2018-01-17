@@ -52,7 +52,7 @@ header "Updating existing packages"
 # Need to ensure we're running the latest versions of these packages
 # so don't just check to see if they've already been installed,
 # force the update
-apt-get install -y securityonion-setup securityonion-sostat
+apt-get install -y securityonion-setup securityonion-sostat securityonion-ossec-rules
 echo "Done!"
 
 }
