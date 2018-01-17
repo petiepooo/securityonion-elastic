@@ -185,7 +185,7 @@ if ($sidsrc == "elastic") {
 		}
 	}
 
-	$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\",\"type\": \"phrase\"}}}}' 2>/dev/null";
+	$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\"}}}}' 2>/dev/null";
 	$elastic_response = shell_exec($elastic_command);
 
 	// Try to decode the response as JSON.
