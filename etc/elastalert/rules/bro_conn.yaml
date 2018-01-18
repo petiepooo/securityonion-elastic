@@ -42,7 +42,7 @@ filter:
 
 # Only count number of records, instead of bringing all data back
 use_count_query: true
-doc_type: 'logs'
+doc_type: 'doc'
 
 # (Required)
 # The alert is use when a match is found

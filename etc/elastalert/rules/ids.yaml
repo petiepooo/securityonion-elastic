@@ -13,7 +13,7 @@ filter:
 
 # Only count number of records, instead of bringing all data back
 use_count_query: true
-doc_type: 'logs'
+doc_type: 'doc'
 
 alert:
 - "debug"
