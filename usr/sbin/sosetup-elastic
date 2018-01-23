@@ -759,7 +759,6 @@ Would you like to enable Bro?"
 	if [ $ANSWER -eq 1 ]; then
 		[ $DEBUG -eq 1 ] && echo "DEBUG: Clicked No.  Disabling Bro."
 		BRO_ENABLED="no"
-		HTTP_AGENT_ENABLED="no"
 	else
 		[ $DEBUG -eq 1 ] && echo "DEBUG: Clicked Yes.  Enabling Bro."
 	fi
@@ -810,69 +809,6 @@ If you need to change this setting later, you can change the lb_procs variable i
 	fi
 
 	if [ $CUSTOM -eq 1 ]; then
-	# http_agent
-	if [ "$BRO_ENABLED" == "yes" ]; then
-		TEXT="http_agent sends Bro's http.log to the Sguil database.\n\
-\n\
-If you plan to access Bro's http.log via Kibana,\n\
-you may want to disable http_agent to avoid duplication of effort.\n\
-\n\
-Would you like to enable http_agent?"
-		YES="Yes, enable http__agent!"
-		NO="No, disable http__agent."
-		zenity --question --title="$TITLE" --text="$TEXT" --ok-label="$YES" --cancel-label="$NO" --no-wrap
-		ANSWER="$?"
-		if [ $ANSWER -eq 1 ]; then
-			[ $DEBUG -eq 1 ] && echo "DEBUG: Clicked No.  Disabling http_agent."
-			HTTP_AGENT_ENABLED="no"
-		else
-			[ $DEBUG -eq 1 ] && echo "DEBUG: Clicked Yes.  Enabling http_agent."
-			HTTP_AGENT_ENABLED="yes"
-		fi
-	fi
-
-	# Argus
-	TEXT="Argus listens on the chosen interfaces and logs session data to the filesystem.\n\
-\n\
-If you plan to use other forms of session data (like Bro's conn.log or Prads),\n\
-you may want to disable Argus to avoid duplication of effort.\n\
-\n\
-Would you like to enable Argus?"
-	YES="Yes, enable Argus!"
-	NO="No, disable Argus."
-	zenity --question --title="$TITLE" --text="$TEXT" --ok-label="$YES" --cancel-label="$NO" --no-wrap
-	ANSWER="$?"
-	if [ $ANSWER -eq 1 ]; then
-		[ $DEBUG -eq 1 ] && echo "DEBUG: Clicked No.  Disabling Argus."
-		ARGUS_ENABLED="no"
-	else
-		[ $DEBUG -eq 1 ] && echo "DEBUG: Clicked Yes.  Enabling Argus."
-		ARGUS_ENABLED="yes"
-	fi
-
-	# Prads
-	TEXT="Prads listens on the chosen interfaces and provides session and asset data for Sguil.\n\
-\n\
-If you plan to use other forms of session data (like Bro's conn.log or Argus)\n\
-and/or you plan to use other forms of asset data (like Bro's software.log),\n\
-you may want to disable Prads to avoid duplication of effort.\n\
-\n\
-Would you like to enable Prads?"
-	YES="Yes, enable Prads!"
-	NO="No, disable Prads."
-	zenity --question --title="$TITLE" --text="$TEXT" --ok-label="$YES" --cancel-label="$NO" --no-wrap
-	ANSWER="$?"
-	if [ $ANSWER -eq 1 ]; then
-		[ $DEBUG -eq 1 ] && echo "DEBUG: Clicked No.  Disabling Prads."
-		PRADS_ENABLED="no"
-		PADS_AGENT_ENABLED="no"
-		SANCP_AGENT_ENABLED="no"
-	else
-		[ $DEBUG -eq 1 ] && echo "DEBUG: Clicked Yes.  Enabling Prads."
-		PRADS_ENABLED="yes"
-		PADS_AGENT_ENABLED="yes"
-		SANCP_AGENT_ENABLED="yes"
-	fi
 
 	# PCAP
 	TEXT="Full packet capture writes all monitored traffic to disk.\n\
@@ -1023,12 +959,13 @@ for hunting through your logs, including:\n\
 * Snort/Suricata logs\n\
 * standard syslog\n\
 \n\
-In a distributed deployment with separate server and sensor(s),\n\
-you'll want to enable/disable the Elastic Stack on all boxes.  So if you want\n\
-to use the Elastic Stack, you should enable it on the master server and all sensors.\n\
+If this is a sensor-only installation, you can store logs in a local Elasticsearch\n\
+database or you can forward to the Elasticsearch database on your master server.\n\
+For either of these options, choose Yes.  You will then be asked if you want to\n\
+store locally or forward to your master server.\n\
 \n\
 Would you like to enable the Elastic Stack?"
-	YES="Yes, enable the Elastic Stack"
+	YES="Yes, enable the Elastic Stack."
 	NO="No, disable the Elastic Stack."
 	zenity --question --title="$TITLE" --text="$TEXT" --ok-label="$YES" --cancel-label="$NO" --no-wrap
 	ANSWER="$?"
@@ -1044,72 +981,59 @@ Would you like to enable the Elastic Stack?"
 	if [ "$ELASTIC" = "YES" ]; then
 		# If Advanced Setup, ask user
 		if [ $ADVANCED_SETUP -eq 1 ]; then
-			LOG_SIZE_LIMIT_CONFIRMED="no"
-			while [ $LOG_SIZE_LIMIT_CONFIRMED = "no" ]; do
-				LOG_SIZE_LIMIT_GB=`zenity --entry --title "$TITLE" --text="How much disk space (in GigaBytes) should be allocated for Elasticsearch to store logs?\n\nPlease enter an integer greater than 0.  The default is half your disk size.\n\nPlease make sure that the value you set here is less than the size of your disk!\n\nIf you need to adjust this later, you can modify the value for disk__space in /etc/curator/action/delete.yml." --entry-text=$LOG_SIZE_LIMIT_GB`
-				[ $? = 1 ] && exit
-				if [ x$LOG_SIZE_LIMIT_GB = "x" ]; then
-				zenity --error --title "$TITLE" --text "Invalid log size limit! Please use integers greater than 0 and less than your disk size."
-				else
-				COMPRESSED="$(echo $LOG_SIZE_LIMIT_GB | sed -e 's/[^[:digit:]]//g')"
-				[ "$COMPRESSED" == "$LOG_SIZE_LIMIT_GB" ] && 
-				[ $LOG_SIZE_LIMIT_GB -gt 0 ] && 
-				[ $LOG_SIZE_LIMIT_GB -lt $DISK_SIZE_GB ] && 
-				LOG_SIZE_LIMIT_CONFIRMED="yes" || 
-				zenity --error --title "$TITLE" --text "Invalid log size limit! Please use integers greater than 0 and less than your disk size." 
-				fi
-			done
-			
-			let LOG_SIZE_LIMIT=LOG_SIZE_LIMIT_GB*1000000000
-			[ $DEBUG -eq 1 ] && echo "DEBUG: LOG_SIZE_LIMIT set to $LOG_SIZE_LIMIT."
-			
+
 			if [ $SERVER -ne 1 ]; then
-                                TEXT="Would you like to forward logs to Logstash on $SERVERNAME, instead of processing them locally?"
-                                YES="Yes, forward logs to Logstash on $SERVERNAME."
-                                NO="No, process logs on $HOSTNAME."
-                                zenity --question --title="$TITLE" --text="$TEXT" --ok-label="$YES" --cancel-label="$NO" --no-wrap
-                                ANSWER="$?"
-                                if [ $ANSWER -eq 0 ]; then
-                                        [ $DEBUG -eq 1 ] && echo "DEBUG: Forward logs to $SERVERNAME."
-                                        FORWARD="YES"
-                                        FORWARD_CONFIRM="- Forward logs from $HOSTNAME to Logstash on $SERVERNAME."
-                                else
-                                        [ $DEBUG -eq 1 ] && echo "DEBUG: Process logs locally."
-                                        FORWARD="NO"
-                                fi
-                   	fi
+				TEXT="By default, logs are stored in a local Elasticsearch database on this sensor and searchable from the master server via cross cluster search.\n\nAlternatively, if you would like a minimal stripped down sensor, you can opt to simply forward logs to the master server.\nHowever, if you choose this option, you should be careful not to overwhelm your master server.\n\nWould you like to store logs locally on $HOSTNAME?"
+				YES="Yes, store logs locally."
+				NO="No, forward logs to $SERVERNAME."
+				zenity --question --title="$TITLE" --text="$TEXT" --ok-label="$YES" --cancel-label="$NO" --no-wrap
+				ANSWER="$?"
+				if [ $ANSWER -eq 0 ]; then
+					[ $DEBUG -eq 1 ] && echo "DEBUG: Process logs locally."
+					FORWARD="NO"
+				else
+					[ $DEBUG -eq 1 ] && echo "DEBUG: Forward logs to $SERVERNAME."
+					FORWARD="YES"
+					FORWARD_CONFIRM="- Forward logs from $HOSTNAME to $SERVERNAME."
+				fi
+			fi
+
+			if [ "$FORWARD" = "NO" ]; then
+				LOG_SIZE_LIMIT_CONFIRMED="no"
+				while [ $LOG_SIZE_LIMIT_CONFIRMED = "no" ]; do
+					LOG_SIZE_LIMIT_GB=`zenity --entry --title "$TITLE" --text="How much disk space (in GigaBytes) should be allocated for Elasticsearch to store logs?\n\nPlease enter an integer greater than 0.  The default is half your disk size.\n\nPlease make sure that the value you set here is less than the size of your disk!\n\nIf you need to adjust this later, you can modify the value for disk__space in /etc/curator/action/delete.yml." --entry-text=$LOG_SIZE_LIMIT_GB`
+					[ $? = 1 ] && exit
+					if [ x$LOG_SIZE_LIMIT_GB = "x" ]; then
+						zenity --error --title "$TITLE" --text "Invalid log size limit! Please use integers greater than 0 and less than your disk size."
+					else
+						COMPRESSED="$(echo $LOG_SIZE_LIMIT_GB | sed -e 's/[^[:digit:]]//g')"
+						[ "$COMPRESSED" == "$LOG_SIZE_LIMIT_GB" ] && 
+						[ $LOG_SIZE_LIMIT_GB -gt 0 ] && 
+						[ $LOG_SIZE_LIMIT_GB -lt $DISK_SIZE_GB ] && 
+						LOG_SIZE_LIMIT_CONFIRMED="yes" || 
+						zenity --error --title "$TITLE" --text "Invalid log size limit! Please use integers greater than 0 and less than your disk size." 
+					fi
+				done
+			
+				let LOG_SIZE_LIMIT=LOG_SIZE_LIMIT_GB*1000000000
+				[ $DEBUG -eq 1 ] && echo "DEBUG: LOG_SIZE_LIMIT set to $LOG_SIZE_LIMIT."
+			fi
 		fi
 	fi
 fi
 
-# Set ELASTIC_ACTION_CONFIRM and ask about updating Elastic server if applicable
+# Set ELASTIC_ACTION_CONFIRM
 if [ "$ELASTIC" = "NO" ]; then
 	ELASTIC_ACTION_CONFIRM="- Disable Elastic stack."
 else
 	if [ $SERVER -eq 1 ]; then
 	    	ELASTIC_ACTION_CONFIRM="- Configure Elastic Stack.\n"
 	else
-    		ELASTIC_ACTION_CONFIRM="- Configure Elastic Stack cross cluster search.\n"
-
-		# Ask if they want to update the SERVER and restart Apache
-#		TEXT="Would you like to automatically update the ELSA server?\n\
-#\n\
-#This will restart Apache on the ELSA server which will disrupt\n\
-#any ELSA queries running at the time."
-#		YES="Yes, update ELSA server!"
-#		NO="No, do not update ELSA server."
-#		zenity --question --title="$TITLE" --text="$TEXT" --ok-label="$YES" --cancel-label="$NO"
-#		ANSWER="$?"
-#		if [ $ANSWER -eq 0 ]; then
-#		    	[ $DEBUG -eq 1 ] && echo "DEBUG: Update ELSA Server."
-#    			UPDATE_ELSA_SERVER="YES"
-#		else
-#			[ $DEBUG -eq 1 ] && echo "DEBUG: Do not update ELSA server."
-#    			UPDATE_ELSA_SERVER="NO"
-#		fi
+		if [ "$FORWARD" = "NO" ]; then
+    			ELASTIC_ACTION_CONFIRM="- Configure Elastic Stack cross cluster search.\n"
+		fi
   	fi
 fi
-
 
 #########################################
 # If just writing a file, do it and exit
@@ -1121,7 +1045,6 @@ if [ "$WRITEANSWERFILE" ]; then
 	zenity --info --title="$TITLE" --text="$TEXT" --no-wrap
 	exit 0
 fi
-
 
 #########################################
 # Confirm all choices before proceeding
@@ -2018,6 +1941,14 @@ EOF
                         echo "# Please wait while stopping and disabling Logstash..." | tee -a $LOG
                         docker stop so-logstash >> $LOG 2>&1
                         sed -i 's|LOGSTASH_ENABLED="yes"|LOGSTASH_ENABLED="no"|g' $CONF
+                        echo "88"
+                        echo "# Please wait while stopping and disabling Elasticsearch..." | tee -a $LOG
+                        docker stop so-elasticsearch >> $LOG 2>&1
+                        sed -i 's|ELASTICSEARCH_ENABLED="yes"|ELASTICSEARCH_ENABLED="no"|g' $CONF
+                        echo "89"
+                        echo "# Please wait while stopping and disabling Curator..." | tee -a $LOG
+                        docker stop so-curator >> $LOG 2>&1
+                        sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' $CONF
                 fi
 		
 		echo "90"
