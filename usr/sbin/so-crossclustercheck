@@ -60,7 +60,7 @@ cat ${CROSSCLUSTERTAB} | while read HOSTNAME INT_PORT; do
 	nc -z ${DOCKER_INTERFACE} ${REVERSE_PORT}
 	if [ $? -ne 0 ]; then
 		# If we can't connect, set seeds to null (disable)
-		ARGS="{\"persistent\": {\"search\": {\"remote\": {\"${HOSTNAME}\": {\"seeds\": [null]}}}}}"
+		ARGS="{\"persistent\": {\"search\": {\"remote\": {\"${HOSTNAME}\": {\"seeds\": null}}}}}"
 	else
 		# If we can connect, set seeds to proper IP and port (enable)
 		ARGS="{\"persistent\": {\"search\": {\"remote\": {\"${HOSTNAME}\": {\"seeds\": [\"${DOCKER_INTERFACE}:${REVERSE_PORT}\"]}}}}}"
