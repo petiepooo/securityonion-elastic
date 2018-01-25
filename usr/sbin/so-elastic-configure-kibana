@@ -2,8 +2,16 @@
 
 . /usr/sbin/so-elastic-common
 
-. /usr/sbin/so-elastic-configure-kibana-config
+if [ "${KIBANA_ENABLED}" = "no" ]; then
 
-. /usr/sbin/so-elastic-configure-kibana-dashboards
+	echo "Kibana is disabled, skipping config"
 
-. /usr/sbin/so-elastic-configure-kibana-shortcuts
+else
+
+	. /usr/sbin/so-elastic-configure-kibana-config
+
+	. /usr/sbin/so-elastic-configure-kibana-dashboards
+
+	. /usr/sbin/so-elastic-configure-kibana-shortcuts
+
+fi
