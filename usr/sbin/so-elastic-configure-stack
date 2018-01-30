@@ -59,6 +59,10 @@ else
 	# Low/High watermark settings
 	# https://www.elastic.co/guide/en/elasticsearch/reference/current/disk-allocator.html#disk-allocator
         grep watermark $ES_YAML_BAK >> $ES_YAML
+        if [ $? != 0 ]; then
+		echo 'cluster.routing.allocation.disk.watermark.low: "85%"' >> $ES_YAML
+		echo 'cluster.routing.allocation.disk.watermark.high: "90%"' >> $ES_YAML
+	fi
 fi
 
 # Set cluster name
