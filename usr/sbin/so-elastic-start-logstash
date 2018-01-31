@@ -28,6 +28,8 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                 docker run --name=so-logstash \
                         --detach \
                         --env LS_JAVA_OPTS="-Xms$LOGSTASH_HEAP -Xmx$LOGSTASH_HEAP" \
+                        --network-alias=logstash \
+                        --network="${DOCKERNET}" \
 			--publish $LOGSTASH_PUBLISH_IP:5044:5044 \
 			--publish $LOGSTASH_PUBLISH_IP:6050:6050 \
                         --publish $LOGSTASH_PUBLISH_IP:6051:6051 \
@@ -46,6 +48,5 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                         --volume /var/log/logstash:/var/log/logstash \
                         $LOGSTASH_OPTIONS \
                         $DOCKERHUB/so-logstash
-                        docker network connect --alias logstash $DOCKERNET so-logstash
         fi
 fi
