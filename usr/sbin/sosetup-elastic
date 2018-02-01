@@ -1929,6 +1929,19 @@ EOF
         	sed "s/LOG_SIZE_LIMIT=.*/LOG_SIZE_LIMIT=$LOG_SIZE_LIMIT_GB/" $CONF
 	fi
 
+	if [ $SERVER -ne 1 ]; then
+		echo 'KIBANA_ENABLED="no"' >> $CONF
+		echo 'ELASTALERT_ENABLED="no"' >> $CONF
+		echo 'FREQ_SERVER_ENABLED="no"' >> $CONF
+		echo 'DOMAIN_STATS_ENABLED="no"' >> $CONF
+
+		if [ "$FORWARD" = "YES" ]; then
+			echo 'ELASTICSEARCH_ENABLED="no"' >> $CONF
+			echo 'LOGSTASH_ENABLED="no"' >> $CONF
+			echo 'CURATOR_ENABLED="no"' >> $CONF
+		fi
+	fi
+
 	/usr/sbin/so-elastic-configure >> $LOG 2>&1
 
 	if [ $SERVER -ne 1 ]; then
@@ -1936,31 +1949,6 @@ EOF
 		echo "# Please wait while stopping Apache web server..." | tee -a $LOG
 		service apache2 stop >> $LOG 2>&1
 
-    		if [ "$FORWARD" = "YES" ]; then
-                        echo "87"
-                        echo "# Please wait while stopping and disabling Logstash..." | tee -a $LOG
-                        docker stop so-logstash >> $LOG 2>&1
-                        sed -i 's|LOGSTASH_ENABLED="yes"|LOGSTASH_ENABLED="no"|g' $CONF
-                        echo "88"
-                        echo "# Please wait while stopping and disabling Elasticsearch..." | tee -a $LOG
-                        docker stop so-elasticsearch >> $LOG 2>&1
-                        sed -i 's|ELASTICSEARCH_ENABLED="yes"|ELASTICSEARCH_ENABLED="no"|g' $CONF
-                        echo "89"
-                        echo "# Please wait while stopping and disabling Curator..." | tee -a $LOG
-                        docker stop so-curator >> $LOG 2>&1
-                        sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' $CONF
-                fi
-		
-		echo "90"
-		echo "# Please wait while stopping and disabling Kibana..." | tee -a $LOG
-		docker stop so-kibana >> $LOG 2>&1
-		sed -i 's|KIBANA_ENABLED="yes"|KIBANA_ENABLED="no"|g' $CONF
-		
-		echo "91"
-                echo "# Please wait while stopping and disabling ElastAlert..." | tee -a $LOG
-                docker stop so-elastalert >> $LOG 2>&1
-                sed -i 's|ELASTALERT_ENABLED="yes"|ELASTALERT_ENABLED="no"|g' $CONF
-		
     		echo "93"
 		echo "# Please wait while stopping and disabling MySQL..." | tee -a $LOG
 		service mysql stop >> $LOG 2>&1
@@ -1969,67 +1957,67 @@ EOF
     		echo "95"
 		echo "# Please wait while performing final sensor configuration..." | tee -a $LOG
 
-		# We need to determine a few things from the master server:
-		# DOCKER_INTERFACE, DOCKER_NETWORK, and REVERSE_PORT
-
-		# DOCKER_INTERFACE
-		SSH_CMD="sudo /usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Gateway'"
-		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
-		DOCKER_INTERFACE=$(echo $SSH_OUTPUT | cut -d\" -f2)
-		echo "DOCKER_INTERFACE is $DOCKER_INTERFACE" >> $LOG 2>&1
-
-		# DOCKER_NETWORK
-		SSH_CMD="sudo /usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Subnet'"
-		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
-		DOCKER_NETWORK=$(echo $SSH_OUTPUT | cut -d\" -f2)
-		echo "DOCKER_NETWORK is $DOCKER_NETWORK" >> $LOG 2>&1
-
-		# REVERSE_PORT
-		SSH_CMD="cat /etc/nsm/crossclustertab | cut -d: -f2 | grep '^5' | sort | tail -1"
-		HIGHEST_REVERSE_PORT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
-		if [ "$HIGHEST_REVERSE_PORT" = "" ]; then
-			echo "Found no other sensors." >> $LOG 2>&1
-			REVERSE_PORT=50000
-		else
-			echo "HIGHEST_REVERSE_PORT is $HIGHEST_REVERSE_PORT" >> $LOG 2>&1
-			if [ ${HIGHEST_REVERSE_PORT} -gt 49999 ] && [ ${HIGHEST_REVERSE_PORT} -lt 59999 ]; then
-				let REVERSE_PORT=HIGHEST_REVERSE_PORT+1
-			fi
-		fi
-		echo "REVERSE_PORT is $REVERSE_PORT" >> $LOG 2>&1
-
-		# Now that we've determined those 3 values, we need to store DOCKER_INTERFACE and REVERSE_PORT in SSH_CONF.
-
-    		# If DOCKER_INTERFACE is not already in SSH_CONF, then store it for future use.
-		if grep "DOCKER_INTERFACE=" $SSH_CONF >/dev/null 2>&1; then
-			echo "DOCKER_INTERFACE already exists in $SSH_CONF." >> $LOG 2>&1
-		else
-			echo "DOCKER_INTERFACE=$DOCKER_INTERFACE" >> $SSH_CONF
-		fi
-
-    		# If REVERSE_PORT is not already in SSH_CONF, then store it for future use.
-		if grep "REVERSE_PORT=" $SSH_CONF >/dev/null 2>&1; then
-			echo "REVERSE_PORT already exists in $SSH_CONF." >> $LOG 2>&1
-		else
-			echo "REVERSE_PORT=$REVERSE_PORT" >> $SSH_CONF
-		fi
-		
-		if [ "$FORWARD" = "YES" ]; then
+    		if [ "$FORWARD" = "YES" ]; then
                         # If AUTOSSH_OPTIONS is already in SSH_CONF, remove it and replace it with new value.
                         if grep "AUTOSSH_OPTIONS=" $SSH_CONF >/dev/null 2>&1; then
                                 sed -i 's/AUTOSSH_OPTIONS.*/AUTOSSH_OPTIONS="-L 6050:localhost:6050"/' $SSH_CONF >> $LOG 2>&1
                         else
                                 echo 'AUTOSSH_OPTIONS="-L 6050:localhost:6050"' >> $SSH_CONF
                         fi
-                fi
+		else
+			# We need to determine a few things from the master server:
 
-		# Configure Elasticsearch
-		ELASTIC_CONFIG="/etc/elasticsearch/elasticsearch.yml"
-		echo "transport.bind_host: 0.0.0.0" >> $ELASTIC_CONFIG
-		echo "transport.publish_host: $DOCKER_INTERFACE" >> $ELASTIC_CONFIG
-		echo "transport.publish_port: $REVERSE_PORT" >> $ELASTIC_CONFIG
-		docker restart so-elasticsearch >> $LOG 2>&1
-		cat << EOF >> $SOSETUPSCP
+			# DOCKER_INTERFACE, DOCKER_NETWORK, and REVERSE_PORT
+
+			# DOCKER_INTERFACE
+			SSH_CMD="sudo /usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Gateway'"
+			SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
+			DOCKER_INTERFACE=$(echo $SSH_OUTPUT | cut -d\" -f2)
+			echo "DOCKER_INTERFACE is $DOCKER_INTERFACE" >> $LOG 2>&1
+
+			# DOCKER_NETWORK
+			SSH_CMD="sudo /usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Subnet'"
+			SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
+			DOCKER_NETWORK=$(echo $SSH_OUTPUT | cut -d\" -f2)
+			echo "DOCKER_NETWORK is $DOCKER_NETWORK" >> $LOG 2>&1
+
+			# REVERSE_PORT
+			SSH_CMD="cat /etc/nsm/crossclustertab | cut -d: -f2 | grep '^5' | sort | tail -1"
+			HIGHEST_REVERSE_PORT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
+			if [ "$HIGHEST_REVERSE_PORT" = "" ]; then
+				echo "Found no other sensors." >> $LOG 2>&1
+				REVERSE_PORT=50000
+			else
+				echo "HIGHEST_REVERSE_PORT is $HIGHEST_REVERSE_PORT" >> $LOG 2>&1
+				if [ ${HIGHEST_REVERSE_PORT} -gt 49999 ] && [ ${HIGHEST_REVERSE_PORT} -lt 59999 ]; then
+					let REVERSE_PORT=HIGHEST_REVERSE_PORT+1
+				fi
+			fi
+			echo "REVERSE_PORT is $REVERSE_PORT" >> $LOG 2>&1
+
+			# Now that we've determined those 3 values, we need to store DOCKER_INTERFACE and REVERSE_PORT in SSH_CONF.
+	
+    			# If DOCKER_INTERFACE is not already in SSH_CONF, then store it for future use.
+			if grep "DOCKER_INTERFACE=" $SSH_CONF >/dev/null 2>&1; then
+				echo "DOCKER_INTERFACE already exists in $SSH_CONF." >> $LOG 2>&1
+			else
+				echo "DOCKER_INTERFACE=$DOCKER_INTERFACE" >> $SSH_CONF
+			fi
+
+	    		# If REVERSE_PORT is not already in SSH_CONF, then store it for future use.
+			if grep "REVERSE_PORT=" $SSH_CONF >/dev/null 2>&1; then
+				echo "REVERSE_PORT already exists in $SSH_CONF." >> $LOG 2>&1
+			else
+				echo "REVERSE_PORT=$REVERSE_PORT" >> $SSH_CONF
+			fi
+
+			# Configure Elasticsearch
+			ELASTIC_CONFIG="/etc/elasticsearch/elasticsearch.yml"
+			echo "transport.bind_host: 0.0.0.0" >> $ELASTIC_CONFIG
+			echo "transport.publish_host: $DOCKER_INTERFACE" >> $ELASTIC_CONFIG
+			echo "transport.publish_port: $REVERSE_PORT" >> $ELASTIC_CONFIG
+			docker restart so-elasticsearch >> $LOG 2>&1
+			cat << EOF >> $SOSETUPSCP
 if ! grep "Match User $SSH_USERNAME" /etc/ssh/sshd_config >/dev/null 2>&1; then
 echo Match User $SSH_USERNAME >> /etc/ssh/sshd_config
 echo '   GatewayPorts clientspecified' >> /etc/ssh/sshd_config
@@ -2039,8 +2027,9 @@ ufw allow proto tcp from $DOCKER_NETWORK to $DOCKER_INTERFACE port $REVERSE_PORT
 source /etc/nsm/securityonion.conf
 curl -XPUT http://\$ELASTICSEARCH_HOST:\$ELASTICSEARCH_PORT/_cluster/settings -H'Content-Type: application/json' -d '{"persistent": {"search": {"remote": {"$HOSTNAME": {"seeds": ["$DOCKER_INTERFACE:$REVERSE_PORT"]}}}}}'
 EOF
-	fi
+		fi
 
+	fi
 fi
 }
 
