@@ -85,6 +85,10 @@ else
 	     -d'{"index_patterns" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
 	echo
 
+	curl -s -XPUT "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/.kibana/_settings" \
+	     -H 'Content-Type: application/json' \
+	     -d'{"index" : {"number_of_replicas" : 0}}'
+
 	# Finally, update KIBANA_VERSION in securityonion.conf to reflect the current Kibana version
 	echo
 	echo "Updating /etc/nsm/securityonion.conf with correct Kibana version ($KIBANA_VERSION)..."
