@@ -17,6 +17,7 @@ if [ ${ELASTALERT_ENABLED} = "yes" ]; then
         curl -s -XPUT "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/elastalert*/_settings" \
              -H 'Content-Type: application/json' \
              -d'{"index" : {"number_of_replicas" : 0}}'
+	echo
 
 else
 	echo "ElastAlert disabled, so not configuring..."

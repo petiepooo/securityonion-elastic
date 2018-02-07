@@ -88,6 +88,7 @@ else
 	curl -s -XPUT "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/.kibana/_settings" \
 	     -H 'Content-Type: application/json' \
 	     -d'{"index" : {"number_of_replicas" : 0}}'
+	echo
 
 	# Finally, update KIBANA_VERSION in securityonion.conf to reflect the current Kibana version
 	echo
