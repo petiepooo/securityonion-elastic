@@ -1,0 +1,21 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+BRO="/opt/bro/share/bro"
+
+if [ ${BRO_ENABLED} = "yes" ]; then
+
+	header "Configuring Bro to output in JSON"
+
+	cp -av ${SRC}/opt/bro/share/bro/json-logs ${BRO}
+
+	LOCALBRO="${BRO}/site/local.bro"
+	if [ -f ${LOCALBRO} ] ; then
+		if ! grep "@load json-logs" ${LOCALBRO} >/dev/null 2>&1; then 
+			echo "@load json-logs" >> ${LOCALBRO}
+		fi
+	fi
+fi
