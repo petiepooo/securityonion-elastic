@@ -27,7 +27,7 @@ cd $ELASTICDIR
 # so-elastic-start should have already run so-elastic-configure-kibana
 # to load Kibana config and dashboards.
 # However, it appears the config isn't loading properly, so let's run it again.
-. /usr/sbin/so-elastic-configure-kibana-config
+#. /usr/sbin/so-elastic-configure-kibana-config
 
 . /usr/sbin/so-elastic-configure-curator
 

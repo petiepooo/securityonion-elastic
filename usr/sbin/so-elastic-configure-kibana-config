@@ -42,26 +42,9 @@ else
 		sleep 1s;
 	done
 
-	# Check to see if Kibana config is available, so we can update it
-	#wait_step=0
-	#until curl -s -XGET http://localhost:5601/api/saved_objects/config/$KIBANA_VERSION | grep -v 404 > /dev/null; do
-	#	wait_step=$(( ${wait_step} + 1 ))
-	#	echo "Waiting on Kibana config...Attempt #$wait_step"
-	#	if [ ${wait_step} -gt ${MAX_WAIT} ]; then
-	#                echo "ERROR: Kibana config not available for more than ${MAX_WAIT} seconds."
-	#                exit 5
-	#        fi
-	#        sleep 1s;
-	#done
-
 	# Apply Kibana config
 	echo
 	echo "Applying Kibana config..."
-	curl -s -XPOST 'http://localhost:5601/api/saved_objects/index-pattern' \
-	    -H 'Content-Type: application/json' \
-	    -H "kbn-version: $KIBANA_VERSION" \
-	    -d '{"attributes":{"title":"*:logstash-*","timeFieldName":"@timestamp"}}'
-	echo
 	curl -s -XPOST http://localhost:5601/api/saved_objects/config/$KIBANA_VERSION \
 	    -H "Content-Type: application/json" \
 	    -H "kbn-xsrf: $KIBANA_VERSION" \
