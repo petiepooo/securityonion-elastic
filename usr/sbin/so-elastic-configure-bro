@@ -6,16 +6,28 @@
 
 BRO="/opt/bro/share/bro"
 
-if [ ${BRO_ENABLED} = "yes" ]; then
+LOCALBRO="${BRO}/site/local.bro"
 
-	header "Configuring Bro to output in JSON"
+if [ -f ${LOCALBRO} ] ; then
 
-	cp -av ${SRC}/opt/bro/share/bro/json-logs ${BRO}
+	# If Bro hasn't already been configured to output JSON,
+	# then we need to configure it and restart Bro.
+	# We also need to handle the case where folks have
+	# manually disabled JSON by commenting out the @load line.
+	if ! grep "@load json-logs" ${LOCALBRO} >/dev/null 2>&1; then 
 
-	LOCALBRO="${BRO}/site/local.bro"
-	if [ -f ${LOCALBRO} ] ; then
-		if ! grep "@load json-logs" ${LOCALBRO} >/dev/null 2>&1; then 
-			echo "@load json-logs" >> ${LOCALBRO}
+		header "Configuring Bro to output in JSON"
+
+		cp -av ${SRC}/opt/bro/share/bro/json-logs ${BRO}
+
+cat << EOF >> ${LOCALBRO}
+
+# Output logs in JSON format
+@load json-logs
+EOF
+
+		if [ ${BRO_ENABLED} = "yes" ]; then
+			/usr/sbin/nsm_sensor_ps-restart --only-bro
 		fi
 	fi
 fi
