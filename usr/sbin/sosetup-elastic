@@ -166,19 +166,12 @@ function ask() {
 #########################################
 # Welcome screen
 #########################################
-TEXT="WARNINGS AND DISCLAIMERS!\n\
+TEXT="Welcome to Security Onion Experimental Setup!\n\
 \n\
-Experimental Mode is BLEEDING EDGE and TOTALLY UNSUPPORTED!\n\
-If this breaks your system, you get to keep both pieces!\n\
-This is a work in progress and is in constant flux.\n\
-This is intended to build a quick prototype proof of concept so you can see what our\n\
-ultimate Elastic configuration might look like.  This configuration will change drastically\n\
-over time leading up to the final release.\n\
-Do NOT run this on a system that you care about!\n\
-Do NOT run this on a system that has data that you care about!\n\
-This should only be run on a TEST box with TEST data!\n\
-This is only designed for standalone boxes and does NOT support distributed deployments.\n\
-Experimental Mode may result in nausea, vomiting, or a burning sensation.\n\
+Experimental Setup will configure the Elastic Stack:\n\
+Elasticsearch\n\
+Logstash\n\
+Kibana\n\
 \n\
 Would you like to continue?"
 if [ "$WRITEANSWERFILE" ]; then
