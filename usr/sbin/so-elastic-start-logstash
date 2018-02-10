@@ -24,6 +24,18 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                         rm -f /etc/logstash/conf.d/8008_postprocess_dns_whois_age.conf
                 fi
 
+                if [ "$LOGSTASH_INPUT_REDIS" = "yes" ]; then
+			cp /etc/logstash/conf.d.redis.input/0900_input_redis.conf /etc/logstash/conf.d/
+		else
+			rm -f /etc/logstash/conf.d/0900_input_redis.conf
+		fi
+
+		CONFD="/etc/logstash/conf.d"
+                if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ]; then
+			cp /etc/logstash/conf.d/0000_input_syslogng.conf /etc/logstash/conf.d.redis.output/
+			CONFD="/etc/logstash/conf.d.redis.output/"
+		fi
+
 		# Publish ports to localhost 127.0.0.1 ONLY
                 docker run --name=so-logstash \
                         --detach \
@@ -40,7 +52,7 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                         --volume /etc/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:ro \
                         --volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
 			--volume /etc/logstash/beats-template.json:/beats-template.json:ro \
-                        --volume /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro \
+                        --volume $CONFD:/usr/share/logstash/pipeline/:ro \
                         --volume /etc/nsm/rules:/etc/nsm/rules:ro \
                         --volume /lib/dictionaries:/lib/dictionaries:ro \
                         --volume /nsm/import:/nsm/import:ro \
