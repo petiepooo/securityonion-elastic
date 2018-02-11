@@ -374,7 +374,7 @@ What would you like the username to be?\n\
 \n\
 Please use alphanumeric characters only.\n\
 \n\
-(Please note: you can create other usernames later using nsm__server__user-add.)"
+(Please note: you can create other usernames later using so-user-add.)"
 		SGUIL_CLIENT_USERNAME=`zenity --title="$TITLE" --text="$TEXT" --entry`
 		[ $? = 1 ] && exit 1
 		COMPRESSED="$(echo $SGUIL_CLIENT_USERNAME | sed -e 's/[^[:alnum:]]//g')"
@@ -401,7 +401,7 @@ This password will be used for Kibana, Squert, and Sguil.\n\
 \n\
 This password must be at least 6 characters.\n\
 \n\
-You can change this password later in the Sguil client or with nsm__server__user-passwd."
+You can change this password later in the Sguil client or with so-user-passwd."
 		SGUIL_CLIENT_PASSWORD_1=`zenity --title="$TITLE" --text="$TEXT" --entry --hide-text`
 		[ $? = 1 ] && exit 1
 	        if [ "${#SGUIL_CLIENT_PASSWORD_1}" -lt "6" ]; then
