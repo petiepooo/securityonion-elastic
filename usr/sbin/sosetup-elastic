@@ -147,6 +147,8 @@ ARGS=("$@")
 REVERSE_PORT=50000
 DOCKER_INTERFACE="172.18.0.1"
 DOCKER_NETWORK="172.18.0.0/24"
+LOGSTASH_OUTPUT_REDIS="no"
+LOGSTASH_INPUT_REDIS="no"
 
 #########################################
 # Debug
@@ -1897,10 +1899,10 @@ EOF
 	fi
 
 	if [ $SERVER -eq 1 ] && [ $LOGSTASH_OUTPUT_REDIS = "yes" ]; then
-		sed -i.bak 's|bind 127.0.0.1|bind 0.0.0.0|g' /etc/redis/redis.conf
-		service redis-server start
-		update-rc.d -f redis-server enable
-		ufw allow proto tcp from 172.18.0.0/24 to 172.18.0.1 port 6379
+		sed -i.bak 's|bind 127.0.0.1|bind 0.0.0.0|g' /etc/redis/redis.conf >> $LOG 2>&1
+		service redis-server start >> $LOG 2>&1
+		update-rc.d -f redis-server enable >> $LOG 2>&1
+		ufw allow proto tcp from 172.18.0.0/24 to 172.18.0.1 port 6379 >> $LOG 2>&1
 		echo "LOGSTASH_OUTPUT_REDIS=$LOGSTASH_OUTPUT_REDIS" >> $CONF
 	fi
 
@@ -1950,7 +1952,7 @@ EOF
 		                else
 		                        echo 'AUTOSSH_OPTIONS="-L 6379:localhost:6379"' >> $SSH_CONF
 		                fi
-				ufw allow proto tcp from 172.18.0.0/24 to 172.18.0.1 port 6379
+				ufw allow proto tcp from 172.18.0.0/24 to 172.18.0.1 port 6379 >> $LOG 2>&1
 			fi
 
 			# We need to determine a few things from the master server:
