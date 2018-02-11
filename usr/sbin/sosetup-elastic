@@ -290,7 +290,7 @@ else
 If you choose New, this machine will be the master server and will run the Kibana and Squert web interfaces.\n\
 \n\
 If you already have a master server, choose Existing.\n\
-You will need to be able to SSH to the existing master server box with an account with sudo privileges.\n"
+You will need to be able to SSH to the existing master server with an account that has sudo privileges.\n"
 	DEPLOYMENT=`zenity --height=250 --list --radiolist --column="1" --column="2" --hide-header --title="$TITLE" --text="$TEXT" TRUE New FALSE Existing`
 	case $DEPLOYMENT in
 	New)
@@ -419,7 +419,7 @@ You can change this password later in the Sguil client or with so-user-passwd."
 		fi
 	done
 	SERVER_CONFIRM="- Create a Sguil server named $SGUIL_SERVER_NAME. \n"
-	SERVER_USER_CONFIRM="- Create a Sguil user named $SGUIL_CLIENT_USERNAME. \n"
+	SERVER_USER_CONFIRM="- Create a user account named $SGUIL_CLIENT_USERNAME. \n"
 fi
 
 #########################################
@@ -1899,10 +1899,6 @@ EOF
 	fi
 
 	if [ $SERVER -eq 1 ] && [ $LOGSTASH_OUTPUT_REDIS = "yes" ]; then
-		sed -i.bak 's|bind 127.0.0.1|bind 0.0.0.0|g' /etc/redis/redis.conf >> $LOG 2>&1
-		service redis-server start >> $LOG 2>&1
-		update-rc.d -f redis-server enable >> $LOG 2>&1
-		ufw allow proto tcp from 172.18.0.0/24 to 172.18.0.1 port 6379 >> $LOG 2>&1
 		echo "LOGSTASH_OUTPUT_REDIS=$LOGSTASH_OUTPUT_REDIS" >> $CONF
 	fi
 

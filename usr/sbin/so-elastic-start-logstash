@@ -32,6 +32,10 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 
 		CONFD="/etc/logstash/conf.d"
                 if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ]; then
+			# Allow logstash container to output to redis
+			sed -i.bak 's|bind 127.0.0.1|bind 0.0.0.0|g' /etc/redis/redis.conf
+                	ufw allow proto tcp from 172.18.0.0/24 to 172.18.0.1 port 6379 >/dev/null
+			service redis-server start >/dev/null
 			cp /etc/logstash/conf.d/0000_input_syslogng.conf /etc/logstash/conf.d.redis.output/
 			CONFD="/etc/logstash/conf.d.redis.output/"
 		fi
