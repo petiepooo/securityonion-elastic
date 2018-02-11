@@ -439,7 +439,7 @@ Storage Nodes extend the storage of the master server.\n\
 They require that the master server has already been configured to load balance to\n\
 additional storage nodes.\n\
 The master server queries storage nodes via cross cluster search.\n"
-	NODE=`zenity --height=350 --list --radiolist --column="1" --column="2" --hide-header --title="$TITLE" --text="$TEXT" TRUE Traditional FALSE Forward FALSE Storage`
+	NODE=`zenity --height=400 --list --radiolist --column="1" --column="2" --hide-header --title="$TITLE" --text="$TEXT" TRUE Traditional FALSE Forward FALSE Storage`
 	case $NODE in
 	Traditional)
 		SENSOR=1
@@ -451,6 +451,10 @@ The master server queries storage nodes via cross cluster search.\n"
 	Storage)
 		SENSOR=0
 		LOGSTASH_INPUT_REDIS="yes"
+		IDS_LB_PROCS_CONFIRM=""
+		BRO_LB_PROCS_CONFIRM=""
+		SENSOR_CONFIRM_3=""
+		ELASTIC_ACTION_CONFIRM="- Configure as Elastic storage node.\n"
 		;;
 	*)
                 exit
