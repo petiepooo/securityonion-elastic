@@ -327,7 +327,7 @@ Please provide the hostname or IP address of a valid master server."
 				# nc will result in OSSEC Active Response blocking the IP address
 				# nc -vz $SERVERNAME 22 -w 5 2>&1 | grep "succeeded\!" >/dev/null 2>&1 && SERVERNAME_CONFIRMED="yes"
 				# so use ssh instead:
-				ssh $SERVERNAME -o ConnectTimeout=5 -o BatchMode=yes 2>&1 | egrep 'Connection timed out|Could not resolve hostname' >/dev/null 2>&1 || SERVERNAME_CONFIRMED="yes"
+				ssh $SERVERNAME -o ConnectTimeout=5 -o BatchMode=yes 2>&1 | egrep 'Connection timed out|No route to host|Could not resolve hostname' >/dev/null 2>&1 || SERVERNAME_CONFIRMED="yes"
 				[ $DEBUG -eq 1 ] && echo "DEBUG: Hostname/IP set to $SERVERNAME."
 				if [ $SERVERNAME_CONFIRMED = "no" ]; then
 					zenity --error --title "$TITLE" --text="Couldn't connect to $SERVERNAME on port 22\!\r \
@@ -444,11 +444,12 @@ Storage Nodes do not generate logs themselves but simply extend the storage of t
 They require that the master server has already been configured to load balance to additional storage nodes.\n\
 Storage Nodes run Elasticsearch and Logstash.\n\
 The master server queries storage nodes via cross cluster search.\n"
-	NODE=`zenity --height=400 --list --radiolist --column="1" --column="2" --hide-header --title="$TITLE" --text="$TEXT" TRUE Forward FALSE Heavy FALSE Storage`
+	NODE=`zenity --height=450 --list --radiolist --column="1" --column="2" --hide-header --title="$TITLE" --text="$TEXT" TRUE Forward FALSE Heavy FALSE Storage`
 	case $NODE in
 	Forward)
 		SENSOR=1
 		FORWARD="yes"
+		ELASTIC_ACTION_CONFIRM="- Forward logs to master server.\n"
 		;;
 	Heavy)
 		SENSOR=1
@@ -1931,6 +1932,7 @@ EOF
 
 		if [ "$LOGSTASH_INPUT_REDIS" = "yes" ]; then
 			echo 'LOGSTASH_INPUT_REDIS="yes"' >> $CONF
+			echo 'OSSEC_AGENT_ENABLED="no"' >> $CONF
 		fi
 	fi
 
@@ -1959,9 +1961,9 @@ EOF
 		else
 			if [ "$LOGSTASH_INPUT_REDIS" = "yes" ]; then
 		                if grep "AUTOSSH_OPTIONS=" $SSH_CONF >/dev/null 2>&1; then
-		                        sed -i 's/AUTOSSH_OPTIONS.*/AUTOSSH_OPTIONS="-L 6379:localhost:6379"/' $SSH_CONF >> $LOG 2>&1
+		                        sed -i 's/AUTOSSH_OPTIONS.*/AUTOSSH_OPTIONS="-L 172.18.0.1:6379:localhost:6379"/' $SSH_CONF >> $LOG 2>&1
 		                else
-		                        echo 'AUTOSSH_OPTIONS="-L 6379:localhost:6379"' >> $SSH_CONF
+		                        echo 'AUTOSSH_OPTIONS="-L 172.18.0.1:6379:localhost:6379"' >> $SSH_CONF
 		                fi
 				ufw allow proto tcp from 172.18.0.0/24 to 172.18.0.1 port 6379 >> $LOG 2>&1
 			fi
