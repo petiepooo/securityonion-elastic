@@ -1205,26 +1205,17 @@ pkill -f ossec_agent
 # Add the Sguil server if necessary
 #########################################
 if [ $SERVER -eq 1 ]; then
-# If this box was previously a slave, we need to remove securityonion_ssh.conf
-rm -f /root/.ssh/securityonion_ssh.conf
-echo "10"
-echo "# Please wait while creating the Sguil server..." | tee -a $LOG
-/usr/sbin/nsm_server_add --server-name="$SGUIL_SERVER_NAME" --server-sensor-name=NULL --server-sensor-port=7736 --server-client-port=7734 --server-client-user="$SGUIL_CLIENT_USERNAME" --server-client-pass="$SGUIL_CLIENT_PASSWORD_1" --server-auto=yes --force-yes >> $LOG 2>&1
-
+	# If this box was previously a slave, we need to remove securityonion_ssh.conf
+	rm -f /root/.ssh/securityonion_ssh.conf
+	echo "10"
+	echo "# Please wait while creating the Sguil server..." | tee -a $LOG
+	/usr/sbin/nsm_server_add --server-name="$SGUIL_SERVER_NAME" --server-sensor-name=NULL --server-sensor-port=7736 --server-client-port=7734 --server-client-user="$SGUIL_CLIENT_USERNAME" --server-client-pass="$SGUIL_CLIENT_PASSWORD_1" --server-auto=yes --force-yes >> $LOG 2>&1
 fi
 
 #########################################
-# Sguil Sensor(s) if necessary
+# If not master server, configure SSH Key authentication to master server
 #########################################
-if [ $SENSOR -eq 1 ]; then
-echo "15"
-echo "# Please wait while creating Sguil sensor(s)..." | tee -a $LOG
-BY2PORT=8000
-HOST_ORIG=`hostname`
-HOSTNAME=${HOST_ORIG,,}
-
-# Configure SSH Key authentication to server if necessary
-if [ "$SERVERNAME" != "localhost" ]; then
+if [ "$SERVER" -ne 1 ]; then
 	mkdir -p $SSH_DIR		
 	[ -f "$KEY" ] && mv $KEY $KEY.old
         ssh-keygen -f "$KEY" -N '' >> $LOG 2>&1
@@ -1278,6 +1269,18 @@ if [ "$SERVERNAME" != "localhost" ]; then
 	echo "SSH_USERNAME=$SSH_USERNAME" > $SSH_CONF
 	echo "SERVERNAME=$SERVERNAME" >> $SSH_CONF
 fi
+
+fi
+
+#########################################
+# Network Sensor(s) if necessary
+#########################################
+if [ $SENSOR -eq 1 ]; then
+echo "15"
+echo "# Please wait while creating Sguil sensor(s)..." | tee -a $LOG
+BY2PORT=8000
+HOST_ORIG=`hostname`
+HOSTNAME=${HOST_ORIG,,}
 
 # NIDS sensor(s)
 for INTERFACE in $ALL_INTERFACES; do	
