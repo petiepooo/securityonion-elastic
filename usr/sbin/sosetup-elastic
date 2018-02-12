@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-# Copyright (C) 2010-2017 Doug Burks and Security Onion
+# Copyright (C) 2010-2014 Doug Burks
+# Copyright (C) 2015-2018 Security Onion Solutions, LLC
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License Version 2 as
@@ -374,7 +375,7 @@ What would you like the username to be?\n\
 \n\
 Please use alphanumeric characters only.\n\
 \n\
-(Please note: you can create other usernames later using so-user-add.)"
+You can create other usernames later using so-user-add."
 		SGUIL_CLIENT_USERNAME=`zenity --title="$TITLE" --text="$TEXT" --entry`
 		[ $? = 1 ] && exit 1
 		COMPRESSED="$(echo $SGUIL_CLIENT_USERNAME | sed -e 's/[^[:alnum:]]//g')"
@@ -429,24 +430,28 @@ NODE="Master"
 if [ $ADVANCED_SETUP -eq 1 ] && [ $SERVER -ne 1 ]; then
 	TEXT="To add to your existing deployment, please select a node type for this node.\n\
 \n\
-Traditional Nodes generate and collect logs and store them locally.\n\
-The master server queries traditional nodes via cross cluster search.\n\
+Forward Nodes generate and collect logs and forward them to the master server.\n\
+Full packet capture remains on Forward Nodes.\n\
+Forward Nodes do not run any Elastic stack processes.\n\
+Forward Nodes require less hardware than Heavy Nodes, but typically use more network bandwidth.\n\
 \n\
-Forward Nodes generate and collect logs but do not store them locally.\n\
-All logs are forwarded to the master server.\n\
+Heavy Nodes generate and collect logs and store them locally.\n\
+Heavy Nodes run Elasticsearch and Logstash.\n\
+The master server queries Heavy Nodes via cross cluster search.\n\
+Heavy Nodes require more hardware than Forward Nodes, but typically use less network bandwidth.\n\
 \n\
-Storage Nodes extend the storage of the master server.\n\
-They require that the master server has already been configured to load balance to\n\
-additional storage nodes.\n\
-The master server queries storage nodes via cross cluster search.\n"
-	NODE=`zenity --height=400 --list --radiolist --column="1" --column="2" --hide-header --title="$TITLE" --text="$TEXT" TRUE Traditional FALSE Forward FALSE Storage`
+Storage Nodes do not generate logs themselves but simply extend the storage of the master server.\n\
+They require that the master server has already been configured to load balance to additional storage nodes.\n\
+Storage Nodes run Elasticsearch and Logstash.\n\
+The master server queries storage nodes via cross cluster search.\n\"
+	NODE=`zenity --height=400 --list --radiolist --column="1" --column="2" --hide-header --title="$TITLE" --text="$TEXT" TRUE Forward FALSE Heavy FALSE Storage`
 	case $NODE in
-	Traditional)
-		SENSOR=1
-		;;
 	Forward)
 		SENSOR=1
 		FORWARD="yes"
+		;;
+	Heavy)
+		SENSOR=1
 		;;	
 	Storage)
 		SENSOR=0
