@@ -40,12 +40,10 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 			CONFD="/etc/logstash/conf.d.redis.output/"
 		fi
 
-		# Publish ports to localhost 127.0.0.1 ONLY
+		# Publish ports to $LOGSTASH_PUBLISH_IP but control them with iptables rules in DOCKER-USER
                 docker run --name=so-logstash \
                         --detach \
                         --env LS_JAVA_OPTS="-Xms$LOGSTASH_HEAP -Xmx$LOGSTASH_HEAP" \
-                        --network-alias=logstash \
-                        --network="${DOCKERNET}" \
 			--publish $LOGSTASH_PUBLISH_IP:5044:5044 \
 			--publish $LOGSTASH_PUBLISH_IP:6050:6050 \
                         --publish $LOGSTASH_PUBLISH_IP:6051:6051 \
@@ -64,5 +62,8 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                         --volume /var/log/logstash:/var/log/logstash \
                         $LOGSTASH_OPTIONS \
                         $DOCKERHUB/so-logstash
+
+		# logstash will connect to elasticsearch, domainstats, and freqserver over $DOCKERNET
+		docker network connect --alias logstash $DOCKERNET so-logstash
         fi
 fi
