@@ -441,9 +441,9 @@ The master server queries Heavy Nodes via cross cluster search.\n\
 Heavy Nodes require more hardware than Forward Nodes, but typically use less network bandwidth.\n\
 \n\
 Storage Nodes do not generate logs themselves but simply extend the storage of the master server.\n\
-They require that the master server has already been configured to load balance to additional storage nodes.\n\
+They require that the master server has already been configured to load balance to additional Storage Nodes.\n\
 Storage Nodes run Elasticsearch and Logstash.\n\
-The master server queries storage nodes via cross cluster search.\n"
+The master server queries Storage Nodes via cross cluster search.\n"
 	NODE=`zenity --height=450 --list --radiolist --column="1" --column="2" --hide-header --title="$TITLE" --text="$TEXT" TRUE Forward FALSE Heavy FALSE Storage`
 	case $NODE in
 	Forward)
