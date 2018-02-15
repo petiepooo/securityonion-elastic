@@ -84,8 +84,12 @@
           }
         },
         "computer_name": {
-          "ignore_above": 1024,
-          "type": "keyword"
+          "type": "text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
         },
         "docker": {
           "properties": {
@@ -265,19 +269,15 @@
         "user": {
           "properties": {
             "domain": {
-              "ignore_above": 1024,
               "type": "keyword"
             },
             "identifier": {
-              "ignore_above": 1024,
               "type": "keyword"
             },
             "name": {
-              "ignore_above": 1024,
               "type": "keyword"
             },
             "type": {
-              "ignore_above": 1024,
               "type": "keyword"
             }
           }
@@ -286,7 +286,7 @@
           "type": "object"
         },
         "version": {
-          "type": "long"
+          "type": "keyword"
         },
         "xml": {
           "norms": false,
