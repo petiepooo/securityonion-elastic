@@ -28,7 +28,11 @@ if [ "$1" = "" ]; then
 	exit
 fi
 
-capinfos $1 2>&1 | grep "The file appears to be damaged or corrupt." && exit
+# Get full path to file since we will be changing directory later
+PCAP=`readlink -f $1`
+
+# Check to see if PCAP is valid
+capinfos $PCAP 2>&1 | grep "The file appears to be damaged or corrupt." && exit
 
 FILE="/etc/nsm/sensortab"
 if ! [ -f /etc/nsm/sensortab ]; then
@@ -45,11 +49,11 @@ docker stop so-curator >/dev/null 2>&1
 # CapMe defaults to only allowing to search back 5 years, better increase that
 sed -i 's| - 5 | - 50 |g' /var/www/so/capme/.inc/callback-elastic.php
 
-START=`capinfos $1 -a |grep "Start time:" | awk '{print $4,$5,$7}'`
+START=`capinfos $PCAP -a |grep "Start time:" | awk '{print $4,$5,$7}'`
 START=`date +%Y-%m-%d --date="$START"`
-END=`capinfos $1 -e |grep "End time:" | awk '{print $4,$5,$7}'`
+END=`capinfos $PCAP -e |grep "End time:" | awk '{print $4,$5,$7}'`
 END=`date +%Y-%m-%d --date="$END"`
-echo "$1 starts on $START and ends on $END."
+echo "$PCAP starts on $START and ends on $END."
 ENDNEXT=`date +%Y-%m-%d --date="$END 1 day"`
 if [ "$START" = "$END" ]; then
 	EPOCH=`date +%s --date="$START"`
@@ -57,7 +61,7 @@ if [ "$START" = "$END" ]; then
 	FILE="$PCAPDIR/snort.log.$EPOCH"
 	echo "This pcap has traffic from a single day, so we'll copy it to $FILE."
 	mkdir -p $PCAPDIR
-	cp $1 $FILE
+	cp $PCAP $FILE
 else
 	echo "This pcap has traffic from multiple days, so we'll split the traffic into daily directories."
 	CURRENT="$START"
@@ -68,7 +72,7 @@ else
 		mkdir -p $PCAPDIR
 		CURRENTNEXT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
 		echo "Writing traffic on or after $CURRENT 00:00:00 and before $CURRENTNEXT 00:00:00 to $FILE"
-		editcap -F libpcap -A "$CURRENT 00:00:00" -B "$CURRENTNEXT 00:00:00" $1 $FILE
+		editcap -F libpcap -A "$CURRENT 00:00:00" -B "$CURRENTNEXT 00:00:00" $PCAP $FILE
 		CURRENT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
 	done
 fi
@@ -77,7 +81,7 @@ BRODIR="/nsm/import/bro"
 echo "Running Bro against pcap and writing logs to $BRODIR..."
 mkdir -p $BRODIR
 cd $BRODIR
-/opt/bro/bin/bro -r $1 local >/dev/null 2>&1
+/opt/bro/bin/bro -r $PCAP local >/dev/null 2>&1
 cd - >/dev/null
 
 cat << EOF
