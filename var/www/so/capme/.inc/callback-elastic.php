@@ -290,7 +290,7 @@ if ($sidsrc == "elastic") {
 		}
 		$timestamp = $elastic_response_object["hits"]["hits"][0]["_source"]["@timestamp"];
 		$timestamp_epoch = strtotime($timestamp);
-		$mintime=time() - 5 * 365 * 24 * 60 * 60;
+		$mintime=time() - 50 * 365 * 24 * 60 * 60;
 		$maxtime=time() + 5 * 365 * 24 * 60 * 60;
 		if (filter_var($timestamp_epoch, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$mintime, "max_range"=>$maxtime))) === false) {
 		        $errMsgElastic = "Invalid start time.";
