@@ -31,7 +31,13 @@ fi
 # Get full path to file since we will be changing directory later
 PCAP=`readlink -f $1`
 
-# Check to see if PCAP is valid
+# Check to see if file exists
+if ! [ -f $PCAP ]; then
+	echo "Invalid file!"
+	exit
+fi
+
+# Check to see if file is a valid PCAP
 capinfos $PCAP 2>&1 | grep "The file appears to be damaged or corrupt." && exit
 
 FILE="/etc/nsm/sensortab"
