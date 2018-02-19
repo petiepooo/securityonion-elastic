@@ -1,0 +1,82 @@
+#!/bin/bash
+
+. /usr/sbin/so-common
+. /etc/nsm/securityonion.conf
+
+cat << EOF
+so-import-pcap
+
+This is a quick and dirty EXPERIMENTAL script that will import a pcap into Security Onion.
+
+It will do the following:
+- stop and disable Curator to avoid closing old indices
+- generate Bro logs and store them in Elasticsearch with the timestamps of the original events
+- split pcap into separate daily pcaps and store them where sguil's pcap_agent can find them
+
+Requirements:
+You must be running at least Security Onion Release Candidate 2.
+You must have a sniffing interface defined (you can choose Evaluation Mode in the Setup wizard).
+
+EOF
+
+[ "$1" = "" ] && echo "Please supply a pcap file." && exit
+
+capinfos $1 2>&1 | grep "The file appears to be damaged or corrupt." && exit
+
+FILE="/etc/nsm/sensortab"
+if ! [ -f /etc/nsm/sensortab ]; then
+	echo "$FILE not found. Exiting!"
+	exit
+fi
+
+SENSOR=`grep -v "^#" /etc/nsm/sensortab  |head -1 |awk '{print $1}'`
+
+echo "Stopping and disabling curator to avoid closing old indices."
+sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' /etc/nsm/securityonion.conf
+docker stop so-curator >/dev/null 2>&1
+
+START=`capinfos $1 -a |grep "Start time:" | awk '{print $4,$5,$7}'`
+START=`date +%Y-%m-%d --date="$START"`
+END=`capinfos $1 -e |grep "End time:" | awk '{print $4,$5,$7}'`
+END=`date +%Y-%m-%d --date="$END"`
+echo "$1 starts on $START and ends on $END."
+ENDNEXT=`date +%Y-%m-%d --date="$END 1 day"`
+if [ "$START" = "$END" ]; then
+	EPOCH=`date +%s --date="$START"`
+	PCAPDIR="/nsm/sensor_data/$SENSOR/dailylogs/$START"
+	FILE="$PCAPDIR/snort.log.$EPOCH"
+	echo "This pcap has traffic from a single day, so we'll copy it to $FILE."
+	mkdir -p $PCAPDIR
+	cp $1 $FILE
+else
+	echo "This pcap has traffic from multiple days, so we'll split the traffic into daily directories."
+	CURRENT="$START"
+	while [ "$CURRENT" != "$ENDNEXT" ]; do
+		EPOCH=`date +%s --date="$CURRENT"`
+		PCAPDIR="/nsm/sensor_data/$SENSOR/dailylogs/$CURRENT"
+		FILE="$PCAPDIR/snort.log.$EPOCH"
+		mkdir -p $PCAPDIR
+		CURRENTNEXT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
+		echo "Writing traffic on or after $CURRENT 00:00:00 and before $CURRENTNEXT 00:00:00 to $FILE"
+		editcap -F libpcap -A "$CURRENT 00:00:00" -B "$CURRENTNEXT 00:00:00" $1 $FILE
+		CURRENT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
+	done
+fi
+
+BRODIR="/nsm/import/bro"
+echo "Running Bro against pcap and writing logs to $BRODIR..."
+mkdir -p $BRODIR
+cd $BRODIR
+/opt/bro/bin/bro -r $1 local >/dev/null 2>&1
+cd - >/dev/null
+
+cat << EOF
+
+Import complete!
+
+You can use this hyperlink to view data in the time range of your import:
+https://localhost/app/kibana#/dashboard/94b52620-342a-11e7-9d52-4f090484f59e?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'${START}T00:00:00.000Z',mode:absolute,to:'${ENDNEXT}T00:00:00.000Z'))
+
+or you can manually set your Time Range to be:
+From: $START    To: $ENDNEXT
+EOF
