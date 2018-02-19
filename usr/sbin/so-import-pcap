@@ -17,9 +17,16 @@ Requirements:
 You must be running at least Security Onion Release Candidate 2.
 You must have a sniffing interface defined (you can choose Evaluation Mode in the Setup wizard).
 
+TODO:
+- generate IDS alerts using Snort or Suricata
+
 EOF
 
-[ "$1" = "" ] && echo "Please supply a pcap file." && exit
+if [ "$1" = "" ]; then
+	echo "Please supply a pcap file:"
+	echo "so-import-pcap <import.pcap>"
+	exit
+fi
 
 capinfos $1 2>&1 | grep "The file appears to be damaged or corrupt." && exit
 
