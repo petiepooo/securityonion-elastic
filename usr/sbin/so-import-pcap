@@ -42,6 +42,9 @@ echo "Stopping and disabling curator to avoid closing old indices."
 sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' /etc/nsm/securityonion.conf
 docker stop so-curator >/dev/null 2>&1
 
+# CapMe defaults to only allowing to search back 5 years, better increase that
+sed -i 's| - 5 | - 50 |g' /var/www/so/capme/.inc/callback-elastic.php
+
 START=`capinfos $1 -a |grep "Start time:" | awk '{print $4,$5,$7}'`
 START=`date +%Y-%m-%d --date="$START"`
 END=`capinfos $1 -e |grep "End time:" | awk '{print $4,$5,$7}'`
