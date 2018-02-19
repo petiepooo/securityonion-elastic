@@ -14,8 +14,8 @@ It will do the following:
 - split pcap into separate daily pcaps and store them where sguil's pcap_agent can find them
 
 Requirements:
-You must be running at least Security Onion Elastic Stack Release Candidate 2 (14.04.5.8 ISO).
-You must have a sniffing interface defined (you can choose Evaluation Mode in the Setup wizard).
+- You must be running at least Security Onion Elastic Stack Release Candidate 2 (14.04.5.8 ISO).
+- You must have a sniffing interface defined (you can choose Evaluation Mode in the Setup wizard).
 
 TODO:
 - generate IDS alerts using Snort or Suricata
