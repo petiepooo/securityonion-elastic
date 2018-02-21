@@ -4,12 +4,20 @@
 
 . /etc/nsm/securityonion.conf
 
+CUSTOM_CONF='/etc/logstash/custom'
+
 if [ "$LOGSTASH_ENABLED" = "yes" ]; then
         echo -n "so-logstash: "
         if docker ps | grep -q so-logstash; then
                 echo "Already started!"
         else
-                if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
+                if [ -d $CUSTOM_CONF ]; then
+			rsync $CUSTOM_CONF/*.conf /etc/logstash/conf.d
+                        rsync $CUSTOM_CONF/*.json /etc/logstash/
+		else
+			mkdir $CUSTOM_CONF
+		fi
+		if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
                         cp -f /etc/logstash/optional/*_postprocess_freq_analysis_*.conf /etc/logstash/conf.d/
                 fi
                 if [ "$FREQ_SERVER_ENABLED" = "no" ]; then
