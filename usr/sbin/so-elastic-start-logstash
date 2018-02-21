@@ -12,8 +12,8 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                 echo "Already started!"
         else
                 if [ -d $CUSTOM_CONF ]; then
-			rsync $CUSTOM_CONF/*.conf /etc/logstash/conf.d
-                        rsync $CUSTOM_CONF/*.json /etc/logstash/
+			rsync $CUSTOM_CONF/*.conf /etc/logstash/conf.d >/dev/null 2>&1
+                        rsync $CUSTOM_CONF/*.json /etc/logstash/ >/dev/null 2>&1
 		else
 			mkdir $CUSTOM_CONF
 		fi
