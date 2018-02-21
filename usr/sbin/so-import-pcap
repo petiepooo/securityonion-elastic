@@ -3,54 +3,6 @@
 . /usr/sbin/so-common
 . /etc/nsm/securityonion.conf
 
-cat << EOF
-so-import-pcap
-
-This is a quick and dirty EXPERIMENTAL script that will import one or more pcaps into Security Onion.
-
-It will do the following:
-- stop and disable Curator to avoid closing old indices
-- generate Bro logs and store them in Elasticsearch with the timestamps of the original events
-- split traffic into separate daily pcaps and store them where sguil's pcap_agent can find them
-
-Requirements:
-- You must be running at least Security Onion Elastic Stack Release Candidate 2 (14.04.5.8 ISO).
-- You must have a sniffing interface defined (you can choose Evaluation Mode in the Setup wizard).
-
-TODO:
-- generate IDS alerts using Snort or Suricata
-
-EOF
-
-if [ $# -eq 0 ]; then
-	echo "Please supply at least one pcap file:"
-	echo "so-import-pcap <import.pcap>"
-	echo "so-import-pcap <import1.pcap> <import2.pcap>"
-	exit
-fi
-
-if [ $# -eq 1 ]; then
-	# Get full path to file since we will be changing directory later
-	PCAP=`readlink -f $1`
-elif [ $# -gt 1 ]; then
-	echo "Multiple pcaps passed, merging into single pcap..."
-	PCAP=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
-	TEMP="$PCAP"
-	if ! mergecap -w $PCAP $@; then
-		echo "Error merging pcaps"
-		exit
-	fi
-fi
-
-# Check to see if file exists
-if ! [ -f $PCAP ]; then
-	echo "Invalid file!"
-	exit
-fi
-
-# Check to see if file is a valid PCAP
-capinfos $PCAP 2>&1 | grep "The file appears to be damaged or corrupt." && exit
-
 FILE="/etc/nsm/sensortab"
 if ! [ -f /etc/nsm/sensortab ]; then
 	echo "$FILE not found. Exiting!"
@@ -58,13 +10,91 @@ if ! [ -f /etc/nsm/sensortab ]; then
 fi
 
 SENSOR=`grep -v "^#" /etc/nsm/sensortab  |head -1 |awk '{print $1}'`
+source /etc/nsm/$SENSOR/sensor.conf
 
-echo "Stopping and disabling curator to avoid closing old indices."
+cat << EOF
+
+so-import-pcap
+
+EOF
+
+function usage {
+cat << EOF
+This is a quick and dirty EXPERIMENTAL script that will import one or more pcaps into Security Onion.
+
+It will do the following:
+- stop and disable Curator to avoid closing old indices
+- generate IDS alerts using Snort or Suricata
+- generate Bro logs
+- store alerts and logs with original timestamps
+- split traffic into separate daily pcaps and store them where sguil's pcap_agent can find them
+
+Requirements:
+- You must be running at least Security Onion Elastic Stack Release Candidate 2 (14.04.5.8 ISO).
+- You must have a sniffing interface defined (you can choose Evaluation Mode in the Setup wizard).
+
+Please supply at least one pcap file.
+
+For example, to import a single pcap named import.pcap:
+so-import-pcap import.pcap
+
+To import multiple pcaps:
+so-import-pcap import1.pcap import2.pcap
+
+EOF
+}
+
+# If no parameters supplied, display usage
+if [ $# -eq 0 ]; then
+	usage
+	exit
+fi
+
+# Verify that all parameters are files
+for i in $@; do
+	if ! [ -f $i ]; then
+		usage
+		exit
+	fi
+done
+
+echo "Please wait while..."
+PCAP=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
+TEMP="$PCAP"
+if ! mergecap -w $PCAP $@; then
+	echo "Error while merging!"
+	exit
+fi
+chmod 444 $PCAP
+
+# Check to see if file is a valid PCAP
+capinfos $PCAP 2>&1 | grep "The file appears to be damaged or corrupt." && exit
+
+echo "...stopping and disabling curator to avoid closing old indices."
 sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' /etc/nsm/securityonion.conf
 docker stop so-curator >/dev/null 2>&1
 
 # CapMe defaults to only allowing to search back 5 years, better increase that
 sed -i 's| - 5 | - 50 |g' /var/www/so/capme/.inc/callback-elastic.php
+
+if [ "$IDS_ENGINE_ENABLED" = "yes" ]; then
+	if [ "$ENGINE" = "snort" ]; then
+		echo "...analyzing traffic with Snort."
+		snort --daq pcap -c /etc/nsm/$SENSOR/snort.conf -u sguil -g sguil -l /nsm/sensor_data/$SENSOR/snort-1 -r $PCAP >/dev/null 2>&1
+	else
+		echo "...analyzing traffic with Suricata."
+		suricata --user sguil --group sguil -c /etc/nsm/$SENSOR/suricata.yaml -l /nsm/sensor_data/$SENSOR --runmode single -r $PCAP >/dev/null 2>&1
+	fi
+fi
+
+if [ "$BRO_ENABLED" = "yes" ] ; then
+	BRODIR="/nsm/import/bro"
+	echo "...analyzing traffic with Bro."
+	mkdir -p $BRODIR
+	cd $BRODIR
+	/opt/bro/bin/bro -r $PCAP local >/dev/null 2>&1
+	cd - >/dev/null
+fi
 
 START=`capinfos $PCAP -a |grep "Start time:" | awk '{print $4,$5,$7}'`
 START=`date +%Y-%m-%d --date="$START"`
@@ -76,7 +106,8 @@ if [ "$START" = "$END" ]; then
 	EPOCH=`date +%s --date="$START"`
 	PCAPDIR="/nsm/sensor_data/$SENSOR/dailylogs/$START"
 	FILE="$PCAPDIR/snort.log.$EPOCH"
-	echo "This pcap has traffic from a single day, so we'll copy it to $FILE."
+	echo "This pcap has traffic from a single day, so we'll copy it to:"
+	echo "$FILE"
 	mkdir -p $PCAPDIR
 	cp $PCAP $FILE
 else
@@ -93,13 +124,6 @@ else
 		CURRENT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
 	done
 fi
-
-BRODIR="/nsm/import/bro"
-echo "Running Bro against pcap and writing logs to $BRODIR..."
-mkdir -p $BRODIR
-cd $BRODIR
-/opt/bro/bin/bro -r $PCAP local >/dev/null 2>&1
-cd - >/dev/null
 
 cat << EOF
 
