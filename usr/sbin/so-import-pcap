@@ -6,12 +6,12 @@
 cat << EOF
 so-import-pcap
 
-This is a quick and dirty EXPERIMENTAL script that will import a pcap into Security Onion.
+This is a quick and dirty EXPERIMENTAL script that will import one or more pcaps into Security Onion.
 
 It will do the following:
 - stop and disable Curator to avoid closing old indices
 - generate Bro logs and store them in Elasticsearch with the timestamps of the original events
-- split pcap into separate daily pcaps and store them where sguil's pcap_agent can find them
+- split traffic into separate daily pcaps and store them where sguil's pcap_agent can find them
 
 Requirements:
 - You must be running at least Security Onion Elastic Stack Release Candidate 2 (14.04.5.8 ISO).
@@ -22,14 +22,25 @@ TODO:
 
 EOF
 
-if [ "$1" = "" ]; then
-	echo "Please supply a pcap file:"
+if [ $# -eq 0 ]; then
+	echo "Please supply at least one pcap file:"
 	echo "so-import-pcap <import.pcap>"
+	echo "so-import-pcap <import1.pcap> <import2.pcap>"
 	exit
 fi
 
-# Get full path to file since we will be changing directory later
-PCAP=`readlink -f $1`
+if [ $# -eq 1 ]; then
+	# Get full path to file since we will be changing directory later
+	PCAP=`readlink -f $1`
+elif [ $# -gt 1 ]; then
+	echo "Multiple pcaps passed, merging into single pcap..."
+	PCAP=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
+	TEMP="$PCAP"
+	if ! mergecap -w $PCAP $@; then
+		echo "Error merging pcaps"
+		exit
+	fi
+fi
 
 # Check to see if file exists
 if ! [ -f $PCAP ]; then
@@ -100,3 +111,8 @@ https://localhost/app/kibana#/dashboard/94b52620-342a-11e7-9d52-4f090484f59e?_g=
 or you can manually set your Time Range to be:
 From: $START    To: $ENDNEXT
 EOF
+
+# If we merged multiple pcaps into a single temp pcap, remove the temp pcap
+if [ $# -gt 1 ]; then
+	rm -f $TEMP
+fi
