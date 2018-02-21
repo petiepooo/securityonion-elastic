@@ -60,7 +60,6 @@ done
 
 echo "Please wait while..."
 PCAP=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
-TEMP="$PCAP"
 if ! mergecap -w $PCAP $@; then
 	echo "Error while merging!"
 	exit
@@ -125,6 +124,9 @@ else
 	done
 fi
 
+# Remove temp file
+rm -f $PCAP
+
 cat << EOF
 
 Import complete!
@@ -135,8 +137,3 @@ https://localhost/app/kibana#/dashboard/94b52620-342a-11e7-9d52-4f090484f59e?_g=
 or you can manually set your Time Range to be:
 From: $START    To: $ENDNEXT
 EOF
-
-# If we merged multiple pcaps into a single temp pcap, remove the temp pcap
-if [ $# -gt 1 ]; then
-	rm -f $TEMP
-fi
