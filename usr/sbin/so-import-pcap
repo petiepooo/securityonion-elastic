@@ -99,18 +99,15 @@ START=`capinfos $PCAP -a |grep "Start time:" | awk '{print $4,$5,$7}'`
 START=`date +%Y-%m-%d --date="$START"`
 END=`capinfos $PCAP -e |grep "End time:" | awk '{print $4,$5,$7}'`
 END=`date +%Y-%m-%d --date="$END"`
-echo "$PCAP starts on $START and ends on $END."
 ENDNEXT=`date +%Y-%m-%d --date="$END 1 day"`
 if [ "$START" = "$END" ]; then
 	EPOCH=`date +%s --date="$START"`
 	PCAPDIR="/nsm/sensor_data/$SENSOR/dailylogs/$START"
 	FILE="$PCAPDIR/snort.log.$EPOCH"
-	echo "This pcap has traffic from a single day, so we'll copy it to:"
-	echo "$FILE"
+	echo "...writing $FILE"
 	mkdir -p $PCAPDIR
 	cp $PCAP $FILE
 else
-	echo "This pcap has traffic from multiple days, so we'll split the traffic into daily directories."
 	CURRENT="$START"
 	while [ "$CURRENT" != "$ENDNEXT" ]; do
 		EPOCH=`date +%s --date="$CURRENT"`
@@ -118,7 +115,7 @@ else
 		FILE="$PCAPDIR/snort.log.$EPOCH"
 		mkdir -p $PCAPDIR
 		CURRENTNEXT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
-		echo "Writing traffic on or after $CURRENT 00:00:00 and before $CURRENTNEXT 00:00:00 to $FILE"
+		echo "...writing $FILE"
 		editcap -F libpcap -A "$CURRENT 00:00:00" -B "$CURRENTNEXT 00:00:00" $PCAP $FILE
 		CURRENT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
 	done
