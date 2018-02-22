@@ -843,7 +843,12 @@
           }
         },
         "domain_age":{  
-          "type":"long"
+           "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
         },
         "domain_name":{  
           "type":"text",
