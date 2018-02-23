@@ -1,17 +1,51 @@
 #!/bin/bash
 
-. /usr/sbin/so-common
-. /etc/nsm/securityonion.conf
+# Copyright 2014,2015,2016,2017,2018 Security Onion Solutions, LLC
 
-FILE="/etc/nsm/sensortab"
-if ! [ -f /etc/nsm/sensortab ]; then
-	echo "$FILE not found. Exiting!"
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+source /usr/sbin/so-common
+
+CONF="/etc/nsm/securityonion.conf"
+if ! [ -f $CONF ]; then
+	echo "$CONF not found. Please run Setup."
+	exit
+fi
+source $CONF
+
+SENSORTAB="/etc/nsm/sensortab"
+if ! [ -f $SENSORTAB ]; then
+	echo "$SENSORTAB not found. This machine must be configured for network sensor services."
 	exit
 fi
 
 SENSOR=`grep -v "^#" /etc/nsm/sensortab  |head -1 |awk '{print $1}'`
+SENSORCONF="/etc/nsm/$SENSOR/sensor.conf"
+if ! [ -f $SENSORCONF ]; then
+	echo "$SENSORCONF not found. This machine must be configured for network sensor services."
+	exit
+fi
 source /etc/nsm/$SENSOR/sensor.conf
 
+# Check to see if this is a sensor before continuing
+if [ -f /root/.ssh/securityonion_ssh.conf ]; then
+	echo "This machine appears to be a sensor connected to a distributed deployment."
+	echo "This script was designed for standalone systems designated for so-import-pcap."
+	exit
+fi
+
+# Output the program name
 cat << EOF
 
 so-import-pcap
@@ -33,6 +67,10 @@ Requirements:
 - You must be running at least Security Onion Elastic Stack Release Candidate 2 (14.04.5.8 ISO).
 - You must have a sniffing interface defined (you can choose Evaluation Mode in the Setup wizard).
 
+Warnings:
+- Do NOT run this on a production deployment. It is designed for standalone systems designated for so-import-pcap.
+
+Usage:
 Please supply at least one pcap file.
 
 For example, to import a single pcap named import.pcap:
@@ -59,7 +97,9 @@ for i in $@; do
 	fi
 done
 
+# Create temp pcap and set permissions
 echo "Please wait while..."
+echo "...creating temp pcap for processing."
 PCAP=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
 if ! mergecap -w $PCAP $@; then
 	echo "Error while merging!"
@@ -70,13 +110,27 @@ chmod 444 $PCAP
 # Check to see if file is a valid PCAP
 capinfos $PCAP 2>&1 | grep "The file appears to be damaged or corrupt." && exit
 
-echo "...stopping and disabling curator to avoid closing old indices."
-sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' /etc/nsm/securityonion.conf
-docker stop so-curator >/dev/null 2>&1
+# Stop curator if running
+if docker ps |grep curator >/dev/null 2>&1; then
+	echo "...stopping curator."
+	docker stop so-curator >/dev/null 2>&1
+fi
 
-# CapMe defaults to only allowing to search back 5 years, better increase that
-sed -i 's| - 5 | - 50 |g' /var/www/so/capme/.inc/callback-elastic.php
+# Disable curator
+if [ "$CURATOR_ENABLED" = "yes" ]; then
+	echo "...disabling curator."
+	sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' /etc/nsm/securityonion.conf
+fi
 
+# In RC2, CapMe defaults to only allowing to search back 5 years.
+# Let's increase that to 50 years just in case.
+# This fix has already been applied by default in RC3.
+if grep " - 5 " /var/www/so/capme/.inc/callback-elastic.php >/dev/null 2>&1; then
+	echo "...adjusting CapMe to allow pcaps up to 50 years old."
+	sed -i 's| - 5 | - 50 |g' /var/www/so/capme/.inc/callback-elastic.php
+fi
+
+# Generate IDS alerts and write them to standard pipeline for consumption via Sguil agents
 if [ "$IDS_ENGINE_ENABLED" = "yes" ]; then
 	if [ "$ENGINE" = "snort" ]; then
 		echo "...analyzing traffic with Snort."
@@ -87,6 +141,7 @@ if [ "$IDS_ENGINE_ENABLED" = "yes" ]; then
 	fi
 fi
 
+# Generate Bro logs and write them to /nsm/import/bro/
 if [ "$BRO_ENABLED" = "yes" ] ; then
 	BRODIR="/nsm/import/bro"
 	echo "...analyzing traffic with Bro."
@@ -96,19 +151,13 @@ if [ "$BRO_ENABLED" = "yes" ] ; then
 	cd - >/dev/null
 fi
 
-START=`capinfos $PCAP -a |grep "Start time:" | awk '{print $4,$5,$7}'`
-START=`date +%Y-%m-%d --date="$START"`
-END=`capinfos $PCAP -e |grep "End time:" | awk '{print $4,$5,$7}'`
-END=`date +%Y-%m-%d --date="$END"`
-ENDNEXT=`date +%Y-%m-%d --date="$END 1 day"`
-if [ "$START" = "$END" ]; then
-	EPOCH=`date +%s --date="$START"`
-	PCAPDIR="/nsm/sensor_data/$SENSOR/dailylogs/$START"
-	FILE="$PCAPDIR/snort.log.$EPOCH"
-	echo "...writing $FILE"
-	mkdir -p $PCAPDIR
-	cp $PCAP $FILE
-else
+# Split traffic into daily directories so that sguil's pcap_agent can find it
+if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
+	START=`capinfos $PCAP -a |grep "Start time:" | awk '{print $4,$5,$7}'`
+	START=`date +%Y-%m-%d --date="$START"`
+	END=`capinfos $PCAP -e |grep "End time:" | awk '{print $4,$5,$7}'`
+	END=`date +%Y-%m-%d --date="$END"`
+	ENDNEXT=`date +%Y-%m-%d --date="$END 1 day"`
 	CURRENT="$START"
 	while [ "$CURRENT" != "$ENDNEXT" ]; do
 		EPOCH=`date +%s --date="$CURRENT"`
@@ -125,6 +174,7 @@ fi
 # Remove temp file
 rm -f $PCAP
 
+# Output final message
 cat << EOF
 
 Import complete!
