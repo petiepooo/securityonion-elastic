@@ -42,10 +42,31 @@ SENSOR=`grep -v "^#" $SENSORTAB  |head -1 |awk '{print $1}'`
 SENSORCONF="/etc/nsm/$SENSOR/sensor.conf"
 if ! [ -f $SENSORCONF ]; then
 	echo "$SENSORCONF not found."
-	echo "This machine must be configured for network sensor services."
+	echo "This machine must be configured for network sensor services to continue."
 	exit
 fi
 source $SENSORCONF
+
+SGUILDCONF="/etc/sguild/sguild.conf"
+if ! [ -f $SGUILDCONF ]; then
+	echo "$SGUILDCONF not found."
+	echo "This machine must be running sguild to continue."
+	exit
+fi
+
+SYSLOGCONF="/etc/syslog-ng/syslog-ng.conf"
+if ! [ -f $SYSLOGCONF ]; then
+	echo "$SYSLOGCONF not found."
+	echo "This machine must be running syslog-ng to continue."
+	exit
+fi
+
+LOGSTASH_SNORT=/etc/logstash/conf.d/1033_preprocess_snort.conf
+if ! [ -f $LOGSTASH_SNORT ]; then
+	echo "$LOGSTASH_SNORT not found."
+	echo "Exiting."
+	exit
+fi
 
 # Check to see if this is a sensor before continuing
 if [ -f /root/.ssh/securityonion_ssh.conf ]; then
@@ -118,6 +139,43 @@ chmod 444 $PCAP
 
 # Check to see if file is a valid PCAP
 capinfos $PCAP 2>&1 | grep "The file appears to be damaged or corrupt." && exit
+
+# make sure sguild is running with DEBUG 2
+if ! grep "set DEBUG 2" $SGUILDCONF >/dev/null 2>&1; then
+	echo "...setting sguild debug to 2 and restarting sguild."
+	sed -i 's|set DEBUG.*$|set DEBUG 2|g' $SGUILDCONF
+	/usr/sbin/nsm_server_ps-restart >/dev/null 2>&1
+fi
+
+# make sure syslog-ng is configured to pick up sguild logs
+if ! grep "/var/log/nsm/securityonion/sguild.log" $SYSLOGCONF >/dev/null 2>&1; then
+	echo "...configuring syslog-ng to pick up sguild logs."
+cat << EOF >> $SYSLOGCONF
+
+# added by so-import-pcap
+source s_sguil { file("/var/log/nsm/securityonion/sguild.log" program_override("snort")); };
+filter f_sguil { message("Alert Received"); };
+log {
+        source(s_sguil);
+        filter(f_sguil);
+        destination(d_logstash);
+};
+EOF
+	service syslog-ng restart >/dev/null 2>&1
+fi
+
+# make sure Logstash is configured to parse sguild logs
+if ! grep "DATA:timestamp" $LOGSTASH_SNORT > /dev/null 2>&1; then
+	echo -n "...configuring logstash to parse sguild logs (this may take a few minutes, but should only need to be done once)..."
+	sed -i 's|"message", "%{GREEDYDATA:alert}"]|"message", "\\A%{TIME} pid\\(%{INT}\\)  Alert Received: %{INT} %{INT:priority} %{DATA:classification} %{DATA:interface} \\{%{DATA:timestamp}} %{INT} %{INT} \\{%{DATA:alert}\} %{IP:source_ip} %{IP:destination_ip} %{INT:protocol} %{INT:source_port} %{INT:destination_port} %{INT:gid} %{INT:sid} %{INT:rev} %{INT} %{INT}\\Z",\n                "message", "%{GREEDYDATA:alert}"]\n    }\n\n    if [timestamp] {\n        mutate {\n                add_field => { "logstash_timestamp" => "%{@timestamp}" }\n        }\n        mutate {\n                convert => { "logstash_timestamp" => "string" }\n        }\n        date {\n                match => [ "timestamp", "yyyy-MM-dd HH:mm:ss" ]\n        }\n        mutate {\n                rename => { "logstash_timestamp" => "timestamp" }\n        }|g' $LOGSTASH_SNORT
+	docker restart so-logstash >/dev/null 2>&1
+	if (timeout 10m tail -F -n0 "/var/log/logstash/logstash.log" &) | grep -q "Pipelines running" ; then
+	    echo "done."
+	else
+	    echo "failed."
+	    exit
+	fi
+fi
 
 # Stop curator if running
 if docker ps |grep curator >/dev/null 2>&1; then
