@@ -68,14 +68,14 @@ if ! [ -f $LOGSTASH_SNORT ]; then
 	exit
 fi
 
-# Check to see if this is a sensor before continuing
+# check to see if this is a sensor before continuing
 if [ -f /root/.ssh/securityonion_ssh.conf ]; then
 	echo "This machine appears to be a sensor connected to a distributed deployment."
 	echo "This script was designed for standalone systems designated for so-import-pcap."
 	exit
 fi
 
-# Output the program name
+# output the program name
 cat << EOF
 
 so-import-pcap
@@ -112,13 +112,13 @@ so-import-pcap import1.pcap import2.pcap
 EOF
 }
 
-# If no parameters supplied, display usage
+# if no parameters supplied, display usage
 if [ $# -eq 0 ]; then
 	usage
 	exit
 fi
 
-# Verify that all parameters are files
+# verify that all parameters are files
 for i in $@; do
 	if ! [ -f $i ]; then
 		usage
@@ -127,7 +127,7 @@ for i in $@; do
 	fi
 done
 
-# Create temp pcap and set permissions
+# create temp pcap and set permissions
 echo "Please wait while..."
 echo "...creating temp pcap for processing."
 PCAP=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
@@ -137,7 +137,7 @@ if ! mergecap -w $PCAP $@; then
 fi
 chmod 444 $PCAP
 
-# Check to see if file is a valid PCAP
+# check to see if file is a valid PCAP
 capinfos $PCAP 2>&1 | grep "The file appears to be damaged or corrupt." && exit
 
 # make sure sguild is running with DEBUG 2
@@ -164,6 +164,13 @@ EOF
 	service syslog-ng restart >/dev/null 2>&1
 fi
 
+# disable barnyard syslog output
+if grep "^output alert_syslog: LOG_LOCAL6 LOG_ALERT$" /etc/nsm/$SENSOR/barnyard*.conf >/dev/null 2>&1; then
+	echo "...disabling syslog output in barnyard."
+	sed -i 's|^output alert_syslog: LOG_LOCAL6 LOG_ALERT$|#output alert_syslog: LOG_LOCAL6 LOG_ALERT|g' /etc/nsm/$SENSOR/barnyard*.conf
+	nsm_sensor_ps-restart --only-barnyard2 >/dev/null 2>&1
+fi
+
 # make sure Logstash is configured to parse sguild logs
 if ! grep "DATA:timestamp" $LOGSTASH_SNORT > /dev/null 2>&1; then
 	echo -n "...configuring logstash to parse sguild logs (this may take a few minutes, but should only need to be done once)..."
@@ -177,27 +184,27 @@ if ! grep "DATA:timestamp" $LOGSTASH_SNORT > /dev/null 2>&1; then
 	fi
 fi
 
-# Stop curator if running
+# stop curator if running
 if docker ps |grep curator >/dev/null 2>&1; then
 	echo "...stopping curator."
 	docker stop so-curator >/dev/null 2>&1
 fi
 
-# Disable curator
+# disable curator
 if [ "$CURATOR_ENABLED" = "yes" ]; then
 	echo "...disabling curator."
 	sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' /etc/nsm/securityonion.conf
 fi
 
-# In RC2, CapMe defaults to only allowing to search back 5 years.
-# Let's increase that to 50 years just in case.
-# This fix has already been applied by default in RC3.
+# in RC2, CapMe defaults to only allowing to search back 5 years
+# let's increase that to 50 years just in case
+# this fix has already been applied by default in RC3
 if grep " - 5 " /var/www/so/capme/.inc/callback-elastic.php >/dev/null 2>&1; then
 	echo "...adjusting CapMe to allow pcaps up to 50 years old."
 	sed -i 's| - 5 | - 50 |g' /var/www/so/capme/.inc/callback-elastic.php
 fi
 
-# Generate IDS alerts and write them to standard pipeline for consumption via Sguil agents
+# generate IDS alerts and write them to standard pipeline for consumption via Sguil agents
 if [ "$IDS_ENGINE_ENABLED" = "yes" ]; then
 	if [ "$ENGINE" = "snort" ]; then
 		echo "...analyzing traffic with Snort."
@@ -208,7 +215,7 @@ if [ "$IDS_ENGINE_ENABLED" = "yes" ]; then
 	fi
 fi
 
-# Generate Bro logs and write them to /nsm/import/bro/
+# generate Bro logs and write them to /nsm/import/bro/
 if [ "$BRO_ENABLED" = "yes" ] ; then
 	BRODIR="/nsm/import/bro"
 	echo "...analyzing traffic with Bro."
@@ -218,7 +225,7 @@ if [ "$BRO_ENABLED" = "yes" ] ; then
 	cd - >/dev/null
 fi
 
-# Split traffic into daily directories so that sguil's pcap_agent can find it
+# split traffic into daily directories so that sguil's pcap_agent can find it
 if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
 	START=`capinfos $PCAP -a |grep "Start time:" | awk '{print $4,$5,$7}'`
 	START=`date +%Y-%m-%d --date="$START"`
@@ -238,10 +245,10 @@ if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
 	done
 fi
 
-# Remove temp file
+# remove temp file
 rm -f $PCAP
 
-# Output final message
+# output final message
 cat << EOF
 
 Import complete!
