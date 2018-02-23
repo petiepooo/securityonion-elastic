@@ -37,8 +37,8 @@ if ! [ -f $SENSORTAB ]; then
 	echo "This machine must be configured for network sensor services."
 	exit
 fi
-
 SENSOR=`grep -v "^#" /etc/nsm/sensortab  |head -1 |awk '{print $1}'`
+
 SENSORCONF="/etc/nsm/$SENSOR/sensor.conf"
 if ! [ -f $SENSORCONF ]; then
 	echo "$SENSORCONF not found."
