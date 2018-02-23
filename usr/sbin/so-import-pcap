@@ -21,7 +21,7 @@ if ! [ -f $COMMON ]; then
 	echo "This script requires Security Onion Elastic Stack Release Candidate 2 (14.04.5.8 ISO) or later."
 	exit
 fi
-source /usr/sbin/so-common
+source $COMMON
 
 CONF="/etc/nsm/securityonion.conf"
 if ! [ -f $CONF ]; then
@@ -37,7 +37,7 @@ if ! [ -f $SENSORTAB ]; then
 	echo "This machine must be configured for network sensor services."
 	exit
 fi
-SENSOR=`grep -v "^#" /etc/nsm/sensortab  |head -1 |awk '{print $1}'`
+SENSOR=`grep -v "^#" $SENSORTAB  |head -1 |awk '{print $1}'`
 
 SENSORCONF="/etc/nsm/$SENSOR/sensor.conf"
 if ! [ -f $SENSORCONF ]; then
@@ -45,7 +45,7 @@ if ! [ -f $SENSORCONF ]; then
 	echo "This machine must be configured for network sensor services."
 	exit
 fi
-source /etc/nsm/$SENSOR/sensor.conf
+source $SENSORCONF
 
 # Check to see if this is a sensor before continuing
 if [ -f /root/.ssh/securityonion_ssh.conf ]; then
