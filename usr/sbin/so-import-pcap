@@ -15,25 +15,34 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+COMMON="/usr/sbin/so-common"
+if ! [ -f $COMMON ]; then
+	echo "$COMMON not found."
+	echo "This script requires Security Onion Elastic Stack Release Candidate 2 (14.04.5.8 ISO) or later."
+	exit
+fi
 source /usr/sbin/so-common
 
 CONF="/etc/nsm/securityonion.conf"
 if ! [ -f $CONF ]; then
-	echo "$CONF not found. Please run Setup."
+	echo "$CONF not found."
+	echo "Please run Setup."
 	exit
 fi
 source $CONF
 
 SENSORTAB="/etc/nsm/sensortab"
 if ! [ -f $SENSORTAB ]; then
-	echo "$SENSORTAB not found. This machine must be configured for network sensor services."
+	echo "$SENSORTAB not found."
+	echo "This machine must be configured for network sensor services."
 	exit
 fi
 
 SENSOR=`grep -v "^#" /etc/nsm/sensortab  |head -1 |awk '{print $1}'`
 SENSORCONF="/etc/nsm/$SENSOR/sensor.conf"
 if ! [ -f $SENSORCONF ]; then
-	echo "$SENSORCONF not found. This machine must be configured for network sensor services."
+	echo "$SENSORCONF not found."
+	echo "This machine must be configured for network sensor services."
 	exit
 fi
 source /etc/nsm/$SENSOR/sensor.conf
