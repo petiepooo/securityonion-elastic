@@ -15,6 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# TODO:
+# stop and disable Bro
+# stop and disable IDS engine
+# stop and disable netsniff-ng
+
 COMMON="/usr/sbin/so-common"
 if ! [ -f $COMMON ]; then
 	echo "$COMMON not found."
@@ -88,9 +93,12 @@ This is a quick and dirty EXPERIMENTAL script that will import one or more pcaps
 
 It will do the following:
 - stop and disable Curator to avoid closing old indices
+- stop and disable all active sniffing processes (Bro, Snort, Suricata, and netsniff-ng)
+- stop and disable ossec_agent
+- reconfigure and restart sguild, syslog-ng, and Logstash
 - generate IDS alerts using Snort or Suricata
 - generate Bro logs
-- store alerts and logs with original timestamps
+- store IDS alerts and Bro logs with original timestamps
 - split traffic into separate daily pcaps and store them where sguil's pcap_agent can find them
 
 Requirements:
@@ -193,7 +201,55 @@ fi
 # disable curator
 if [ "$CURATOR_ENABLED" = "yes" ]; then
 	echo "...disabling curator."
-	sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' /etc/nsm/securityonion.conf
+	sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' $CONF
+fi
+
+# stop ossec_agent if running
+if pgrep -f /usr/bin/ossec_agent >/dev/null 2>&1; then
+	echo "...stopping ossec_agent."
+	/usr/sbin/nsm_sensor_ps-stop --only-ossec-agent >/dev/null 2>&1
+fi
+
+# disable ossec_agent
+if [ "$OSSEC_AGENT_ENABLED" = "yes" ]; then
+	echo "...disabling ossec_agent."
+	sed -i 's|OSSEC_AGENT_ENABLED=yes|OSSEC_AGENT_ENABLED=no|g' $CONF
+fi
+
+# stop bro if running
+if pgrep -f /opt/bro/share/broctl/scripts/run-bro >/dev/null 2>&1; then
+	echo "...stopping Bro sniffing process."
+	/usr/sbin/nsm_sensor_ps-stop --only-bro >/dev/null 2>&1
+fi
+
+# disable bro
+if [ "$BRO_ENABLED" = "yes" ]; then
+	echo "...disabling Bro sniffing process."
+	sed -i 's|BRO_ENABLED=yes|BRO_ENABLED=no|g' $CONF
+fi
+
+# stop IDS engine if running
+if nsm_sensor_ps-status --only-snort-alert | grep OK >/dev/null 2>&1; then
+	echo "...stopping IDS sniffing process."
+	/usr/sbin/nsm_sensor_ps-stop --only-snort-alert >/dev/null 2>&1
+fi
+
+# disable IDS engine
+if [ "$IDS_ENGINE_ENABLED" = "yes" ]; then
+	echo "...disabling IDS sniffing process."
+	sed -i 's|IDS_ENGINE_ENABLED="yes"|IDS_ENGINE_ENABLED="no"|g' $SENSORCONF
+fi
+
+# stop netsniff-ng if running
+if nsm_sensor_ps-status --only-pcap | grep OK >/dev/null 2>&1; then
+	echo "...stopping netsniff-ng."
+	/usr/sbin/nsm_sensor_ps-stop --only-pcap >/dev/null 2>&1
+fi
+
+# disable netsniff-ng
+if [ "$PCAP_ENABLED" = "yes" ]; then
+	echo "...disabling netsniff-ng."
+	sed -i 's|PCAP_ENABLED="yes"|PCAP_ENABLED="no"|g' $SENSORCONF
 fi
 
 # in RC2, CapMe defaults to only allowing to search back 5 years
@@ -205,25 +261,21 @@ if grep " - 5 " /var/www/so/capme/.inc/callback-elastic.php >/dev/null 2>&1; the
 fi
 
 # generate IDS alerts and write them to standard pipeline for consumption via Sguil agents
-if [ "$IDS_ENGINE_ENABLED" = "yes" ]; then
-	if [ "$ENGINE" = "snort" ]; then
-		echo "...analyzing traffic with Snort."
-		snort --daq pcap -c /etc/nsm/$SENSOR/snort.conf -u sguil -g sguil -l /nsm/sensor_data/$SENSOR/snort-1 -r $PCAP >/dev/null 2>&1
-	else
-		echo "...analyzing traffic with Suricata."
-		suricata --user sguil --group sguil -c /etc/nsm/$SENSOR/suricata.yaml -l /nsm/sensor_data/$SENSOR --runmode single -r $PCAP >/dev/null 2>&1
-	fi
+if [ "$ENGINE" = "snort" ]; then
+	echo "...analyzing traffic with Snort."
+	snort --daq pcap -c /etc/nsm/$SENSOR/snort.conf -u sguil -g sguil -l /nsm/sensor_data/$SENSOR/snort-1 -r $PCAP >/dev/null 2>&1
+else
+	echo "...analyzing traffic with Suricata."
+	suricata --user sguil --group sguil -c /etc/nsm/$SENSOR/suricata.yaml -l /nsm/sensor_data/$SENSOR --runmode single -r $PCAP >/dev/null 2>&1
 fi
 
 # generate Bro logs and write them to /nsm/import/bro/
-if [ "$BRO_ENABLED" = "yes" ] ; then
-	BRODIR="/nsm/import/bro"
-	echo "...analyzing traffic with Bro."
-	mkdir -p $BRODIR
-	cd $BRODIR
-	/opt/bro/bin/bro -r $PCAP local >/dev/null 2>&1
-	cd - >/dev/null
-fi
+BRODIR="/nsm/import/bro"
+echo "...analyzing traffic with Bro."
+mkdir -p $BRODIR
+cd $BRODIR
+/opt/bro/bin/bro -r $PCAP local >/dev/null 2>&1
+cd - >/dev/null
 
 # split traffic into daily directories so that sguil's pcap_agent can find it
 if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
