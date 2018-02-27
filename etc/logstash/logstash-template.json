@@ -181,6 +181,9 @@
         "basic_constraints_path_length":{  
           "type":"long"
         },
+        "bound_port":{
+          "type":"long"
+        },
         "call_id":{  
           "type":"text",
 	  "fields":{
@@ -843,7 +846,12 @@
           }
         },
         "domain_age":{  
-          "type":"long"
+           "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
         },
         "domain_name":{  
           "type":"text",
@@ -1882,6 +1890,9 @@
             }
           }
         },
+        "original_bytes":{
+          "type":"long"
+        },
         "original_country_code":{  
           "type":"text",
           "fields":{  
@@ -1890,6 +1901,9 @@
             }
           }
         },
+        "original_ip_bytes":{
+	  "type":"long"
+	},
         "original_packets":{  
           "type":"long"
         },
@@ -2276,6 +2290,14 @@
             }
           }
         },
+        "request_port":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "request_timestamp":{  
           "type":"text",
           "fields":{  
@@ -2343,7 +2365,7 @@
         "respond_bytes":{  
           "type":"long"
         },
-        "respond_ipbytes":{  
+        "respond_ip_bytes":{  
           "type":"long"
         },
         "respond_packets":{  
