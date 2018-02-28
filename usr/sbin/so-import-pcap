@@ -75,15 +75,11 @@ if [ -f /root/.ssh/securityonion_ssh.conf ]; then
 	exit
 fi
 
-# output the program name
+# display warnings every time
 cat << EOF
 
 so-import-pcap
 
-EOF
-
-function usage {
-cat << EOF
 This is a quick and dirty EXPERIMENTAL script that will import one or more pcaps into Security Onion and preserve original timestamps.
 
 It will do the following:
@@ -108,6 +104,11 @@ Reverting System Changes:
 - If you take a VM snapshot before this program makes changes, then just revert to snapshot.
 - Otherwise, you can re-run Setup and it should overwrite all modified files to revert the system to normal operation.
 
+EOF
+
+# display usage if no valid pcap files are passed
+function usage {
+cat << EOF
 Usage:
 Please supply at least one pcap file.
 
@@ -134,6 +135,14 @@ for i in $@; do
 		exit
 	fi
 done
+
+# prompt user before making changes
+cat << EOF
+If this is the first time so-import-pcap has been run on this system, then it will make changes to the system.
+
+Press Enter to continue or Ctrl-c to cancel.
+EOF
+read input
 
 # create temp pcap and set permissions
 echo "Please wait while..."
