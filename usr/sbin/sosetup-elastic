@@ -237,7 +237,7 @@ Evaluation Mode is recommended for first-time users or standalone VMs:\n\
 - ideal for quickly evaluating Security Onion\n\
 - will automatically configure most details of your system\n\
 - configures Snort and Bro to monitor one network interface\n\
-- NOT intended for a production sensor\n\
+- NOT intended for a production deployment\n\
 \n\
 Production Mode is recommended for production deployments\n\
 as it gives you more control over the details of your system\n\
@@ -304,7 +304,7 @@ You will need to be able to SSH to the existing master server with an account th
 	Existing)
                 [ $DEBUG -eq 1 ] && echo "DEBUG: Selected Existing."
 		SERVER=0
-		TEXT="What is the hostname or IP address of the master server that this sensor should connect to?"
+		TEXT="What is the hostname or IP address of the master server that this node should connect to?"
 		SERVERNAME_CONFIRMED="no"
 		while [ $SERVERNAME_CONFIRMED = "no" ]; do
 			SERVERNAME=`zenity --title="$TITLE" --text="$TEXT" --entry`
@@ -313,11 +313,11 @@ You will need to be able to SSH to the existing master server with an account th
 			if [ "$SERVERNAME" = "$HOSTNAME" ]; then
 				zenity --error --title "$TITLE" --text="That is the hostname of this box\!\r \
 \r \
-Since you chose a sensor-only installation, the master server should be a separate box."
+Since you chose a node installation, the master server should be a separate box."
 			elif [ "$SERVERNAME" = "$IP" ]; then
 				zenity --error --title "$TITLE" --text="That is the IP address of this box\!\r \
 \r \
-Since you chose a sensor-only installation, the master server should be a separate box."
+Since you chose a node installation, the master server should be a separate box."
 			elif [ "x$SERVERNAME" = "x" ]; then
 				zenity --error --title "$TITLE" --text="No server defined\!\r \
 \r \
@@ -930,8 +930,8 @@ for hunting through your logs, including:\n\
 * Snort/Suricata logs\n\
 * standard syslog\n\
 \n\
-If this is a sensor-only installation, you can store logs in a local Elasticsearch\n\
-database or you can forward to the Elasticsearch database on your master server.\n\
+If this is a node installation, you can store logs in a local Elasticsearch\n\
+database or you can forward to your master server.\n\
 For either of these options, choose Yes.  You will then be asked if you want to\n\
 store locally or forward to your master server.\n\
 \n\
@@ -955,7 +955,7 @@ fi
 if [ "$ELASTIC" = "yes" ] && [ $ADVANCED_SETUP -eq 1 ] && [ $SERVER -eq 1 ]; then
 	TEXT="By default, the master server stores logs in its own local Elasticsearch database via a local Logstash instance.\n\
 \n\
-If you want to forward logs from multiple sensors to this master server, then you may overwhelm those single instances of Logstash and Elasticsearch.\n\
+If you want to forward logs from multiple nodes to this master server, then you may overwhelm those single instances of Logstash and Elasticsearch.\n\
 You may want to consider load balancing these forwarded logs to additional storage nodes.\n\
 \n\
 Would you like to store logs locally on $HOSTNAME?"
@@ -1542,8 +1542,8 @@ OSSEC_AGENT_LEVEL=$OSSEC_AGENT_LEVEL
 XPLICO_ENABLED=$XPLICO_ENABLED
 
 # LOCAL_HIDS_RULE_TUNING
-# If set to no (default), sensor will copy OSSEC rules from master server as-is (no changes).
-# If set to yes, sensor will keep its own copy of the OSSEC rules.
+# If set to no (default), this node will copy OSSEC rules from master server as-is (no changes).
+# If set to yes, this node will keep its own copy of the OSSEC rules.
 LOCAL_HIDS_RULE_TUNING=no
 
 # LOCAL_NIDS_RULE_TUNING
@@ -1949,7 +1949,7 @@ EOF
 		echo "manual" > /etc/init/mysql.override
 
     		echo "95"
-		echo "# Please wait while performing final sensor configuration..." | tee -a $LOG
+		echo "# Please wait while performing final node configuration..." | tee -a $LOG
 
     		if [ "$FORWARD" = "yes" ]; then
                         # If AUTOSSH_OPTIONS is already in SSH_CONF, remove it and replace it with new value.
@@ -1988,7 +1988,7 @@ EOF
 			SSH_CMD="cat /etc/nsm/crossclustertab | cut -d: -f2 | grep '^5' | sort | tail -1"
 			HIGHEST_REVERSE_PORT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 			if [ "$HIGHEST_REVERSE_PORT" = "" ]; then
-				echo "Found no other sensors." >> $LOG 2>&1
+				echo "Found no other nodes." >> $LOG 2>&1
 				REVERSE_PORT=50000
 			else
 				echo "HIGHEST_REVERSE_PORT is $HIGHEST_REVERSE_PORT" >> $LOG 2>&1
