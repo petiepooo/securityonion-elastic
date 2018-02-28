@@ -1127,6 +1127,7 @@ pkill autossh
 # Delete any Elasticsearch or Logstash data
 rm -rf /nsm/elasticsearch/nodes
 rm -rf /nsm/logstash/queue/main/*
+rm -f /etc/elasticsearch/elasticsearch.yml
 # Make sure MySQL is running so that we can fully delete the NSM databases
 [ $SERVER -eq 1 ] && service mysql start >> $LOG 2>&1
 # Uncomment any disabled sensors so that we can fully delete them
