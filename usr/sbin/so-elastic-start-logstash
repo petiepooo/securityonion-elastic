@@ -40,9 +40,17 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 
 		CONFD="/etc/logstash/conf.d"
                 if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ]; then
+			REDISCONF="/etc/redis/redis.conf"
 			# Allow logstash container to output to redis
-			sed -i.bak 's|bind 127.0.0.1|bind 0.0.0.0|g' /etc/redis/redis.conf
+			sed -i.bak 's|bind 127.0.0.1|bind 0.0.0.0|g' $REDISCONF
                 	ufw allow proto tcp from 172.18.0.0/24 to 172.18.0.1 port 6379 >/dev/null
+			# Configure redis memory settings
+			TOTAL_MEM=`grep MemTotal /proc/meminfo | awk '{print $2}' | sed -r 's/.{3}$//'`
+			REDISMEM=$(($TOTAL_MEM / 10))"m"
+			if ! grep "^maxmemory" $REDISCONF >/dev/null 2>&1; then
+				sed -i "/#maxmemory <bytes>/ a maxmemory $REDISMEM" $REDISCONF
+				sed -i "/#maxmemory-policy volatile-lru/ a maxmemory-policy noeviction" $REDISCONF
+			fi
 			service redis-server start >/dev/null
 			cp /etc/logstash/conf.d/0000_input_syslogng.conf /etc/logstash/conf.d.redis.output/
 			CONFD="/etc/logstash/conf.d.redis.output/"
