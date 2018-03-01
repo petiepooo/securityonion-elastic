@@ -2450,7 +2450,7 @@
           }
         },
         "rtt":{  
-          "type":"text",
+          "type":"float",
           "fields":{  
             "keyword":{  
               "type":"keyword"

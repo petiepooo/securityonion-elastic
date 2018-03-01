@@ -1,10 +1,10 @@
 {
-  "version": "6.2.2",
+  "version": "6.1.3",
   "objects": [
     {
       "id": "4f6f3440-6d62-11e7-8ddb-e71eb260f4a3",
       "type": "dashboard",
-      "updated_at": "2018-02-28T20:09:27.724Z",
+      "updated_at": "2018-03-01T15:56:06.142Z",
       "version": 1,
       "attributes": {
         "hits": 0,
