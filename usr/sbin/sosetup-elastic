@@ -932,8 +932,7 @@ for hunting through your logs, including:\n\
 \n\
 If this is a node installation, you can store logs in a local Elasticsearch\n\
 database or you can forward to your master server.\n\
-For either of these options, choose Yes.  You will then be asked if you want to\n\
-store locally or forward to your master server.\n\
+For either of these options, choose Yes.\n\
 \n\
 Would you like to enable the Elastic Stack?"
 	YES="Yes, enable the Elastic Stack."
