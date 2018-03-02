@@ -4,6 +4,8 @@
 
 . /etc/nsm/securityonion.conf
 
+[ "$LOGSTASH_OUTPUT_REDIS" = "yes" ] && pgrep redis-server >/dev/null 2>&1 && service redis-server stop
+
 if docker ps | grep -q so- ; then
 	echo
 	echo "Stopping containers:"
