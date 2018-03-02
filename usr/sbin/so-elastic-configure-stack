@@ -46,12 +46,19 @@ ES_YAML_BAK="/etc/elasticsearch/elasticsearch.yml.bak"
 if [ ! -f "$ES_YAML" ]; then
 	# If no config, create it
 	cp -av $SRC/$ES_YAML $ES_YAML
+
+	# Set cluster name to hostname in lower case
+	HOSTNAME_ORIG=`hostname`
+	HOSTNAME_LOWER=${HOSTNAME_ORIG,,}
+	sed -i "s/cluster\.name.*/cluster\.name: \"$HOSTNAME_LOWER\"/" $ES_YAML
 else
-	# If config exists, back it up, write the new config file, and then transfer transport settings
+	# If config exists, back it up, write the new config file, and then migrate custom settings
 	cp -av $ES_YAML $ES_YAML_BAK
 	cp -av $SRC/$ES_YAML $ES_YAML
 	
-	# If old config file had custom settings, migrate them to new config file
+	# cluster.name: "myclustername"
+	CLUSTERNAME=$(grep "cluster.name" $ES_YAML_BAK | cut -d\" -f2)
+	sed -i "s/cluster\.name.*/cluster\.name: \"$CLUSTERNAME\"/" $ES_YAML
 
 	# transport settings
 	# https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-transport.html
@@ -62,8 +69,6 @@ else
         grep "cluster.routing.allocation.disk" $ES_YAML_BAK >> $ES_YAML
 fi
 
-# Set cluster name
-sed -i "s/cluster\.name.*/cluster\.name: \"$HOSTNAME\"/" $ES_YAML
 echo "Done!"
 
 header "Configuring Logstash"
