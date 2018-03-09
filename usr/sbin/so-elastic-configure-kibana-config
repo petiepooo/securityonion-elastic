@@ -52,7 +52,9 @@ else
 	echo
 	
 	# Apply cross cluster search seed info for local Elasticsearch instance
-	HOSTNAME=$(hostname)
+	HOST_ORIG=`hostname`
+	# set to lower case
+	HOSTNAME=${HOST_ORIG,,}
 	echo
 	echo "Applying cross cluster search config..."
 	curl -s -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings \
