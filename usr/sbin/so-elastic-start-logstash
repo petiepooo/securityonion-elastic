@@ -4,7 +4,10 @@
 
 . /etc/nsm/securityonion.conf
 
-CUSTOM_CONF='/etc/logstash/custom'
+CUSTOM_CONF="/etc/logstash/custom"
+INPUT_REDIS_CONF="/etc/logstash/conf.d/0900_input_redis.conf"
+OUTPUT_REDIS_CONF="/etc/logstash/conf.d.redis.output/9900_output_redis.conf"
+CONFD="/etc/logstash/conf.d"
 
 if [ "$LOGSTASH_ENABLED" = "yes" ]; then
         echo -n "so-logstash: "
@@ -33,13 +36,54 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                 fi
 
                 if [ "$LOGSTASH_INPUT_REDIS" = "yes" ]; then
-			cp /etc/logstash/conf.d.redis.input/0900_input_redis.conf /etc/logstash/conf.d/
+			# this is a storage node consuming from redis
+			# need to add an input if it doesn't already exist
+			if ! [ -f $INPUT_REDIS_CONF ]; then
+cat << EOF >> $INPUT_REDIS_CONF
+input {
+	redis {
+		host => '172.18.0.1'
+		data_type => 'list'
+		key => 'logstash:redis'
+		type => 'redis-input'
+		# threads => 1
+	}
+}
+EOF
+			fi
 		else
-			rm -f /etc/logstash/conf.d/0900_input_redis.conf
+			rm -f $INPUT_REDIS_CONF
 		fi
 
-		CONFD="/etc/logstash/conf.d"
                 if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ]; then
+			# this is a master server outputting to redis
+			# logstash just needs 2 config files:
+			# syslog input
+			# redis output
+			# create a new config directory for these 2 files
+			CONFD="/etc/logstash/conf.d.redis.output/"
+			mkdir -p $CONFD
+
+			# copy syslog input
+			cp /etc/logstash/conf.d/0000_input_syslogng.conf /etc/logstash/conf.d.redis.output/
+
+			# create the redis output if it doesn't already exist
+			if ! [ -f $OUTPUT_REDIS_CONF ]; then
+cat << EOF >> $OUTPUT_REDIS_CONF
+output {
+	redis {
+		host => '172.18.0.1'
+		data_type => 'list'
+		key => 'logstash:redis'
+		congestion_interval => 1
+		congestion_threshold => 50000000
+		# batch_events => 500
+	}
+}
+EOF
+			fi
+
+			# now configure redis
 			REDISCONF="/etc/redis/redis.conf"
 			# Allow logstash container to output to redis
 			sed -i.bak 's|bind 127.0.0.1|bind 0.0.0.0|g' $REDISCONF
@@ -52,8 +96,6 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 				sed -i "/# maxmemory-policy volatile-lru/ a maxmemory-policy noeviction" $REDISCONF
 			fi
 			service redis-server start >/dev/null
-			cp /etc/logstash/conf.d/0000_input_syslogng.conf /etc/logstash/conf.d.redis.output/
-			CONFD="/etc/logstash/conf.d.redis.output/"
 		fi
 
 		# Publish ports to $LOGSTASH_PUBLISH_IP but control them with iptables rules in DOCKER-USER
