@@ -25,8 +25,7 @@ doc_type: 'doc'
 # Ex.  alert:
 #      -debug 
 #      -email
-#
-# 
+
 alert:
 - "debug"
 #- "email"
