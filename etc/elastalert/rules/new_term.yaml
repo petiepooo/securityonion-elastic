@@ -1,4 +1,4 @@
-# Alert when a never before seen IP
+# Alert on never before seen username
 # In this example, Winlogbeat logs contain subject username which user has never been seen before.
 
 # (Required)
