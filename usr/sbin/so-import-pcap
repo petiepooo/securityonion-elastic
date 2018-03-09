@@ -319,4 +319,6 @@ https://localhost/app/kibana#/dashboard/94b52620-342a-11e7-9d52-4f090484f59e?_g=
 
 or you can manually set your Time Range to be:
 From: $START    To: $ENDNEXT
+
+Please note that it may take 30 seconds or more for events to appear in Kibana.
 EOF
