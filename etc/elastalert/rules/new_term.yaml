@@ -34,6 +34,10 @@ filter:
 - term:
     event_type: "wineventlog"
 
+# Only count number of records, instead of bringing all data back
+use_count_query: true
+doc_type: 'doc'
+
 # Specify how we would like to alert.  Default is to the log in /var/log/elastalert/elastalert_stderr.log
 # We can specify multiple outputs as well.
 # Ex.  alert:
