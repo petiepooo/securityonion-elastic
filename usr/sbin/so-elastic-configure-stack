@@ -90,8 +90,8 @@ cp -av $SRC/configfiles-setup_required/8*_postprocess_dns_*.conf $CONFDAVAILABLE
 cp -av $SRC/configfiles-setup_required/85*_postprocess_freq_analysis_*.conf $CONFDAVAILABLE
 README="/etc/logstash/conf.d/README.txt"
 if ! [ -f $README ]; then
-	for i in `ls $CONFDAVAILABLE/* | sed 's|/etc/logstash/conf.d/||g'`; do 
-		ln -s $CONFDAVAILABLE/$i /etc/logstash/conf.d/$i
+	for i in `ls $CONFDAVAILABLE/* | sed 's|/etc/logstash/conf.d.available/||g'`; do 
+		ln -s ../conf.d.available/$i /etc/logstash/conf.d/$i
 	done
 cat << EOF >> $README
 Please do not modify the files in this directory directly!
