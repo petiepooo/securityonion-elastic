@@ -21,17 +21,17 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 			mkdir $CUSTOM_CONF
 		fi
 		if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
-			ln -sf /etc/logstash/conf.d.available/8502_postprocess_freq_analysis_bro_dns.conf /etc/logstash/conf.d/8502_postprocess_freq_analysis_bro_dns.conf
-			ln -sf /etc/logstash/conf.d.available/8503_postprocess_freq_analysis_bro_http.conf /etc/logstash/conf.d/8503_postprocess_freq_analysis_bro_http.conf
-			ln -sf /etc/logstash/conf.d.available/8504_postprocess_freq_analysis_bro_ssl.conf /etc/logstash/conf.d/8504_postprocess_freq_analysis_bro_ssl.conf
-			ln -sf /etc/logstash/conf.d.available/8505_postprocess_freq_analysis_bro_x509.conf /etc/logstash/conf.d/8505_postprocess_freq_analysis_bro_x509.conf
+			ln -sf ../conf.d.available/8502_postprocess_freq_analysis_bro_dns.conf /etc/logstash/conf.d/8502_postprocess_freq_analysis_bro_dns.conf
+			ln -sf ../conf.d.available/8503_postprocess_freq_analysis_bro_http.conf /etc/logstash/conf.d/8503_postprocess_freq_analysis_bro_http.conf
+			ln -sf ../conf.d.available/8504_postprocess_freq_analysis_bro_ssl.conf /etc/logstash/conf.d/8504_postprocess_freq_analysis_bro_ssl.conf
+			ln -sf ../conf.d.available/8505_postprocess_freq_analysis_bro_x509.conf /etc/logstash/conf.d/8505_postprocess_freq_analysis_bro_x509.conf
                 fi
                 if [ "$FREQ_SERVER_ENABLED" = "no" ]; then
                         rm -f /etc/logstash/conf.d/*_postprocess_freq_analysis_*.conf
                 fi
                 if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
-			ln -sf /etc/logstash/conf.d.available/8007_postprocess_dns_top1m_tagging.conf /etc/logstash/conf.d/8007_postprocess_dns_top1m_tagging.conf
-			ln -sf /etc/logstash/conf.d.available/8008_postprocess_dns_whois_age.conf /etc/logstash/conf.d/8008_postprocess_dns_whois_age.conf
+			ln -sf ../conf.d.available/8007_postprocess_dns_top1m_tagging.conf /etc/logstash/conf.d/8007_postprocess_dns_top1m_tagging.conf
+			ln -sf ../conf.d.available/8008_postprocess_dns_whois_age.conf /etc/logstash/conf.d/8008_postprocess_dns_whois_age.conf
                 fi
                 if [ "$DOMAIN_STATS_ENABLED" = "no" ]; then
                         rm -f /etc/logstash/conf.d/8007_postprocess_dns_top1m_tagging.conf
