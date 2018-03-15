@@ -208,8 +208,8 @@ else
         # Set heap size to 25% of available memory
         ES_HEAP_SIZE=$(($TOTAL_MEM / 4))"m"
 fi
-sed -i "s/-Xms.*/-Xms\"$ES_HEAP_SIZE\"/" /etc/elasticsearch/jvm.options
-sed -i "s/-Xmx.*/-Xmx\"$ES_HEAP_SIZE\"/" /etc/elasticsearch/jvm.options
+sed -i "s/^-Xms.*/-Xms\"$ES_HEAP_SIZE\"/" /etc/elasticsearch/jvm.options
+sed -i "s/^-Xmx.*/-Xmx\"$ES_HEAP_SIZE\"/" /etc/elasticsearch/jvm.options
 
 # Logstash Heap Size
 # 25% of RAM up to a maximum of 4GB
@@ -219,8 +219,8 @@ else
         # Set heap size to 25% of available memory
         LS_HEAP_SIZE=$(($TOTAL_MEM / 4))"m"
 fi
-sed -i "s/-Xms.*/-Xms\"$LS_HEAP_SIZE\"/" /etc/logstash/jvm.options
-sed -i "s/-Xmx.*/-Xmx\"$LS_HEAP_SIZE\"/" /etc/logstash/jvm.options
+sed -i "s/^-Xms.*/-Xms\"$LS_HEAP_SIZE\"/" /etc/logstash/jvm.options
+sed -i "s/^-Xmx.*/-Xmx\"$LS_HEAP_SIZE\"/" /etc/logstash/jvm.options
 
 echo "Done!"
 
