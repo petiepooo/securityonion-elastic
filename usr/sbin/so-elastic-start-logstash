@@ -38,6 +38,11 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                         rm -f /etc/logstash/conf.d/8008_postprocess_dns_whois_age.conf
                 fi
 
+		# NIDS rule grep is expensive and should only be enabled if running Evaluation Mode (Bro in standalone mode)
+		if ! grep "^type=standalone$" /opt/bro/etc/node.cfg >/dev/null 2>&1; then
+			rm -f /etc/logstash/conf.d/1035_preprocess_snort_rule.conf
+		fi
+
                 if [ "$LOGSTASH_INPUT_REDIS" = "yes" ]; then
 			# this is a storage node consuming from redis
 			# need to add an input if it doesn't already exist
@@ -54,8 +59,6 @@ input {
 }
 EOF
 			fi
-			# also need to disable NIDS rule lookups as they are expensive
-			rm -f /etc/logstash/conf.d/1035_preprocess_snort_rule.conf
 		else
 			rm -f $INPUT_REDIS_CONF
 		fi
@@ -118,6 +121,7 @@ EOF
                         --volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
 			--volume /etc/logstash/beats-template.json:/beats-template.json:ro \
                         --volume $CONFD:/usr/share/logstash/pipeline/:ro \
+                        --volume /etc/logstash/conf.d.available/:/usr/share/logstash/conf.d.available/:ro \
                         --volume /etc/nsm/rules:/etc/nsm/rules:ro \
                         --volume /lib/dictionaries:/lib/dictionaries:ro \
                         --volume /nsm/import:/nsm/import:ro \
