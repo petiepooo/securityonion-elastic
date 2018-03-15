@@ -21,14 +21,17 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 			mkdir $CUSTOM_CONF
 		fi
 		if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
-                        cp -f /etc/logstash/optional/*_postprocess_freq_analysis_*.conf /etc/logstash/conf.d/
+			ln -sf /etc/logstash/conf.d.available/8502_postprocess_freq_analysis_bro_dns.conf /etc/logstash/conf.d/8502_postprocess_freq_analysis_bro_dns.conf
+			ln -sf /etc/logstash/conf.d.available/8503_postprocess_freq_analysis_bro_http.conf /etc/logstash/conf.d/8503_postprocess_freq_analysis_bro_http.conf
+			ln -sf /etc/logstash/conf.d.available/8504_postprocess_freq_analysis_bro_ssl.conf /etc/logstash/conf.d/8504_postprocess_freq_analysis_bro_ssl.conf
+			ln -sf /etc/logstash/conf.d.available/8505_postprocess_freq_analysis_bro_x509.conf /etc/logstash/conf.d/8505_postprocess_freq_analysis_bro_x509.conf
                 fi
                 if [ "$FREQ_SERVER_ENABLED" = "no" ]; then
                         rm -f /etc/logstash/conf.d/*_postprocess_freq_analysis_*.conf
                 fi
                 if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
-                        cp -f /etc/logstash/optional/8007_postprocess_dns_top1m_tagging.conf /etc/logstash/conf.d/
-                        cp -f /etc/logstash/optional/8008_postprocess_dns_whois_age.conf /etc/logstash/conf.d/
+			ln -sf /etc/logstash/conf.d.available/8007_postprocess_dns_top1m_tagging.conf /etc/logstash/conf.d/8007_postprocess_dns_top1m_tagging.conf
+			ln -sf /etc/logstash/conf.d.available/8008_postprocess_dns_whois_age.conf /etc/logstash/conf.d/8008_postprocess_dns_whois_age.conf
                 fi
                 if [ "$DOMAIN_STATS_ENABLED" = "no" ]; then
                         rm -f /etc/logstash/conf.d/8007_postprocess_dns_top1m_tagging.conf
@@ -51,6 +54,8 @@ input {
 }
 EOF
 			fi
+			# also need to disable NIDS rule lookups as they are expensive
+			rm -f /etc/logstash/conf.d/1035_preprocess_snort_rule.conf
 		else
 			rm -f $INPUT_REDIS_CONF
 		fi
@@ -64,8 +69,8 @@ EOF
 			CONFD="/etc/logstash/conf.d.redis.output/"
 			mkdir -p $CONFD
 
-			# copy syslog input
-			cp /etc/logstash/conf.d/0000_input_syslogng.conf /etc/logstash/conf.d.redis.output/
+			# create symbolic link for syslog input
+			ln -sf /etc/logstash/conf.d.available/0000_input_syslogng.conf /etc/logstash/conf.d.redis.output/0000_input_syslogng.conf
 
 			# create the redis output if it doesn't already exist
 			if ! [ -f $OUTPUT_REDIS_CONF ]; then
