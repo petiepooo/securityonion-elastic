@@ -41,6 +41,11 @@ done
 
 cp -av $SRC/etc/elasticsearch/log4j2.properties /etc/elasticsearch/log4j2.properties
 
+# jvm.options contains heap size and we don't want to overwrite that
+if [ ! -f /etc/elasticsearch/jvm.options ]; then
+	cp -av $SRC/etc/elasticsearch/jvm.options /etc/elasticsearch/jvm.options
+fi
+
 ES_YAML="/etc/elasticsearch/elasticsearch.yml"
 ES_YAML_BAK="/etc/elasticsearch/elasticsearch.yml.bak"
 if [ ! -f "$ES_YAML" ]; then
@@ -100,7 +105,14 @@ If you want to disable parts of the default logstash config, you can remove the 
 EOF
 fi
 
-cp -av $SRC/etc/logstash/* /etc/logstash/
+# jvm.options contains heap size and we don't want to overwrite that
+if [ ! -f /etc/logstash/jvm.options ]; then
+	cp -av $SRC/etc/logstash/jvm.options /etc/logstash/jvm.options
+fi
+# copy the rest of the logstash config
+cp -av $SRC/etc/logstash/beats* /etc/logstash/
+cp -av $SRC/etc/logstash/conf* /etc/logstash/
+cp -av $SRC/etc/logstash/log* /etc/logstash/
 cp -av $SRC/lib/dictionaries /lib/
 #cp -rf $SRC/grok-patterns /lib/
 echo "Done!"
@@ -208,8 +220,8 @@ else
         # Set heap size to 25% of available memory
         ES_HEAP_SIZE=$(($TOTAL_MEM / 4))"m"
 fi
-sed -i "s/^-Xms.*/-Xms\"$ES_HEAP_SIZE\"/" /etc/elasticsearch/jvm.options
-sed -i "s/^-Xmx.*/-Xmx\"$ES_HEAP_SIZE\"/" /etc/elasticsearch/jvm.options
+sed -i "s/^-Xms.*/-Xms$ES_HEAP_SIZE/" /etc/elasticsearch/jvm.options
+sed -i "s/^-Xmx.*/-Xmx$ES_HEAP_SIZE/" /etc/elasticsearch/jvm.options
 
 # Logstash Heap Size
 # 25% of RAM up to a maximum of 4GB
@@ -219,8 +231,8 @@ else
         # Set heap size to 25% of available memory
         LS_HEAP_SIZE=$(($TOTAL_MEM / 4))"m"
 fi
-sed -i "s/^-Xms.*/-Xms\"$LS_HEAP_SIZE\"/" /etc/logstash/jvm.options
-sed -i "s/^-Xmx.*/-Xmx\"$LS_HEAP_SIZE\"/" /etc/logstash/jvm.options
+sed -i "s/^-Xms.*/-Xms$LS_HEAP_SIZE/" /etc/logstash/jvm.options
+sed -i "s/^-Xmx.*/-Xmx$LS_HEAP_SIZE/" /etc/logstash/jvm.options
 
 echo "Done!"
 
