@@ -4,26 +4,28 @@
 
 . /etc/nsm/securityonion.conf
 
-[ "$LOGSTASH_OUTPUT_REDIS" = "yes" ] && pgrep redis-server >/dev/null 2>&1 && service redis-server stop
+/usr/sbin/so-redis-stop
 
 if docker ps | grep -q so- ; then
 	echo
 	echo "Stopping containers:"
 	echo
-	[ "$LOGSTASH_ENABLED" = "yes" ] && docker ps | grep -q so-logstash && docker stop so-logstash 
-	[ "$KIBANA_ENABLED" = "yes" ] && docker ps | grep -q so-kibana && docker stop so-kibana
-	[ "$ELASTICSEARCH_ENABLED" = "yes" ] && docker ps | grep -q so-elasticsearch && docker stop so-elasticsearch
-	[ "$ELASTALERT_ENABLED" = "yes" ] && docker ps | grep -q so-elastalert && docker stop so-elastalert
-	[ "$CURATOR_ENABLED" = "yes" ] && docker ps | grep -q so-curator && docker stop so-curator
-	[ "$FREQ_SERVER_ENABLED" = "yes" ] && docker ps | grep -q so-freqserver && docker stop so-freqserver
-	[ "$DOMAIN_STATS_ENABLED" = "yes" ] && docker ps | grep -q so-domainstats && docker stop so-domainstats
-	echo
-	echo "Removing containers:"
-	echo
+
+	/usr/sbin/so-logstash-stop
+
+	/usr/sbin/so-kibana-stop
+
+	/usr/sbin/so-elasticsearch-stop
+
+	/usr/sbin/so-elastalert-stop
+
+	/usr/sbin/so-curator-stop
+
+	/usr/sbin/so-freqserver-stop
+
+	/usr/sbin/so-domainstats-stop
 else
 	echo
 	echo "Containers already stopped!"
 	echo
 fi
-
-/usr/sbin/so-elastic-remove

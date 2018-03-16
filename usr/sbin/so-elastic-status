@@ -34,7 +34,7 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 		if [ "$QUEUE_TYPE" == "memory" ] || [ "$QUEUE_TYPE" == "persisted" ]; then	
 			ok
 		else
-			echo " -- Logstash has started, but is still initializing...$(warn)"
+			echo -n " -- Logstash has started, but is still initializing...$(warn)"
 		fi
 	else
 		fail

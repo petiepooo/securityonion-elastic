@@ -19,24 +19,24 @@ echo "Starting containers:"
 echo
 
 # Start so-freqserver
-. /usr/sbin/so-elastic-start-freqserver
+. /usr/sbin/so-freqserver-start
 
 # Start so-domainstats
-. /usr/sbin/so-elastic-start-domainstats
+. /usr/sbin/so-domainstats-start
 
 # Start so-elasticsearch
-. /usr/sbin/so-elastic-start-elasticsearch
+. /usr/sbin/so-elasticsearch-start
 
 # Start so-logstash
-. /usr/sbin/so-elastic-start-logstash
+. /usr/sbin/so-logstash-start
 
 # Start so-kibana
-. /usr/sbin/so-elastic-start-kibana
+. /usr/sbin/so-kibana-start
 
 # Start so-elastalert
-. /usr/sbin/so-elastic-start-elastalert
+. /usr/sbin/so-elastalert-start
 
 # Start so-curator
-. /usr/sbin/so-elastic-start-curator
+. /usr/sbin/so-curator-start
 
 echo
