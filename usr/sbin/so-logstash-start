@@ -73,7 +73,7 @@ EOF
 			mkdir -p $CONFD
 
 			# create symbolic link for syslog input
-			ln -sf /etc/logstash/conf.d.available/0000_input_syslogng.conf /etc/logstash/conf.d.redis.output/0000_input_syslogng.conf
+			ln -sf ../conf.d.available/0000_input_syslogng.conf /etc/logstash/conf.d.redis.output/0000_input_syslogng.conf
 
 			# create the redis output if it doesn't already exist
 			if ! [ -f $OUTPUT_REDIS_CONF ]; then
