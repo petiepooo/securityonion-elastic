@@ -9,6 +9,7 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
                 echo -n "so-kibana: "
                 echo "Already started!"
         else
+		docker rm so-kibana >/dev/null 2>&1
                 source /etc/nsm/securityonion.conf
                 # Wait for ElasticSearch to come up, so that we can query for version infromation
                 echo -n "Waiting for ElasticSearch..."

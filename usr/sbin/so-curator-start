@@ -9,6 +9,7 @@ if [ "$CURATOR_ENABLED" = "yes" ]; then
         if docker ps | grep -q so-curator; then
                 echo "Already started!"
         else
+		docker rm so-curator >/dev/null 2>&1
 		# No published ports
                 docker run --name=so-curator \
                         --detach \
