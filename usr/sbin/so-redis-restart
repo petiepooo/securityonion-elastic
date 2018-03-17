@@ -19,6 +19,6 @@
 
 . /etc/nsm/securityonion.conf
 
-if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ] && pgrep redis-server >/dev/null 2>&1; then
+if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ] ; then
 	service redis-server restart
 fi

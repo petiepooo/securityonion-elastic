@@ -1,4 +1,19 @@
 #!/bin/bash
+#
+# Copyright 2014,2015,2016,2017,2018 Security Onion Solutions, LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 . /usr/sbin/so-elastic-common
 
@@ -22,12 +37,6 @@ done
 . /usr/sbin/so-elastic-configure-ossec-rules
 
 cd $ELASTICDIR
-
-# Configure Kibana
-# so-elastic-start should have already run so-elastic-configure-kibana
-# to load Kibana config and dashboards.
-# However, it appears the config isn't loading properly, so let's run it again.
-#. /usr/sbin/so-elastic-configure-kibana-config
 
 . /usr/sbin/so-elastic-configure-curator
 
