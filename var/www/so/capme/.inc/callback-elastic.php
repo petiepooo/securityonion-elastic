@@ -70,9 +70,13 @@ function cliscript($cmd, $pwd) {
 // Gets the appropriate Bro Conn record from ES and returns a JSON object
 function elastic_command($elastic_host, $elastic_port, $type, $bro_query, $st_es, $et_es) {
 
-$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'
+$ch = curl_init();
+$method = "GET";
+$url = "$elastic_host/*:logstash-*/_search?";
+$headers = ['Content-Type: application/json'];
 
-{
+$query = 
+"{
   \"query\": {
     \"bool\": {
       \"must\": [
@@ -94,10 +98,16 @@ $elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-
       ]
     }
   }
-}' 2>/dev/null";
+}";
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_PORT, $elastic_port);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
+curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-// TODO: have PHP query ES directly without shell_exec and curl
-$elastic_response = shell_exec($elastic_command);
+$elastic_response = curl_exec($ch);
+curl_close($ch);
 
 // Try to decode the response as JSON.
 $elastic_response_object = json_decode($elastic_response, true);
@@ -159,7 +169,6 @@ if ($sidsrc == "elastic") {
 	*/
 
 	// Submit the ES query
-	// TODO: have PHP query ES directly without shell_exec and curl
 	
 	// Determine Elastic hostname and port
 
@@ -185,8 +194,22 @@ if ($sidsrc == "elastic") {
 		}
 	}
 
-	$elastic_command = "/usr/bin/curl -XGET '$elastic_host:$elastic_port/*:logstash-*/_search?' -H 'Content-Type: application/json' -d'{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\"}}}}' 2>/dev/null";
-	$elastic_response = shell_exec($elastic_command);
+	$ch = curl_init();
+	$method = "GET";
+	$url = "$elastic_host/*:logstash-*/_search?";
+	$headers = ['Content-Type: application/json'];
+
+	$query = "{\"query\": {\"match\": {\"_id\": {\"query\": \"$esid\"}}}}";
+
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_PORT, $elastic_port);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+	$elastic_response = curl_exec($ch);
+	curl_close($ch);
 
 	// Try to decode the response as JSON.
 	$elastic_response_object = json_decode($elastic_response, true);
@@ -231,6 +254,22 @@ if ($sidsrc == "elastic") {
                                 }
                         }
 		}
+
+		// If this is a NIDS alert, try to find the rule that generated the alert
+                if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["sid"]) ) {
+			$rule_sid = $elastic_response_object["hits"]["hits"][0]["_source"]["sid"];
+			if ( $rule_sid > 0 && $rule_sid < 9999999) {
+				$rule_command = "grep -h sid:$rule_sid\; /etc/nsm/rules/*.rules |head -1";
+				$rule = shell_exec($rule_command);
+			}
+		}
+
+		// $es_doc is the actual elasticsearch document and it contains all fields relating to the message
+		// might revisit this later and pull out more fields
+		$es_doc = $elastic_response_object["hits"]["hits"][0]["_source"];
+		// $message is the syslog message field (Bro log, NIDS alert, etc.)
+		$message = $es_doc["message"];
+
 		// If it wasn't a Bro log with CID, then let's manually parse out
 		// source_ip, source_port, destination_ip, and destination_port
 		if ( $bro_query == "" ) {
@@ -464,7 +503,15 @@ if ($err == 1) {
     // The original cliscript.tcl assumes TCP (proto 6).
     $script = "cliscript.tcl";
     $proto=6;
-    $cmd = "../.scripts/$script \"$usr\" \"$sensor\" \"$st\" $sid $sip $dip $spt $dpt";
+    $cmdusr 	= escapeshellarg($usr);
+    $cmdsensor 	= escapeshellarg($sensor);
+    $cmdst	= escapeshellarg($st);
+    $cmdsid 	= escapeshellarg($sid);
+    $cmdsip 	= escapeshellarg($sip);
+    $cmddip 	= escapeshellarg($dip);
+    $cmdspt 	= escapeshellarg($spt);
+    $cmddpt 	= escapeshellarg($dpt);
+    $cmd = "../.scripts/$script $cmdusr $cmdsensor $cmdst $cmdsid $cmdsip $cmddip $cmdspt $cmddpt";
 
     // If the request came from Elastic, check to see if the event is UDP.
     if ($elastic_response_object["hits"]["hits"][$key]["_source"]["protocol"] == "udp") {
@@ -474,7 +521,8 @@ if ($err == 1) {
     // If the traffic is UDP or the user chose the Bro transcript, change to cliscriptbro.tcl.
     if ($xscript == "bro" || $proto == "17" ) {
 	$script = "cliscriptbro.tcl";
-	$cmd = "../.scripts/$script \"$usr\" \"$sensor\" \"$st\" $sid $sip $dip $spt $dpt $proto";
+    	$cmdproto 	= escapeshellarg($proto);
+	$cmd = "../.scripts/$script $cmdusr $cmdsensor $cmdst $cmdsid $cmdsip $cmddip $cmdspt $cmddpt $cmdproto";
     }
 
     // Request the transcript.
@@ -499,9 +547,23 @@ if ($err == 1) {
     }
     $time3 = microtime(true);
 
+    # Insert message so user can see the full message of the log they pivoted from
+    $fmtd .= "<span class=txtext_hdr>Log entry:</span>";
+    $fmtd .= "<span class=txtext_hdr>" . htmlspecialchars($message) . "</span>";
+
+    # If NIDS alert, show rule that generated the alert
+    if (isset($rule) && isset($rule_sid)) {
+	$fmtd .= "<span class=txtext_hdr><br></span>";
+	$fmtd .= "<span class=txtext_hdr>IDS rule:</span>";
+	$fmtd .= "<span class=txtext_hdr>" . htmlspecialchars($rule) . "</span>";
+    }
+
+    $fmtd .= "<span class=txtext_hdr><br></span>";
+
     // If we found gzip encoding, then switch to Bro transcript.
     if ($foundgzip==1) {
-        $cmd = "../.scripts/cliscriptbro.tcl \"$usr\" \"$sensor\" \"$st\" $sid $sip $dip $spt $dpt $proto";
+    	$cmdproto 	= escapeshellarg($proto);
+        $cmd = "../.scripts/cliscriptbro.tcl $cmdusr $cmdsensor $cmdst $cmdsid $cmdsip $cmddip $cmdspt $cmddpt $cmdproto";
 	$fmtd .= "<span class=txtext_hdr>CAPME: <b>Detected gzip encoding.</b></span>";
 	$fmtd .= "<span class=txtext_hdr>CAPME: <b>Automatically switched to Bro transcript.</b></span>";
     }
@@ -538,6 +600,7 @@ if ($err == 1) {
 		}
         }
     }
+
 
     // Default to sending transcript.
     $mytx = $fmtd;
