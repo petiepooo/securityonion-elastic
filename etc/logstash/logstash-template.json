@@ -1,5 +1,5 @@
 {  
-  "index_patterns": ["logstash-*", "-*beats*"],
+  "index_patterns": ["logstash-ids-*", "logstash-firewall-*", "logstash-syslog-*", "logstash-bro-*"],
   "version":50001,
   "order" : 0,
   "settings":{  
@@ -9,6 +9,7 @@
   },
   "mappings":{  
     "doc":{  
+       "dynamic": false,
        "date_detection": false,
        "properties":{  
         "@timestamp":{  
@@ -75,6 +76,14 @@
           "type":"text",
           "fields":{  
             "keyword":{  
+              "type":"keyword"
+            }
+          }
+        },
+        "ack":{
+          "type":"text",
+          "fields":{
+            "keyword":{
               "type":"keyword"
             }
           }
@@ -170,6 +179,14 @@
             }
           }
         },
+        "basic_constraints":{
+          "type":"object",
+          "properties":{
+            "path_len": {
+              "type": "text"
+            }
+          }
+        },
         "basic_constraints_ca":{  
           "type":"text",
           "fields":{  
@@ -208,7 +225,10 @@
             }
           }
         },
-        "certificate_chain_fuids":{  
+        "certificate_chain_count":{
+          "type":"long"
+        },
+	"certificate_chain_fuids":{  
           "type":"text",
           "fields":{  
             "keyword":{  
@@ -229,6 +249,17 @@
         },
         "certificate_common_name_length":{  
           "type":"long"
+        },
+        "certificate_count":{
+          "type":"long"
+        },
+        "certificate_country_code":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
         },
         "certificate_curve":{  
           "type":"text",
@@ -987,6 +1018,14 @@
             }
           }
         },
+        "extracted_cutoff":{
+         "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "facility":{  
           "type":"text",
           "fields":{  
@@ -1066,6 +1105,14 @@
           "type":"text",
           "fields":{  
             "keyword":{  
+              "type":"keyword"
+            }
+          }
+        },
+        "framed_addr":{
+          "type":"text",
+          "fields":{
+            "keyword":{
               "type":"keyword"
             }
           }
@@ -1158,6 +1205,14 @@
           "type":"text",
           "fields":{  
             "keyword":{  
+              "type":"keyword"
+            }
+          }
+        },
+        "get_responses":{
+          "type":"text",
+          "fields":{
+            "keyword":{
               "type":"keyword"
             }
           }
@@ -1353,6 +1408,14 @@
         "ip_version":{  
           "type":"long"
         },
+        "ipv4_ecn":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "ips":{  
           "type":"text",
           "fields":{  
@@ -1423,6 +1486,14 @@
             }
           }
         },
+        "irc_username":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "is_64bit":{  
           "type":"text",
           "fields":{  
@@ -1476,6 +1547,14 @@
         },
         "issuer_common_name_length":{  
           "type":"long"
+        },
+        "issuer_country_code":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
         },
         "issuer_distinguished_name":{  
           "type":"text",
@@ -1866,6 +1945,14 @@
             }
           }
         },
+        "options":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "orig_filenames":{  
           "type":"text",
           "fields":{  
@@ -2241,6 +2328,14 @@
         "remote_ip":{  
           "type":"ip"
         },
+        "remote_location":{
+          "type":"object",
+          "properties":{
+            "country_code": {
+              "type": "text"
+            }   
+          }
+        },
         "renewable":{  
           "type":"text",
           "fields":{  
@@ -2364,6 +2459,14 @@
         },
         "respond_bytes":{  
           "type":"long"
+        },
+        "respond_country_code":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
         },
         "respond_ip_bytes":{  
           "type":"long"
@@ -2542,6 +2645,9 @@
               "type":"keyword"
             }
           }
+        },
+        "sequence_number":{
+          "type":"long"
         },
         "server":{  
           "type":"text",
@@ -2972,6 +3078,14 @@
             }
           }
         },
+        "tcp_flags":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "terminal_id":{  
           "type":"text",
           "fields":{  
@@ -2988,7 +3102,8 @@
             }
           }
         },
-        "timed_out":{  
+      
+	"timed_out":{  
           "type":"text",
           "fields":{  
             "keyword":{  
@@ -3140,6 +3255,14 @@
           "type":"text",
           "fields":{  
             "keyword":{  
+              "type":"keyword"
+            }
+          }
+        },
+        "urg":{
+          "type":"text",
+          "fields":{
+            "keyword":{
               "type":"keyword"
             }
           }
@@ -3304,6 +3427,14 @@
           "type":"text",
           "fields":{  
             "keyword":{  
+              "type":"keyword"
+            }
+          }
+        },
+        "window":{
+          "type":"text",
+          "fields":{
+            "keyword":{
               "type":"keyword"
             }
           }
