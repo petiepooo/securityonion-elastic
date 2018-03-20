@@ -48,9 +48,7 @@ for i in /etc/elasticsearch/ /nsm/elasticsearch /var/log/elasticsearch; do
 	[ ! -d $i ] && mkdir -p $i
 done
 
-touch /etc/nsm/crossclustertab
-
-for i in /nsm/elasticsearch /var/log/elasticsearch /etc/nsm/crossclustertab; do
+for i in /nsm/elasticsearch /var/log/elasticsearch; do
 	chown -R elasticsearch:elasticsearch $i
 done
 

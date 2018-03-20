@@ -1,7 +1,0 @@
-#/etc/cron.d/crossclustercheck
-#
-#crontab entry to check cross cluster nodes
-
-SHELL=/bin/sh
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-* * * * * elasticsearch /usr/sbin/so-crossclustercheck > /dev/null 2>&1

@@ -1069,7 +1069,6 @@ function CONFIGURE_SERVICES() {
 rm -f /tmp/GeoIP.dat
 rm -f /tmp/GeoLiteCity.dat
 rm -f /tmp/GeoLiteCity.dat.gz
-rm -f /etc/nsm/crossclustertab
 [ -f /opt/bro/etc/node.cfg ] && rm -f /opt/bro/etc/node.cfg
 
 #########################################
@@ -1985,7 +1984,7 @@ EOF
 			echo "DOCKER_NETWORK is $DOCKER_NETWORK" >> $LOG 2>&1
 
 			# REVERSE_PORT
-			SSH_CMD="cat /etc/nsm/crossclustertab | cut -d: -f2 | grep '^5' | sort | tail -1"
+			SSH_CMD="sudo /usr/sbin/so-crossclustercheck | jq '.' | grep ":5" | cut -d: -f2 | cut -d\" -f1 | sort | tail -1"
 			HIGHEST_REVERSE_PORT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 			if [ "$HIGHEST_REVERSE_PORT" = "" ]; then
 				echo "Found no other nodes." >> $LOG 2>&1
@@ -2028,7 +2027,7 @@ service ssh restart
 fi
 ufw allow proto tcp from $DOCKER_NETWORK to $DOCKER_INTERFACE port $REVERSE_PORT
 source /etc/nsm/securityonion.conf
-curl -XPUT http://\$ELASTICSEARCH_HOST:\$ELASTICSEARCH_PORT/_cluster/settings -H'Content-Type: application/json' -d '{"persistent": {"search": {"remote": {"$HOSTNAME": {"seeds": ["$DOCKER_INTERFACE:$REVERSE_PORT"]}}}}}'
+curl -XPUT http://\$ELASTICSEARCH_HOST:\$ELASTICSEARCH_PORT/_cluster/settings -H'Content-Type: application/json' -d '{"persistent": {"search": {"remote": {"$HOSTNAME": {"skip_unavailable": "true", "seeds": ["$DOCKER_INTERFACE:$REVERSE_PORT"]}}}}}'
 EOF
 		fi
 
