@@ -1984,7 +1984,7 @@ EOF
 			echo "DOCKER_NETWORK is $DOCKER_NETWORK" >> $LOG 2>&1
 
 			# REVERSE_PORT
-			SSH_CMD="sudo /usr/sbin/so-crossclustercheck | jq '.' | grep ":5" | cut -d: -f2 | cut -d\" -f1 | sort | tail -1"
+			SSH_CMD='sudo /usr/sbin/so-crossclustercheck | jq "." | grep ":5" | cut -d: -f2 | cut -d\" -f1 | sort | tail -1'
 			HIGHEST_REVERSE_PORT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
 			if [ "$HIGHEST_REVERSE_PORT" = "" ]; then
 				echo "Found no other nodes." >> $LOG 2>&1
