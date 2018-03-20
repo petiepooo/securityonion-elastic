@@ -21,7 +21,7 @@
 
 CUSTOM_CONF="/etc/logstash/custom"
 INPUT_REDIS_CONF="/etc/logstash/conf.d/0900_input_redis.conf"
-OUTPUT_REDIS_CONF="/etc/logstash/conf.d.redis.output/9900_output_redis.conf"
+OUTPUT_REDIS_CONF="/etc/logstash/conf.d.redis.output/9999_output_redis.conf"
 CONFD="/etc/logstash/conf.d"
 
 if [ "$LOGSTASH_ENABLED" = "yes" ]; then
