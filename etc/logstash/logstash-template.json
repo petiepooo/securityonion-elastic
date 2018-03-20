@@ -1,5 +1,5 @@
 {  
-  "index_patterns": ["logstash-ids-*", "logstash-firewall-*", "logstash-syslog-*", "logstash-bro-*"],
+  "index_patterns": ["logstash-ids-*", "logstash-firewall-*", "logstash-syslog-*", "logstash-bro-*", "logstash-import-*"],
   "version":50001,
   "order" : 0,
   "settings":{  
