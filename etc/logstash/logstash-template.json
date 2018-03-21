@@ -3201,7 +3201,7 @@
           "type":"long"
         },
         "ttls":{  
-          "type":"long"
+          "type":"text"
         },
         "tty":{  
           "type":"text",
