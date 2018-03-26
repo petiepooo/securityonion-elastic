@@ -229,6 +229,11 @@ if ($sidsrc == "elastic") {
 		// Let's first check to see if it's a Bro log that has a CID in the uid field.
 		if (isset($elastic_response_object["hits"]["hits"][0]["_source"]["uid"]) ) {
 			$uid = $elastic_response_object["hits"]["hits"][0]["_source"]["uid"];
+			// Some bro_files logs are coming back with uid as an array
+			// If that's the case here, then grab the first element in that array
+			if (is_array($uid)) {
+				$uid = $elastic_response_object["hits"]["hits"][0]["_source"]["uid"][0];
+			}
 			// A Bro CID should be alphanumeric and begin with the letter C
 			if (ctype_alnum($uid)) {
 				if (substr($uid,0,1)=="C") {
