@@ -25,7 +25,7 @@ SRC="$ELASTICDIR/src"
 DOCKERHUB="securityonionsolutions"
 
 ELASTICDOWNLOADCONF="/etc/nsm/elasticdownload.conf"
-if ! grep "# Elastic Download" $ELASTICDOWNLOADCONF >/dev/null 2>&1; then
+if ! grep "DOCKERHUB" $ELASTICDOWNLOADCONF >/dev/null 2>&1; then
 cat << EOF >> $ELASTICDOWNLOADCONF
 # Our docker images are hosted on Docker Hub:
 # https://hub.docker.com/u/securityonionsolutions/
