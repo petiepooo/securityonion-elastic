@@ -152,11 +152,25 @@ EOF
 fi
 
 # copy the rest of the logstash config
-cp -av $SRC/etc/logstash/beats* /etc/logstash/
-cp -av $SRC/etc/logstash/conf* /etc/logstash/
-cp -av $SRC/etc/logstash/log* /etc/logstash/
 cp -av $SRC/lib/dictionaries /lib/
 #cp -rf $SRC/grok-patterns /lib/
+cp -av $SRC/etc/logstash/beats* /etc/logstash/
+cp -av $SRC/etc/logstash/conf* /etc/logstash/
+# /etc/logstash/logstash-template.json contains number_of_shards which may have been customized by user, so let's create a backup copy before overwriting
+LS_TMPL="/etc/logstash/logstash-template.json"
+LS_TMPL_BAK="/etc/logstash/logstash-template.json.bak"
+if [ -f "$LS_TMPL" ]; then
+	# If template exists, back it up
+	cp -av $LS_TMPL $LS_TMPL_BAK
+fi
+# write the new logstash-template.json
+cp -av $SRC/etc/logstash/log* /etc/logstash/
+# now that we've written the new logstash-template.json, update it with number_of_shards value if necessary
+if [ -f "$LS_TMPL_BAK" ]; then
+	# If backup exists, migrate number_of_shards to new file
+	SHARDS=$(grep "number_of_shards" $LS_TMPL_BAK | tail -1)
+	sed -i "s|^.*number_of_shards.*$|$SHARDS|g" $LS_TMPL
+fi
 echo "Done!"
 
 header "Configuring Kibana"
