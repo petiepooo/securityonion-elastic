@@ -54,11 +54,6 @@ done
 
 cp -av $SRC/etc/elasticsearch/log4j2.properties /etc/elasticsearch/log4j2.properties
 
-# jvm.options contains heap size and we don't want to overwrite that
-if [ ! -f /etc/elasticsearch/jvm.options ]; then
-	cp -av $SRC/etc/elasticsearch/jvm.options /etc/elasticsearch/jvm.options
-fi
-
 ES_YAML="/etc/elasticsearch/elasticsearch.yml"
 ES_YAML_BAK="/etc/elasticsearch/elasticsearch.yml.bak"
 if [ ! -f "$ES_YAML" ]; then
@@ -87,6 +82,29 @@ else
         grep "cluster.routing.allocation.disk" $ES_YAML_BAK >> $ES_YAML
 fi
 
+# Get total installed memory
+TOTAL_MEM=`grep MemTotal /proc/meminfo | awk '{print $2}' | sed -r 's/.{3}$//'`
+
+# Elasticsearch jvm.options contains heap size and we don't want to overwrite that
+if [ ! -f /etc/elasticsearch/jvm.options ]; then
+	cp -av $SRC/etc/elasticsearch/jvm.options /etc/elasticsearch/jvm.options
+
+	# Elasticsearch Heap Size
+	# 25% of RAM up to a maximum of 25GB
+	if [ $TOTAL_MEM -ge 100000 ]; then
+        	# Set a max of 25GB for heap size
+	        # https://www.elastic.co/guide/en/elasticsearch/guide/current/heap-sizing.html
+		# https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html
+		# "try to stay below the threshold for zero-based compressed oops; the exact cutoff varies but 26 GB is safe on most systems"
+        	ES_HEAP_SIZE="25000m"
+	else
+        	# Set heap size to 25% of available memory
+	        ES_HEAP_SIZE=$(($TOTAL_MEM / 4))"m"
+	fi
+	sed -i "s/^-Xms.*/-Xms$ES_HEAP_SIZE/" /etc/elasticsearch/jvm.options
+	sed -i "s/^-Xmx.*/-Xmx$ES_HEAP_SIZE/" /etc/elasticsearch/jvm.options
+fi
+
 echo "Done!"
 
 header "Configuring Logstash"
@@ -96,6 +114,21 @@ done
 for i in /nsm/logstash /var/log/logstash; do
 	chown -R logstash:logstash $i
 done
+
+# Logstash jvm.options contains heap size and we don't want to overwrite that
+if [ ! -f /etc/logstash/jvm.options ]; then
+	cp -av $SRC/etc/logstash/jvm.options /etc/logstash/jvm.options
+	# Logstash Heap Size
+	# 25% of RAM up to a maximum of 4GB
+	if [ $TOTAL_MEM -ge 16000 ]; then
+        	LS_HEAP_SIZE="4000m"
+	else
+        	# Set heap size to 25% of available memory
+	        LS_HEAP_SIZE=$(($TOTAL_MEM / 4))"m"
+	fi
+	sed -i "s/^-Xms.*/-Xms$LS_HEAP_SIZE/" /etc/logstash/jvm.options
+	sed -i "s/^-Xmx.*/-Xmx$LS_HEAP_SIZE/" /etc/logstash/jvm.options
+fi
 
 CONFDAVAILABLE="/etc/logstash/conf.d.available/"
 cp -av $SRC/configfiles/*.conf $CONFDAVAILABLE
@@ -118,10 +151,6 @@ If you want to disable parts of the default logstash config, you can remove the 
 EOF
 fi
 
-# jvm.options contains heap size and we don't want to overwrite that
-if [ ! -f /etc/logstash/jvm.options ]; then
-	cp -av $SRC/etc/logstash/jvm.options /etc/logstash/jvm.options
-fi
 # copy the rest of the logstash config
 cp -av $SRC/etc/logstash/beats* /etc/logstash/
 cp -av $SRC/etc/logstash/conf* /etc/logstash/
@@ -217,35 +246,6 @@ if pgrep sosetup > /dev/null; then
 		done
 	fi
 fi
-
-# Get total installed memory
-TOTAL_MEM=`grep MemTotal /proc/meminfo | awk '{print $2}' | sed -r 's/.{3}$//'`
-
-# Elasticsearch Heap Size
-# 25% of RAM up to a maximum of 25GB
-if [ $TOTAL_MEM -ge 100000 ]; then
-        # Set a max of 25GB for heap size
-        # https://www.elastic.co/guide/en/elasticsearch/guide/current/heap-sizing.html
-	# https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html
-	# "try to stay below the threshold for zero-based compressed oops; the exact cutoff varies but 26 GB is safe on most systems"
-        ES_HEAP_SIZE="25000m"
-else
-        # Set heap size to 25% of available memory
-        ES_HEAP_SIZE=$(($TOTAL_MEM / 4))"m"
-fi
-sed -i "s/^-Xms.*/-Xms$ES_HEAP_SIZE/" /etc/elasticsearch/jvm.options
-sed -i "s/^-Xmx.*/-Xmx$ES_HEAP_SIZE/" /etc/elasticsearch/jvm.options
-
-# Logstash Heap Size
-# 25% of RAM up to a maximum of 4GB
-if [ $TOTAL_MEM -ge 16000 ]; then
-        LS_HEAP_SIZE="4000m"
-else
-        # Set heap size to 25% of available memory
-        LS_HEAP_SIZE=$(($TOTAL_MEM / 4))"m"
-fi
-sed -i "s/^-Xms.*/-Xms$LS_HEAP_SIZE/" /etc/logstash/jvm.options
-sed -i "s/^-Xmx.*/-Xmx$LS_HEAP_SIZE/" /etc/logstash/jvm.options
 
 echo "Done!"
 
