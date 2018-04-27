@@ -1,0 +1,11 @@
+{
+  "version": "6.2.4",
+  "objects": [
+    {
+      "id": "old",
+      "type": "dashboard",
+      "updated_at": "2018-04-26T16:18:02.504Z",
+      "version": 1
+    }
+  ]
+}
