@@ -264,8 +264,8 @@
     {
       "id": "9ef20ae0-3583-11e7-a588-05992195c551",
       "type": "dashboard",
-      "updated_at": "2018-04-26T16:18:01.675Z",
-      "version": 3,
+      "updated_at": "2018-04-30T13:08:55.645Z",
+      "version": 4,
       "attributes": {
         "title": "Bro - RFB",
         "hits": 0,

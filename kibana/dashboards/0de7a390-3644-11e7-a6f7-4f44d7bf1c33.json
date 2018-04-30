@@ -35,87 +35,19 @@
       }
     },
     {
-      "id": "2ce56d00-398b-11e7-84f8-a1f7cef50fcb",
-      "type": "visualization",
-      "updated_at": "2018-04-26T17:58:27.318Z",
-      "version": 9,
-      "attributes": {
-        "title": "OSSEC Alerts - Event Type (Pie Chart)",
-        "visState": "{\"title\":\"OSSEC Alerts - Event Type (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":false,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"description.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Alert\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"syslog-host_from.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Host\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"username.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"User\"}}]}",
-        "uiStateJSON": "{}",
-        "description": "",
-        "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
-        "version": 1,
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
-        }
-      }
-    },
-    {
       "id": "69d98570-398b-11e7-84f8-a1f7cef50fcb",
       "type": "visualization",
-      "updated_at": "2018-04-26T17:54:37.809Z",
-      "version": 4,
+      "updated_at": "2018-04-30T15:10:00.136Z",
+      "version": 7,
       "attributes": {
         "title": "OSSEC Alerts - Alert Level (Pie Chart)",
         "visState": "{\"title\":\"OSSEC Alerts - Alert Level (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"alert_level.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Alert Level\"}}]}",
-        "uiStateJSON": "{}",
+        "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
         "description": "",
         "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
         "version": 1,
         "kibanaSavedObjectMeta": {
           "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
-        }
-      }
-    },
-    {
-      "id": "d4e00ce0-398b-11e7-84f8-a1f7cef50fcb",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:01.499Z",
-      "version": 3,
-      "attributes": {
-        "visState": "{\"title\":\"OSSEC Alerts - Command\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"command.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "OSSEC Alerts - Command",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      }
-    },
-    {
-      "id": "25046860-398c-11e7-84f8-a1f7cef50fcb",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:01.499Z",
-      "version": 3,
-      "attributes": {
-        "visState": "{\"title\":\"OSSEC Alerts - Process and PID\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":false},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"process.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Process\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"pid.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"PID\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "OSSEC Alerts - Process and PID",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      }
-    },
-    {
-      "id": "e02efd30-398c-11e7-84f8-a1f7cef50fcb",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:01.499Z",
-      "version": 3,
-      "attributes": {
-        "visState": "{\n  \"title\": \"OSSEC Alerts - User to Escalated User\",\n  \"type\": \"pie\",\n  \"params\": {\n    \"addTooltip\": true,\n    \"addLegend\": true,\n    \"legendPosition\": \"right\",\n    \"isDonut\": false\n  },\n  \"aggs\": [\n    {\n      \"id\": \"1\",\n      \"enabled\": true,\n      \"type\": \"count\",\n      \"schema\": \"metric\",\n      \"params\": {}\n    },\n    {\n      \"id\": \"2\",\n      \"enabled\": true,\n      \"type\": \"terms\",\n      \"schema\": \"segment\",\n      \"params\": {\n        \"field\": \"username.keyword\",\n        \"size\": 5,\n        \"order\": \"desc\",\n        \"orderBy\": \"1\",\n        \"customLabel\": \"User\"\n      }\n    },\n    {\n      \"id\": \"3\",\n      \"enabled\": true,\n      \"type\": \"terms\",\n      \"schema\": \"segment\",\n      \"params\": {\n        \"field\": \"escalated_user.keyword\",\n        \"size\": 5,\n        \"order\": \"desc\",\n        \"orderBy\": \"1\",\n        \"customLabel\": \"Escalated User\"\n      }\n    }\n  ],\n  \"listeners\": {}\n}",
-        "description": "",
-        "title": "OSSEC Alerts - User to Escalated User",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\n  \"filter\": []\n}"
         }
       }
     },
@@ -161,6 +93,74 @@
       }
     },
     {
+      "id": "ee0ba080-4a3d-11e8-9b0a-f1d33346f773",
+      "type": "visualization",
+      "updated_at": "2018-04-27T17:10:48.200Z",
+      "version": 1,
+      "attributes": {
+        "title": "OSSEC Alerts - Event Summary",
+        "visState": "{\"title\":\"OSSEC Alerts - Event Summary\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"description.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Description\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"syslog-host_from.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Host\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"username.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Username\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+      }
+    },
+    {
+      "id": "1de31b40-4a42-11e8-9b0a-f1d33346f773",
+      "type": "visualization",
+      "updated_at": "2018-04-27T17:40:46.452Z",
+      "version": 1,
+      "attributes": {
+        "title": "OSSEC Alerts - User to Escalated User (Data Table)",
+        "visState": "{\"title\":\"OSSEC Alerts - User to Escalated User (Data Table)\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"username.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"User\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"escalated_user.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Escalated User\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+      }
+    },
+    {
+      "id": "9ff34f60-4a42-11e8-9b0a-f1d33346f773",
+      "type": "visualization",
+      "updated_at": "2018-04-27T17:45:45.451Z",
+      "version": 2,
+      "attributes": {
+        "title": "OSSEC Alerts - Command (Data Table)",
+        "visState": "{\"title\":\"OSSEC Alerts - Command (Data Table)\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"command.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Command\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"username.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Username\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+      }
+    },
+    {
+      "id": "447bd2f0-4a43-11e8-9b0a-f1d33346f773",
+      "type": "visualization",
+      "updated_at": "2018-04-27T17:49:00.703Z",
+      "version": 1,
+      "attributes": {
+        "title": "OSSEC Alerts - Process and PID (Data Table)",
+        "visState": "{\"title\":\"OSSEC Alerts - Process and PID (Data Table)\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"process.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Process\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"pid.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"PID\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"username.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Username\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+      }
+    },
+    {
       "id": "*:logstash-*",
       "type": "index-pattern",
       "updated_at": "2018-04-26T16:18:02.704Z",
@@ -176,19 +176,18 @@
     {
       "id": "0de7a390-3644-11e7-a6f7-4f44d7bf1c33",
       "type": "dashboard",
-      "updated_at": "2018-04-26T16:18:01.499Z",
-      "version": 3,
+      "updated_at": "2018-04-27T17:50:31.043Z",
+      "version": 4,
       "attributes": {
         "title": "OSSEC Alerts",
         "hits": 0,
         "description": "",
-        "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":2,\"h\":15,\"i\":\"1\"},\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"3\",\"gridData\":{\"x\":4,\"y\":0,\"w\":8,\"h\":2,\"i\":\"3\"},\"id\":\"4fa0e530-3644-11e7-a6f7-4f44d7bf1c33\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"5\",\"gridData\":{\"x\":2,\"y\":2,\"w\":5,\"h\":3,\"i\":\"5\"},\"id\":\"2ce56d00-398b-11e7-84f8-a1f7cef50fcb\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"6\",\"gridData\":{\"x\":7,\"y\":2,\"w\":5,\"h\":3,\"i\":\"6\"},\"id\":\"69d98570-398b-11e7-84f8-a1f7cef50fcb\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"8\",\"gridData\":{\"x\":2,\"y\":5,\"w\":5,\"h\":3,\"i\":\"8\"},\"id\":\"d4e00ce0-398b-11e7-84f8-a1f7cef50fcb\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"9\",\"gridData\":{\"x\":2,\"y\":8,\"w\":10,\"h\":7,\"i\":\"9\"},\"id\":\"25046860-398c-11e7-84f8-a1f7cef50fcb\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"10\",\"gridData\":{\"x\":7,\"y\":5,\"w\":5,\"h\":3,\"i\":\"10\"},\"id\":\"e02efd30-398c-11e7-84f8-a1f7cef50fcb\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"11\",\"gridData\":{\"x\":0,\"y\":15,\"w\":12,\"h\":14,\"i\":\"11\"},\"columns\":[\"alert_level\",\"classification\",\"description\"],\"id\":\"d9096bb0-342f-11e7-9e93-53b62e1857b2\",\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\",\"version\":\"6.1.1\"},{\"panelIndex\":\"12\",\"gridData\":{\"x\":2,\"y\":0,\"w\":2,\"h\":2,\"i\":\"12\"},\"type\":\"visualization\",\"id\":\"AWDG4pcDxQT5EBNmq3pi\",\"version\":\"6.1.1\"}]",
+        "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":2,\"h\":15,\"i\":\"1\"},\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"3\",\"gridData\":{\"x\":4,\"y\":0,\"w\":8,\"h\":2,\"i\":\"3\"},\"embeddableConfig\":{\"vis\":{\"legendOpen\":false}},\"id\":\"4fa0e530-3644-11e7-a6f7-4f44d7bf1c33\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"6\",\"gridData\":{\"x\":8,\"y\":2,\"w\":4,\"h\":7,\"i\":\"6\"},\"id\":\"69d98570-398b-11e7-84f8-a1f7cef50fcb\",\"type\":\"visualization\",\"version\":\"6.1.1\",\"embeddableConfig\":{\"vis\":{\"legendOpen\":true}}},{\"panelIndex\":\"11\",\"gridData\":{\"x\":0,\"y\":22,\"w\":12,\"h\":14,\"i\":\"11\"},\"columns\":[\"alert_level\",\"classification\",\"description\"],\"id\":\"d9096bb0-342f-11e7-9e93-53b62e1857b2\",\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\",\"version\":\"6.1.1\"},{\"panelIndex\":\"12\",\"gridData\":{\"x\":2,\"y\":0,\"w\":2,\"h\":2,\"i\":\"12\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG4pcDxQT5EBNmq3pi\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"13\",\"gridData\":{\"x\":2,\"y\":2,\"w\":6,\"h\":7,\"i\":\"13\"},\"id\":\"ee0ba080-4a3d-11e8-9b0a-f1d33346f773\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"14\",\"gridData\":{\"x\":8,\"y\":9,\"w\":4,\"h\":6,\"i\":\"14\"},\"id\":\"1de31b40-4a42-11e8-9b0a-f1d33346f773\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"15\",\"gridData\":{\"x\":0,\"y\":15,\"w\":12,\"h\":7,\"i\":\"15\"},\"id\":\"9ff34f60-4a42-11e8-9b0a-f1d33346f773\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"16\",\"gridData\":{\"x\":2,\"y\":9,\"w\":6,\"h\":6,\"i\":\"16\"},\"version\":\"6.2.4\",\"type\":\"visualization\",\"id\":\"447bd2f0-4a43-11e8-9b0a-f1d33346f773\"}]",
         "optionsJSON": "{\"darkTheme\":true,\"useMargins\":true}",
-        "uiStateJSON": "{\"P-3\":{\"vis\":{\"legendOpen\":false}},\"P-2\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-12\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}}}",
         "version": 1,
         "timeRestore": false,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[],\"highlightAll\":true,\"version\":true,\"query\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\",\"default_field\":\"*\"}},\"language\":\"lucene\"}}"
+          "searchSourceJSON": "{\"filter\":[],\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"default_field\":\"*\",\"query\":\"*\"}}}}"
         }
       }
     }

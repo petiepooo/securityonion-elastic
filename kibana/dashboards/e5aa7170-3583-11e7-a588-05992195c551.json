@@ -61,17 +61,17 @@
     {
       "id": "738127f0-37d7-11e7-9efb-91e89505091f",
       "type": "visualization",
-      "updated_at": "2018-04-26T16:18:02.694Z",
-      "version": 3,
+      "updated_at": "2018-04-30T14:59:41.669Z",
+      "version": 4,
       "attributes": {
-        "visState": "{\"title\":\"X.509 - Certificate Signing Algorithm\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"certificate_signing_algorithm.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Algorithm\"}}],\"listeners\":{}}",
-        "description": "",
         "title": "X.509 - Certificate Signing Algorithm",
+        "visState": "{\"title\":\"X.509 - Certificate Signing Algorithm\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"certificate_signing_algorithm.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Algorithm\"}}]}",
         "uiStateJSON": "{}",
-        "version": 1,
+        "description": "",
         "savedSearchId": "f5038cc0-342e-11e7-9e93-53b62e1857b2",
+        "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
         }
       }
     },

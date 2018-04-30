@@ -21,29 +21,12 @@
     {
       "id": "0f25aac0-3434-11e7-8867-29a39c0f86b2",
       "type": "visualization",
-      "updated_at": "2018-04-26T16:18:01.412Z",
-      "version": 3,
+      "updated_at": "2018-04-30T18:38:21.226Z",
+      "version": 4,
       "attributes": {
-        "visState": "{\"title\":\"Sensors - Total Number of Logs\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"sensor_name.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "Sensors - Total Number of Logs",
+        "title": "Sensors/Devices - Total Number of Logs",
+        "visState": "{\"title\":\"Sensors/Devices - Total Number of Logs\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"syslog-host_from.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Sensor/Device\"}}]}",
         "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
-        "version": 1,
-        "savedSearchId": "aa05e920-3433-11e7-8867-29a39c0f86b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      }
-    },
-    {
-      "id": "9c979ea0-345b-11e7-8867-29a39c0f86b2",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:02.486Z",
-      "version": 10,
-      "attributes": {
-        "title": "Sensors - Sensor and Services (Pie Chart)",
-        "visState": "{\"title\":\"Sensors - Sensor and Services (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"sensor_name.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Sensor\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"service.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\"}}]}",
-        "uiStateJSON": "{}",
         "description": "",
         "savedSearchId": "aa05e920-3433-11e7-8867-29a39c0f86b2",
         "version": 1,
@@ -55,17 +38,17 @@
     {
       "id": "3a273780-46d0-11e7-946f-1bfb1be7c36b",
       "type": "visualization",
-      "updated_at": "2018-04-26T16:18:01.412Z",
-      "version": 3,
+      "updated_at": "2018-04-30T18:40:46.166Z",
+      "version": 4,
       "attributes": {
-        "visState": "{\"title\":\"Logstash - Error Type (Donut Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"type\":\"pie\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"tags.keyword\",\"exclude\":\"\",\"include\":\"_csvparsefailure|_grokparsefailure|_rubyexception\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
         "title": "Logstash - Error Type (Donut Chart)",
+        "visState": "{\"title\":\"Logstash - Error Type (Donut Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"tags.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"exclude\":\"\",\"include\":\"_csvparsefailure|_grokparsefailure|_rubyexception\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"event_type.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\"}}]}",
         "uiStateJSON": "{}",
-        "version": 1,
+        "description": "",
         "savedSearchId": "ef487fd0-46cf-11e7-ba56-317a6969f55c",
+        "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
         }
       }
     },
@@ -172,6 +155,22 @@
       }
     },
     {
+      "id": "d8214de0-4a3a-11e8-9b0a-f1d33346f773",
+      "type": "visualization",
+      "updated_at": "2018-04-30T18:38:48.052Z",
+      "version": 2,
+      "attributes": {
+        "title": "Sensors/Devices and Services",
+        "visState": "{\"title\":\"Sensors/Devices and Services\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"sensor_name.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Sensor\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"service.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Service\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+      }
+    },
+    {
       "id": "*:logstash-*",
       "type": "index-pattern",
       "updated_at": "2018-04-26T16:18:02.704Z",
@@ -214,19 +213,18 @@
     {
       "id": "130017f0-46ce-11e7-946f-1bfb1be7c36b",
       "type": "dashboard",
-      "updated_at": "2018-04-26T16:18:01.412Z",
-      "version": 3,
+      "updated_at": "2018-04-30T18:41:06.344Z",
+      "version": 5,
       "attributes": {
         "title": "Stats",
         "hits": 0,
         "description": "",
-        "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":2,\"y\":3,\"w\":10,\"h\":6,\"i\":\"1\"},\"id\":\"f86bc870-46ce-11e7-946f-1bfb1be7c36b\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"2\",\"gridData\":{\"x\":2,\"y\":9,\"w\":5,\"h\":7,\"i\":\"2\"},\"id\":\"0f25aac0-3434-11e7-8867-29a39c0f86b2\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"3\",\"gridData\":{\"x\":7,\"y\":9,\"w\":5,\"h\":7,\"i\":\"3\"},\"id\":\"9c979ea0-345b-11e7-8867-29a39c0f86b2\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"4\",\"gridData\":{\"x\":0,\"y\":16,\"w\":12,\"h\":6,\"i\":\"4\"},\"id\":\"3a273780-46d0-11e7-946f-1bfb1be7c36b\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"9\",\"gridData\":{\"x\":0,\"y\":0,\"w\":2,\"h\":16,\"i\":\"9\"},\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"10\",\"gridData\":{\"x\":0,\"y\":22,\"w\":12,\"h\":16,\"i\":\"10\"},\"columns\":[\"_source\"],\"id\":\"ef487fd0-46cf-11e7-ba56-317a6969f55c\",\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\",\"version\":\"6.1.1\"},{\"panelIndex\":\"15\",\"gridData\":{\"x\":2,\"y\":0,\"w\":2,\"h\":3,\"i\":\"15\"},\"id\":\"AWDHIynExQT5EBNmq49q\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"16\",\"gridData\":{\"x\":4,\"y\":0,\"w\":2,\"h\":3,\"i\":\"16\"},\"id\":\"AWDHJY1BxQT5EBNmq5Ay\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"17\",\"gridData\":{\"x\":6,\"y\":0,\"w\":2,\"h\":3,\"i\":\"17\"},\"id\":\"AWDHJpuBxQT5EBNmq5Cr\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"18\",\"gridData\":{\"x\":8,\"y\":0,\"w\":2,\"h\":3,\"i\":\"18\"},\"type\":\"visualization\",\"id\":\"AWDHKEF2xQT5EBNmq5FA\",\"version\":\"6.1.1\"}]",
+        "panelsJSON": "[{\"gridData\":{\"h\":6,\"i\":\"1\",\"w\":10,\"x\":2,\"y\":3},\"id\":\"f86bc870-46ce-11e7-946f-1bfb1be7c36b\",\"panelIndex\":\"1\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"gridData\":{\"h\":7,\"i\":\"2\",\"w\":3,\"x\":2,\"y\":9},\"id\":\"0f25aac0-3434-11e7-8867-29a39c0f86b2\",\"panelIndex\":\"2\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"gridData\":{\"h\":6,\"i\":\"4\",\"w\":12,\"x\":0,\"y\":16},\"id\":\"3a273780-46d0-11e7-946f-1bfb1be7c36b\",\"panelIndex\":\"4\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"gridData\":{\"h\":16,\"i\":\"9\",\"w\":2,\"x\":0,\"y\":0},\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"panelIndex\":\"9\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"columns\":[\"_source\"],\"gridData\":{\"h\":16,\"i\":\"10\",\"w\":12,\"x\":0,\"y\":22},\"id\":\"ef487fd0-46cf-11e7-ba56-317a6969f55c\",\"panelIndex\":\"10\",\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\",\"version\":\"6.1.1\"},{\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"gridData\":{\"h\":3,\"i\":\"15\",\"w\":2,\"x\":2,\"y\":0},\"id\":\"AWDHIynExQT5EBNmq49q\",\"panelIndex\":\"15\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"gridData\":{\"h\":3,\"i\":\"16\",\"w\":2,\"x\":4,\"y\":0},\"id\":\"AWDHJY1BxQT5EBNmq5Ay\",\"panelIndex\":\"16\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"gridData\":{\"h\":3,\"i\":\"17\",\"w\":2,\"x\":6,\"y\":0},\"id\":\"AWDHJpuBxQT5EBNmq5Cr\",\"panelIndex\":\"17\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"gridData\":{\"h\":3,\"i\":\"18\",\"w\":2,\"x\":8,\"y\":0},\"id\":\"AWDHKEF2xQT5EBNmq5FA\",\"panelIndex\":\"18\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":2,\"direction\":\"desc\"}}}},\"gridData\":{\"h\":7,\"i\":\"19\",\"w\":7,\"x\":5,\"y\":9},\"id\":\"d8214de0-4a3a-11e8-9b0a-f1d33346f773\",\"panelIndex\":\"19\",\"type\":\"visualization\",\"version\":\"6.2.4\"}]",
         "optionsJSON": "{\"darkTheme\":true,\"useMargins\":true}",
-        "uiStateJSON": "{\"P-15\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-16\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-17\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-2\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"P-6\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-7\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-8\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"P-18\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}}}",
         "version": 1,
         "timeRestore": false,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[],\"highlightAll\":true,\"version\":true,\"query\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\",\"default_field\":\"*\"}},\"language\":\"lucene\"}}"
+          "searchSourceJSON": "{\"filter\":[],\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"default_field\":\"*\",\"query\":\"*\"}}}}"
         }
       }
     }

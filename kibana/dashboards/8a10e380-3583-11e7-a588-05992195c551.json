@@ -37,34 +37,34 @@
     {
       "id": "45c4ae10-380c-11e7-a1cc-ebc6a7e70e84",
       "type": "visualization",
-      "updated_at": "2018-04-26T16:18:01.683Z",
-      "version": 3,
+      "updated_at": "2018-04-30T13:03:00.861Z",
+      "version": 5,
       "attributes": {
-        "visState": "{\"title\":\"PE - OS (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"os.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
         "title": "PE - OS (Pie Chart)",
+        "visState": "{\"title\":\"PE - OS (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"os.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\"}}]}",
         "uiStateJSON": "{}",
-        "version": 1,
+        "description": "",
         "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
+        "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
         }
       }
     },
     {
       "id": "807da390-380c-11e7-a1cc-ebc6a7e70e84",
       "type": "visualization",
-      "updated_at": "2018-04-26T16:18:01.683Z",
-      "version": 3,
+      "updated_at": "2018-04-27T20:36:55.430Z",
+      "version": 4,
       "attributes": {
-        "visState": "{\"title\":\"PE - Subsystem (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"subsystem.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
-        "description": "",
         "title": "PE - Subsystem (Pie Chart)",
+        "visState": "{\"title\":\"PE - Subsystem (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"subsystem.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\"}}]}",
         "uiStateJSON": "{}",
-        "version": 1,
+        "description": "",
         "savedSearchId": "66288140-342e-11e7-9e93-53b62e1857b2",
+        "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
         }
       }
     },
@@ -159,18 +159,18 @@
     {
       "id": "8a10e380-3583-11e7-a588-05992195c551",
       "type": "dashboard",
-      "updated_at": "2018-04-26T16:18:01.683Z",
-      "version": 3,
+      "updated_at": "2018-04-30T13:03:12.524Z",
+      "version": 4,
       "attributes": {
         "title": "Bro - PE",
         "hits": 0,
         "description": "",
-        "panelsJSON": "[{\"panelIndex\":\"2\",\"gridData\":{\"x\":0,\"y\":0,\"w\":2,\"h\":12,\"i\":\"2\"},\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"3\",\"gridData\":{\"x\":4,\"y\":0,\"w\":8,\"h\":2,\"i\":\"3\"},\"id\":\"9cffd160-363f-11e7-a6f7-4f44d7bf1c33\",\"type\":\"visualization\",\"version\":\"6.1.1\",\"embeddableConfig\":{\"vis\":{\"legendOpen\":false}}},{\"panelIndex\":\"5\",\"gridData\":{\"x\":7,\"y\":2,\"w\":5,\"h\":4,\"i\":\"5\"},\"id\":\"45c4ae10-380c-11e7-a1cc-ebc6a7e70e84\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"7\",\"gridData\":{\"x\":2,\"y\":2,\"w\":5,\"h\":4,\"i\":\"7\"},\"id\":\"807da390-380c-11e7-a1cc-ebc6a7e70e84\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"8\",\"gridData\":{\"x\":0,\"y\":12,\"w\":12,\"h\":7,\"i\":\"8\"},\"columns\":[\"fuid\",\"machine\",\"is_exe\",\"is_64bit\",\"subsystem\",\"_id\"],\"id\":\"66288140-342e-11e7-9e93-53b62e1857b2\",\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\",\"version\":\"6.1.1\"},{\"panelIndex\":\"9\",\"gridData\":{\"x\":7,\"y\":6,\"w\":5,\"h\":6,\"i\":\"9\"},\"id\":\"4e56b4d0-416f-11e7-9850-b78558d0ac17\",\"type\":\"visualization\",\"version\":\"6.1.1\",\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}},{\"panelIndex\":\"10\",\"gridData\":{\"x\":2,\"y\":6,\"w\":5,\"h\":6,\"i\":\"10\"},\"id\":\"7de76e10-6e1f-11e7-b553-7f80727663c1\",\"type\":\"visualization\",\"version\":\"6.1.1\",\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}},{\"panelIndex\":\"11\",\"gridData\":{\"x\":2,\"y\":0,\"w\":2,\"h\":2,\"i\":\"11\"},\"id\":\"AWDHCUeZxQT5EBNmq4Xy\",\"type\":\"visualization\",\"version\":\"6.1.1\",\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}}}]",
+        "panelsJSON": "[{\"gridData\":{\"h\":12,\"i\":\"2\",\"w\":2,\"x\":0,\"y\":0},\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"panelIndex\":\"2\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"embeddableConfig\":{\"vis\":{\"legendOpen\":false}},\"gridData\":{\"h\":2,\"i\":\"3\",\"w\":8,\"x\":4,\"y\":0},\"id\":\"9cffd160-363f-11e7-a6f7-4f44d7bf1c33\",\"panelIndex\":\"3\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"gridData\":{\"h\":4,\"i\":\"5\",\"w\":5,\"x\":7,\"y\":2},\"id\":\"45c4ae10-380c-11e7-a1cc-ebc6a7e70e84\",\"panelIndex\":\"5\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"gridData\":{\"h\":4,\"i\":\"7\",\"w\":5,\"x\":2,\"y\":2},\"id\":\"807da390-380c-11e7-a1cc-ebc6a7e70e84\",\"panelIndex\":\"7\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"columns\":[\"fuid\",\"machine\",\"is_exe\",\"is_64bit\",\"subsystem\",\"_id\"],\"gridData\":{\"h\":7,\"i\":\"8\",\"w\":12,\"x\":0,\"y\":12},\"id\":\"66288140-342e-11e7-9e93-53b62e1857b2\",\"panelIndex\":\"8\",\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\",\"version\":\"6.1.1\"},{\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"gridData\":{\"h\":6,\"i\":\"9\",\"w\":5,\"x\":7,\"y\":6},\"id\":\"4e56b4d0-416f-11e7-9850-b78558d0ac17\",\"panelIndex\":\"9\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"gridData\":{\"h\":6,\"i\":\"10\",\"w\":5,\"x\":2,\"y\":6},\"id\":\"7de76e10-6e1f-11e7-b553-7f80727663c1\",\"panelIndex\":\"10\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"gridData\":{\"h\":2,\"i\":\"11\",\"w\":2,\"x\":2,\"y\":0},\"id\":\"AWDHCUeZxQT5EBNmq4Xy\",\"panelIndex\":\"11\",\"type\":\"visualization\",\"version\":\"6.1.1\"}]",
         "optionsJSON": "{\"darkTheme\":true,\"hidePanelTitles\":false,\"useMargins\":true}",
         "version": 1,
         "timeRestore": false,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[],\"highlightAll\":true,\"version\":true,\"query\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"default_field\":\"*\",\"query\":\"*\"}},\"language\":\"lucene\"}}"
+          "searchSourceJSON": "{\"filter\":[],\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"default_field\":\"*\",\"query\":\"*\"}}}}"
         }
       }
     }

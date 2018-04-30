@@ -18,40 +18,6 @@
       }
     },
     {
-      "id": "0d8c6290-3433-11e7-8867-29a39c0f86b2",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:02.668Z",
-      "version": 7,
-      "attributes": {
-        "title": "NIDS - Alert Summary (Pie Chart)",
-        "visState": "{\"title\":\"NIDS - Alert Summary (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":false,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"alert.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Alert\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"source_ip\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Source IP Address\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"destination_ip\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Destination IP Address\"}}]}",
-        "uiStateJSON": "{}",
-        "description": "",
-        "savedSearchId": "9a5a35c0-342f-11e7-9e93-53b62e1857b2",
-        "version": 1,
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
-        }
-      }
-    },
-    {
-      "id": "9c979ea0-345b-11e7-8867-29a39c0f86b2",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:02.486Z",
-      "version": 10,
-      "attributes": {
-        "title": "Sensors - Sensor and Services (Pie Chart)",
-        "visState": "{\"title\":\"Sensors - Sensor and Services (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"sensor_name.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Sensor\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"service.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\"}}]}",
-        "uiStateJSON": "{}",
-        "description": "",
-        "savedSearchId": "aa05e920-3433-11e7-8867-29a39c0f86b2",
-        "version": 1,
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
-        }
-      }
-    },
-    {
       "id": "aa05e920-3433-11e7-8867-29a39c0f86b2",
       "type": "search",
       "updated_at": "2018-04-26T16:18:02.629Z",
@@ -79,23 +45,6 @@
       }
     },
     {
-      "id": "6ca12600-345e-11e7-8867-29a39c0f86b2",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:01.622Z",
-      "version": 7,
-      "attributes": {
-        "title": "Bro - Notices - Notice Types (Pie Chart)",
-        "visState": "{\"title\":\"Bro - Notices - Notice Types (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addLegend\":true,\"addTooltip\":true,\"isDonut\":false,\"legendPosition\":\"right\",\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"note.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Note\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"source_ip\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Source IP Address\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"destination_ip\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Destination IP Address\"}}]}",
-        "uiStateJSON": "{}",
-        "description": "",
-        "savedSearchId": "0a3bfbe0-342f-11e7-9e93-53b62e1857b2",
-        "version": 1,
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
-        }
-      }
-    },
-    {
       "id": "1c2aeb50-365e-11e7-b896-5bdd6bfa1561",
       "type": "visualization",
       "updated_at": "2018-04-26T16:18:01.622Z",
@@ -113,53 +62,19 @@
       }
     },
     {
-      "id": "2ce56d00-398b-11e7-84f8-a1f7cef50fcb",
+      "id": "277f3250-4161-11e7-8493-51634b0a4565",
       "type": "visualization",
-      "updated_at": "2018-04-26T17:58:27.318Z",
-      "version": 9,
+      "updated_at": "2018-04-27T17:27:33.860Z",
+      "version": 4,
       "attributes": {
-        "title": "OSSEC Alerts - Event Type (Pie Chart)",
-        "visState": "{\"title\":\"OSSEC Alerts - Event Type (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":false,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"description.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Alert\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"syslog-host_from.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Host\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"username.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"User\"}}]}",
-        "uiStateJSON": "{}",
+        "title": "Bro - Connections - Service By Destination Country",
+        "visState": "{\"title\":\"Bro - Connections - Service By Destination Country\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"top\",\"isDonut\":true,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"split\",\"params\":{\"field\":\"destination_geo.country_name.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"\",\"row\":false}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"service.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Service\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
         "description": "",
-        "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
+        "savedSearchId": "9bf42190-342d-11e7-9e93-53b62e1857b2",
         "version": 1,
         "kibanaSavedObjectMeta": {
           "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
-        }
-      }
-    },
-    {
-      "id": "999285d0-415d-11e7-8493-51634b0a4565",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:01.622Z",
-      "version": 3,
-      "attributes": {
-        "visState": "{\"title\":\"Overview - Alert Summary (Bar Chart)\",\"type\":\"histogram\",\"params\":{\"addLegend\":true,\"addTimeMarker\":false,\"addTooltip\":true,\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"labels\":{\"rotate\":0,\"show\":true,\"truncate\":100},\"position\":\"bottom\",\"scale\":{\"type\":\"linear\"},\"show\":true,\"style\":{},\"title\":{},\"type\":\"category\"}],\"defaultYExtents\":false,\"drawLinesBetweenPoints\":true,\"grid\":{\"categoryLines\":false,\"style\":{\"color\":\"#eee\"}},\"interpolate\":\"linear\",\"legendPosition\":\"right\",\"orderBucketsBySum\":false,\"radiusRatio\":9,\"scale\":\"linear\",\"seriesParams\":[{\"data\":{\"id\":\"1\",\"label\":\"Count\"},\"drawLinesBetweenPoints\":true,\"mode\":\"stacked\",\"show\":\"true\",\"showCircles\":true,\"type\":\"histogram\",\"valueAxis\":\"ValueAxis-1\"}],\"setYExtents\":false,\"showCircles\":true,\"times\":[],\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"labels\":{\"filter\":false,\"rotate\":0,\"show\":true,\"truncate\":100},\"name\":\"LeftAxis-1\",\"position\":\"left\",\"scale\":{\"mode\":\"normal\",\"type\":\"linear\"},\"show\":true,\"style\":{},\"title\":{},\"type\":\"value\"}]},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"filters\",\"schema\":\"segment\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"event_type:bro_notice\"}}},\"label\":\"Bro Notices\"},{\"input\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"event_type:ossec\"}}},\"label\":\"OSSEC Alerts\"},{\"input\":{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"event_type:snort\"}}},\"label\":\"NIDS Alerts\"}]}}],\"listeners\":{}}",
-        "description": "",
-        "title": "Overview - Alert Summary (Bar Chart)",
-        "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
-        "version": 1,
-        "savedSearchId": "5ee67050-4157-11e7-9a3b-dba7a0c85da1",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      }
-    },
-    {
-      "id": "277f3250-4161-11e7-8493-51634b0a4565",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:01.622Z",
-      "version": 3,
-      "attributes": {
-        "visState": "{\"title\":\"Bro - Connections - Service By Destination Country\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"top\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"split\",\"params\":{\"field\":\"destination_geo.country_name.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"\",\"row\":false}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"service.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Service\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "Bro - Connections - Service By Destination Country",
-        "uiStateJSON": "{\"vis\":{\"legendOpen\":false}}",
-        "version": 1,
-        "savedSearchId": "9bf42190-342d-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
         }
       }
     },
@@ -312,6 +227,57 @@
       }
     },
     {
+      "id": "2a949080-4a3d-11e8-9b0a-f1d33346f773",
+      "type": "visualization",
+      "updated_at": "2018-04-27T17:05:20.264Z",
+      "version": 1,
+      "attributes": {
+        "title": "Bro - Notices - Notice Types",
+        "visState": "{\"title\":\"Bro - Notices - Notice Types\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"note.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Note\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"source_ip\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Source IP Address\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"destination_ip\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Destination IP Address\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "savedSearchId": "0a3bfbe0-342f-11e7-9e93-53b62e1857b2",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+      }
+    },
+    {
+      "id": "96c2cf10-4a3d-11e8-9b0a-f1d33346f773",
+      "type": "visualization",
+      "updated_at": "2018-04-27T17:08:21.761Z",
+      "version": 1,
+      "attributes": {
+        "title": "NIDS - Alert Summary",
+        "visState": "{\"title\":\"NIDS - Alert Summary\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"alert.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Alert\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"source_ip\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Source IP Address\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"destination_ip\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Destination IP Address\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "savedSearchId": "9a5a35c0-342f-11e7-9e93-53b62e1857b2",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+      }
+    },
+    {
+      "id": "ee0ba080-4a3d-11e8-9b0a-f1d33346f773",
+      "type": "visualization",
+      "updated_at": "2018-04-27T17:10:48.200Z",
+      "version": 1,
+      "attributes": {
+        "title": "OSSEC Alerts - Event Summary",
+        "visState": "{\"title\":\"OSSEC Alerts - Event Summary\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"description.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Description\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"syslog-host_from.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":20,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Host\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"username.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Username\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "savedSearchId": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+      }
+    },
+    {
       "id": "*:logstash-*",
       "type": "index-pattern",
       "updated_at": "2018-04-26T16:18:02.704Z",
@@ -325,10 +291,10 @@
       }
     },
     {
-      "id": "9a5a35c0-342f-11e7-9e93-53b62e1857b2",
+      "id": "9bf42190-342d-11e7-9e93-53b62e1857b2",
       "type": "search",
-      "updated_at": "2018-04-26T16:18:02.668Z",
-      "version": 9,
+      "updated_at": "2018-04-26T16:18:02.676Z",
+      "version": 30,
       "attributes": {
         "sort": [
           "@timestamp",
@@ -336,16 +302,17 @@
         ],
         "hits": 0,
         "description": "",
-        "title": "NIDS - Alerts",
+        "title": "Connections - Logs",
         "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"event_type:snort\",\"analyze_wildcard\":true}}}"
+          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"highlightAll\": true,\n  \"version\": true,\n  \"filter\": [],\n  \"size\":10,\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"event_type:bro_conn\",\n      \"analyze_wildcard\": true\n    }\n  }\n}"
         },
         "columns": [
           "source_ip",
           "source_port",
           "destination_ip",
           "destination_port",
+          "uid",
           "_id"
         ]
       }
@@ -377,6 +344,32 @@
       }
     },
     {
+      "id": "9a5a35c0-342f-11e7-9e93-53b62e1857b2",
+      "type": "search",
+      "updated_at": "2018-04-26T16:18:02.668Z",
+      "version": 9,
+      "attributes": {
+        "sort": [
+          "@timestamp",
+          "desc"
+        ],
+        "hits": 0,
+        "description": "",
+        "title": "NIDS - Alerts",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"filter\":[],\"query\":{\"query_string\":{\"query\":\"event_type:snort\",\"analyze_wildcard\":true}}}"
+        },
+        "columns": [
+          "source_ip",
+          "source_port",
+          "destination_ip",
+          "destination_port",
+          "_id"
+        ]
+      }
+    },
+    {
       "id": "d9096bb0-342f-11e7-9e93-53b62e1857b2",
       "type": "search",
       "updated_at": "2018-04-26T16:18:02.486Z",
@@ -401,64 +394,15 @@
       }
     },
     {
-      "id": "5ee67050-4157-11e7-9a3b-dba7a0c85da1",
-      "type": "search",
-      "updated_at": "2018-04-26T16:18:01.622Z",
-      "version": 3,
-      "attributes": {
-        "sort": [
-          "@timestamp",
-          "desc"
-        ],
-        "hits": 0,
-        "description": "",
-        "title": "Overview - Alert Summary",
-        "version": 1,
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"index\":\"*:logstash-*\",\"highlightAll\":true,\"version\":true,\"query\":{\"query_string\":{\"query\":\"event_type:snort OR event_type:ossec OR event_type:bro_notice\",\"analyze_wildcard\":true}},\"filter\":[]}"
-        },
-        "columns": [
-          "_source"
-        ]
-      }
-    },
-    {
-      "id": "9bf42190-342d-11e7-9e93-53b62e1857b2",
-      "type": "search",
-      "updated_at": "2018-04-26T16:18:02.676Z",
-      "version": 30,
-      "attributes": {
-        "sort": [
-          "@timestamp",
-          "desc"
-        ],
-        "hits": 0,
-        "description": "",
-        "title": "Connections - Logs",
-        "version": 1,
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\n  \"index\": \"*:logstash-*\",\n  \"highlightAll\": true,\n  \"version\": true,\n  \"filter\": [],\n  \"size\":10,\n  \"query\": {\n    \"query_string\": {\n      \"query\": \"event_type:bro_conn\",\n      \"analyze_wildcard\": true\n    }\n  }\n}"
-        },
-        "columns": [
-          "source_ip",
-          "source_port",
-          "destination_ip",
-          "destination_port",
-          "uid",
-          "_id"
-        ]
-      }
-    },
-    {
       "id": "94b52620-342a-11e7-9d52-4f090484f59e",
       "type": "dashboard",
-      "updated_at": "2018-04-27T11:48:37.972Z",
-      "version": 6,
+      "updated_at": "2018-04-27T17:28:41.489Z",
+      "version": 9,
       "attributes": {
         "title": "Overview",
         "hits": 0,
         "description": "",
-        "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":2,\"h\":12,\"i\":\"1\"},\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"5\",\"gridData\":{\"x\":6,\"y\":36,\"w\":6,\"h\":9,\"i\":\"5\"},\"embeddableConfig\":{\"vis\":{\"legendOpen\":true}},\"id\":\"0d8c6290-3433-11e7-8867-29a39c0f86b2\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"6\",\"gridData\":{\"x\":2,\"y\":2,\"w\":6,\"h\":10,\"i\":\"6\"},\"id\":\"9c979ea0-345b-11e7-8867-29a39c0f86b2\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"8\",\"gridData\":{\"x\":0,\"y\":45,\"w\":12,\"h\":16,\"i\":\"8\"},\"columns\":[\"source_ip\",\"source_port\",\"destination_ip\",\"destination_port\",\"_id\"],\"id\":\"aa05e920-3433-11e7-8867-29a39c0f86b2\",\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\",\"version\":\"6.1.1\"},{\"panelIndex\":\"10\",\"gridData\":{\"x\":0,\"y\":36,\"w\":6,\"h\":9,\"i\":\"10\"},\"id\":\"6ca12600-345e-11e7-8867-29a39c0f86b2\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"12\",\"gridData\":{\"x\":5,\"y\":0,\"w\":7,\"h\":2,\"i\":\"12\"},\"embeddableConfig\":{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}},\"vis\":{\"legendOpen\":false}},\"id\":\"1c2aeb50-365e-11e7-b896-5bdd6bfa1561\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"17\",\"gridData\":{\"x\":0,\"y\":31,\"w\":6,\"h\":5,\"i\":\"17\"},\"id\":\"2ce56d00-398b-11e7-84f8-a1f7cef50fcb\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"18\",\"gridData\":{\"x\":6,\"y\":31,\"w\":6,\"h\":5,\"i\":\"18\"},\"embeddableConfig\":{\"vis\":{\"colors\":{\"Count\":\"#64B0C8\"},\"legendOpen\":false}},\"id\":\"999285d0-415d-11e7-8493-51634b0a4565\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"19\",\"gridData\":{\"x\":0,\"y\":26,\"w\":12,\"h\":5,\"i\":\"19\"},\"id\":\"277f3250-4161-11e7-8493-51634b0a4565\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"21\",\"gridData\":{\"x\":0,\"y\":14,\"w\":12,\"h\":6,\"i\":\"21\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"id\":\"901bda80-a83f-11e7-893a-1b88920b2837\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"23\",\"gridData\":{\"x\":8,\"y\":5,\"w\":4,\"h\":7,\"i\":\"23\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"id\":\"5b3988c0-a840-11e7-893a-1b88920b2837\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"32\",\"gridData\":{\"x\":2,\"y\":0,\"w\":3,\"h\":2,\"i\":\"32\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDGyaGxxQT5EBNmq3K9\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"33\",\"gridData\":{\"x\":8,\"y\":2,\"w\":2,\"h\":3,\"i\":\"33\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDGzmzcxQT5EBNmq3Sj\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"34\",\"gridData\":{\"x\":10,\"y\":2,\"w\":2,\"h\":3,\"i\":\"34\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG0UDvxQT5EBNmq3WD\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"35\",\"gridData\":{\"x\":0,\"y\":12,\"w\":4,\"h\":2,\"i\":\"35\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG1uC-xQT5EBNmq3dP\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"36\",\"gridData\":{\"x\":4,\"y\":12,\"w\":4,\"h\":2,\"i\":\"36\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG3ym0xQT5EBNmq3mG\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"37\",\"gridData\":{\"x\":8,\"y\":12,\"w\":4,\"h\":2,\"i\":\"37\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG4pcDxQT5EBNmq3pi\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"38\",\"gridData\":{\"x\":0,\"y\":20,\"w\":12,\"h\":6,\"i\":\"38\"},\"id\":\"733ce440-494d-11e8-9576-313be7c6b44b\",\"type\":\"visualization\",\"version\":\"6.2.4\"}]",
+        "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":2,\"h\":14,\"i\":\"1\"},\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"8\",\"gridData\":{\"x\":0,\"y\":33,\"w\":12,\"h\":16,\"i\":\"8\"},\"columns\":[\"source_ip\",\"source_port\",\"destination_ip\",\"destination_port\",\"_id\"],\"id\":\"aa05e920-3433-11e7-8867-29a39c0f86b2\",\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\",\"version\":\"6.1.1\"},{\"panelIndex\":\"12\",\"gridData\":{\"x\":5,\"y\":0,\"w\":7,\"h\":2,\"i\":\"12\"},\"embeddableConfig\":{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}},\"vis\":{\"legendOpen\":false}},\"id\":\"1c2aeb50-365e-11e7-b896-5bdd6bfa1561\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"19\",\"gridData\":{\"x\":0,\"y\":14,\"w\":12,\"h\":4,\"i\":\"19\"},\"id\":\"277f3250-4161-11e7-8493-51634b0a4565\",\"type\":\"visualization\",\"version\":\"6.1.1\",\"embeddableConfig\":{\"vis\":{\"legendOpen\":true}}},{\"panelIndex\":\"21\",\"gridData\":{\"x\":2,\"y\":2,\"w\":6,\"h\":6,\"i\":\"21\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"id\":\"901bda80-a83f-11e7-893a-1b88920b2837\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"23\",\"gridData\":{\"x\":8,\"y\":6,\"w\":4,\"h\":8,\"i\":\"23\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"id\":\"5b3988c0-a840-11e7-893a-1b88920b2837\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"32\",\"gridData\":{\"x\":2,\"y\":0,\"w\":3,\"h\":2,\"i\":\"32\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDGyaGxxQT5EBNmq3K9\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"33\",\"gridData\":{\"x\":8,\"y\":2,\"w\":2,\"h\":4,\"i\":\"33\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDGzmzcxQT5EBNmq3Sj\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"34\",\"gridData\":{\"x\":10,\"y\":2,\"w\":2,\"h\":4,\"i\":\"34\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG0UDvxQT5EBNmq3WD\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"35\",\"gridData\":{\"x\":0,\"y\":18,\"w\":4,\"h\":2,\"i\":\"35\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG1uC-xQT5EBNmq3dP\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"36\",\"gridData\":{\"x\":4,\"y\":18,\"w\":4,\"h\":2,\"i\":\"36\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG3ym0xQT5EBNmq3mG\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"37\",\"gridData\":{\"x\":8,\"y\":18,\"w\":4,\"h\":2,\"i\":\"37\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG4pcDxQT5EBNmq3pi\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"38\",\"gridData\":{\"x\":2,\"y\":8,\"w\":6,\"h\":6,\"i\":\"38\"},\"id\":\"733ce440-494d-11e8-9576-313be7c6b44b\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"39\",\"gridData\":{\"x\":0,\"y\":27,\"w\":12,\"h\":6,\"i\":\"39\"},\"id\":\"2a949080-4a3d-11e8-9b0a-f1d33346f773\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"40\",\"gridData\":{\"x\":6,\"y\":20,\"w\":6,\"h\":7,\"i\":\"40\"},\"id\":\"96c2cf10-4a3d-11e8-9b0a-f1d33346f773\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"41\",\"gridData\":{\"x\":0,\"y\":20,\"w\":6,\"h\":7,\"i\":\"41\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":3,\"direction\":\"desc\"}}}},\"id\":\"ee0ba080-4a3d-11e8-9b0a-f1d33346f773\",\"type\":\"visualization\",\"version\":\"6.2.4\"}]",
         "optionsJSON": "{\"darkTheme\":true,\"useMargins\":true}",
         "version": 1,
         "timeRestore": false,

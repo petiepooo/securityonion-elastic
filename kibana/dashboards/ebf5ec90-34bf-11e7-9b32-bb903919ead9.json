@@ -54,34 +54,17 @@
     {
       "id": "45a652b0-34c1-11e7-917c-af7a9d11771a",
       "type": "visualization",
-      "updated_at": "2018-04-26T16:18:02.474Z",
-      "version": 6,
+      "updated_at": "2018-04-27T19:13:51.280Z",
+      "version": 7,
       "attributes": {
-        "visState": "{\"title\":\"DNS - Query Class (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"query_class_name.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Query Class\"}}],\"listeners\":{}}",
-        "description": "",
         "title": "DNS - Query Class (Pie Chart)",
+        "visState": "{\"title\":\"DNS - Query Class (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"type\":\"pie\",\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"query_class_name.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":10,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Query Class\"}}]}",
         "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "d46522e0-342d-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      }
-    },
-    {
-      "id": "8df86c10-34c1-11e7-917c-af7a9d11771a",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:02.474Z",
-      "version": 3,
-      "attributes": {
-        "visState": "{\"title\":\"DNS - Query Type (Pie Chart)\",\"type\":\"pie\",\"params\":{\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"query_type_name.keyword\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Query Type\"}}],\"listeners\":{}}",
         "description": "",
-        "title": "DNS - Query Type (Pie Chart)",
-        "uiStateJSON": "{}",
-        "version": 1,
         "savedSearchId": "d46522e0-342d-11e7-9e93-53b62e1857b2",
+        "version": 1,
         "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
         }
       }
     },
@@ -155,23 +138,6 @@
         "visState": "{\"title\":\"DNS - Destination Port (Horizontal Bar Chart)\",\"type\":\"histogram\",\"params\":{\"grid\":{\"categoryLines\":false,\"style\":{\"color\":\"#eee\"}},\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"type\":\"category\",\"position\":\"left\",\"show\":false,\"style\":{},\"scale\":{\"type\":\"linear\"},\"labels\":{\"show\":true,\"rotate\":0,\"filter\":false,\"truncate\":200},\"title\":{}}],\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"name\":\"LeftAxis-1\",\"type\":\"value\",\"position\":\"bottom\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\",\"mode\":\"normal\"},\"labels\":{\"show\":true,\"rotate\":75,\"filter\":false,\"truncate\":100},\"title\":{\"text\":\"Count\"}}],\"seriesParams\":[{\"show\":true,\"type\":\"histogram\",\"mode\":\"normal\",\"data\":{\"label\":\"Count\",\"id\":\"1\"},\"valueAxis\":\"ValueAxis-1\",\"drawLinesBetweenPoints\":true,\"showCircles\":true}],\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"times\":[],\"addTimeMarker\":false},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"group\",\"params\":{\"field\":\"destination_port\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"\"}}],\"listeners\":{}}",
         "description": "",
         "title": "DNS - Destination Port (Horizontal Bar Chart)",
-        "uiStateJSON": "{}",
-        "version": 1,
-        "savedSearchId": "d46522e0-342d-11e7-9e93-53b62e1857b2",
-        "kibanaSavedObjectMeta": {
-          "searchSourceJSON": "{\"filter\":[]}"
-        }
-      }
-    },
-    {
-      "id": "80651610-6e10-11e7-8624-1fb07dd76c6a",
-      "type": "visualization",
-      "updated_at": "2018-04-26T16:18:02.474Z",
-      "version": 3,
-      "attributes": {
-        "visState": "{\"title\":\"DNS - Protocol (Vertical Bar Chart)\",\"type\":\"histogram\",\"params\":{\"grid\":{\"categoryLines\":false,\"style\":{\"color\":\"#eee\"}},\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"type\":\"category\",\"position\":\"bottom\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\"},\"labels\":{\"show\":true,\"truncate\":100,\"rotate\":75},\"title\":{\"text\":\"Protocol\"}}],\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"name\":\"LeftAxis-1\",\"type\":\"value\",\"position\":\"left\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\",\"mode\":\"normal\"},\"labels\":{\"show\":true,\"rotate\":0,\"filter\":false,\"truncate\":100},\"title\":{\"text\":\"Count\"}}],\"seriesParams\":[{\"show\":\"true\",\"type\":\"histogram\",\"mode\":\"stacked\",\"data\":{\"label\":\"Count\",\"id\":\"1\"},\"valueAxis\":\"ValueAxis-1\",\"drawLinesBetweenPoints\":true,\"showCircles\":true}],\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"times\":[],\"addTimeMarker\":false},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"protocol.keyword\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Protocol\"}}],\"listeners\":{}}",
-        "description": "",
-        "title": "DNS - Protocol (Vertical Bar Chart)",
         "uiStateJSON": "{}",
         "version": 1,
         "savedSearchId": "d46522e0-342d-11e7-9e93-53b62e1857b2",
@@ -281,6 +247,40 @@
       }
     },
     {
+      "id": "0c338e50-4a4e-11e8-9b0a-f1d33346f773",
+      "type": "visualization",
+      "updated_at": "2018-04-27T19:06:10.741Z",
+      "version": 1,
+      "attributes": {
+        "title": "DNS - Query Type",
+        "visState": "{\"title\":\"DNS - Query Type\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"query_type_name.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":100,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Query Type\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "savedSearchId": "d46522e0-342d-11e7-9e93-53b62e1857b2",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+      }
+    },
+    {
+      "id": "49e04860-4a4e-11e8-9b0a-f1d33346f773",
+      "type": "visualization",
+      "updated_at": "2018-04-27T19:07:54.214Z",
+      "version": 1,
+      "attributes": {
+        "title": "DNS - Protocol (Donut Chart)",
+        "visState": "{\"title\":\"DNS - Protocol (Donut Chart)\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"protocol.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Protocol\"}}]}",
+        "uiStateJSON": "{}",
+        "description": "",
+        "savedSearchId": "d46522e0-342d-11e7-9e93-53b62e1857b2",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+      }
+    },
+    {
       "id": "*:logstash-*",
       "type": "index-pattern",
       "updated_at": "2018-04-26T16:18:02.704Z",
@@ -296,13 +296,13 @@
     {
       "id": "ebf5ec90-34bf-11e7-9b32-bb903919ead9",
       "type": "dashboard",
-      "updated_at": "2018-04-26T16:18:02.474Z",
-      "version": 6,
+      "updated_at": "2018-04-30T15:31:44.854Z",
+      "version": 8,
       "attributes": {
         "title": "Bro - DNS",
         "hits": 0,
         "description": "",
-        "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":2,\"h\":14,\"i\":\"1\"},\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"5\",\"gridData\":{\"x\":5,\"y\":8,\"w\":3,\"h\":6,\"i\":\"5\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"id\":\"6ef90c30-34c0-11e7-9b32-bb903919ead9\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"6\",\"gridData\":{\"x\":2,\"y\":8,\"w\":3,\"h\":6,\"i\":\"6\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"id\":\"57a9a3f0-34c0-11e7-9b32-bb903919ead9\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"7\",\"gridData\":{\"x\":2,\"y\":2,\"w\":5,\"h\":3,\"i\":\"7\"},\"id\":\"45a652b0-34c1-11e7-917c-af7a9d11771a\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"9\",\"gridData\":{\"x\":2,\"y\":5,\"w\":5,\"h\":3,\"i\":\"9\"},\"id\":\"8df86c10-34c1-11e7-917c-af7a9d11771a\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"10\",\"gridData\":{\"x\":0,\"y\":20,\"w\":12,\"h\":6,\"i\":\"10\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"id\":\"e8e3b8a0-34c1-11e7-917c-af7a9d11771a\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"13\",\"gridData\":{\"x\":4,\"y\":0,\"w\":8,\"h\":2,\"i\":\"13\"},\"embeddableConfig\":{\"vis\":{\"legendOpen\":false}},\"id\":\"1ecdd2e0-34c0-11e7-9b32-bb903919ead9\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"16\",\"gridData\":{\"x\":0,\"y\":29,\"w\":12,\"h\":16,\"i\":\"16\"},\"columns\":[\"source_ip\",\"source_port\",\"destination_ip\",\"destination_port\",\"uid\",\"_id\"],\"id\":\"d46522e0-342d-11e7-9e93-53b62e1857b2\",\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\",\"version\":\"6.1.1\"},{\"panelIndex\":\"17\",\"gridData\":{\"x\":7,\"y\":2,\"w\":5,\"h\":3,\"i\":\"17\"},\"id\":\"e3717d80-6e0f-11e7-8624-1fb07dd76c6a\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"18\",\"gridData\":{\"x\":7,\"y\":5,\"w\":5,\"h\":3,\"i\":\"18\"},\"id\":\"80651610-6e10-11e7-8624-1fb07dd76c6a\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"21\",\"gridData\":{\"x\":0,\"y\":26,\"w\":6,\"h\":3,\"i\":\"21\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 0\":\"rgb(0,104,55)\",\"1 - 999999\":\"rgb(165,0,38)\"}}},\"id\":\"4d89e140-6f09-11e7-9d31-23c0596994a7\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"22\",\"gridData\":{\"x\":6,\"y\":26,\"w\":6,\"h\":3,\"i\":\"22\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 0\":\"rgb(0,104,55)\",\"1 - 999999\":\"rgb(165,0,38)\"}}},\"id\":\"74861280-6f06-11e7-b253-211f64f37eda\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"23\",\"gridData\":{\"x\":2,\"y\":0,\"w\":2,\"h\":2,\"i\":\"23\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG9Qx0xQT5EBNmq3_2\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"24\",\"gridData\":{\"x\":0,\"y\":14,\"w\":6,\"h\":6,\"i\":\"24\"},\"id\":\"dcda5680-2927-11e8-b2a2-09f3986ae284\",\"type\":\"visualization\",\"version\":\"6.2.2\"},{\"panelIndex\":\"25\",\"gridData\":{\"x\":6,\"y\":14,\"w\":6,\"h\":6,\"i\":\"25\"},\"id\":\"ff2af9b0-2927-11e8-b2a2-09f3986ae284\",\"type\":\"visualization\",\"version\":\"6.2.2\"},{\"panelIndex\":\"26\",\"gridData\":{\"x\":8,\"y\":8,\"w\":4,\"h\":6,\"i\":\"26\"},\"id\":\"22f7de30-4949-11e8-9576-313be7c6b44b\",\"type\":\"visualization\",\"version\":\"6.2.4\"}]",
+        "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":2,\"h\":17,\"i\":\"1\"},\"id\":\"b3b449d0-3429-11e7-9d52-4f090484f59e\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"5\",\"gridData\":{\"x\":5,\"y\":11,\"w\":3,\"h\":6,\"i\":\"5\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"id\":\"6ef90c30-34c0-11e7-9b32-bb903919ead9\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"6\",\"gridData\":{\"x\":2,\"y\":11,\"w\":3,\"h\":6,\"i\":\"6\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"id\":\"57a9a3f0-34c0-11e7-9b32-bb903919ead9\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"7\",\"gridData\":{\"x\":2,\"y\":2,\"w\":5,\"h\":3,\"i\":\"7\"},\"id\":\"45a652b0-34c1-11e7-917c-af7a9d11771a\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"10\",\"gridData\":{\"x\":0,\"y\":23,\"w\":12,\"h\":6,\"i\":\"10\"},\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}},\"id\":\"e8e3b8a0-34c1-11e7-917c-af7a9d11771a\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"13\",\"gridData\":{\"x\":4,\"y\":0,\"w\":8,\"h\":2,\"i\":\"13\"},\"embeddableConfig\":{\"vis\":{\"legendOpen\":false}},\"id\":\"1ecdd2e0-34c0-11e7-9b32-bb903919ead9\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"16\",\"gridData\":{\"x\":0,\"y\":29,\"w\":12,\"h\":16,\"i\":\"16\"},\"columns\":[\"source_ip\",\"source_port\",\"destination_ip\",\"destination_port\",\"uid\",\"_id\"],\"id\":\"d46522e0-342d-11e7-9e93-53b62e1857b2\",\"sort\":[\"@timestamp\",\"desc\"],\"type\":\"search\",\"version\":\"6.1.1\"},{\"panelIndex\":\"17\",\"gridData\":{\"x\":7,\"y\":2,\"w\":5,\"h\":3,\"i\":\"17\"},\"id\":\"e3717d80-6e0f-11e7-8624-1fb07dd76c6a\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"21\",\"gridData\":{\"x\":8,\"y\":11,\"w\":4,\"h\":3,\"i\":\"21\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 0\":\"rgb(0,104,55)\",\"1 - 999999\":\"rgb(165,0,38)\"}}},\"id\":\"4d89e140-6f09-11e7-9d31-23c0596994a7\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"22\",\"gridData\":{\"x\":8,\"y\":14,\"w\":4,\"h\":3,\"i\":\"22\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 0\":\"rgb(0,104,55)\",\"1 - 999999\":\"rgb(165,0,38)\"}}},\"id\":\"74861280-6f06-11e7-b253-211f64f37eda\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"23\",\"gridData\":{\"x\":2,\"y\":0,\"w\":2,\"h\":2,\"i\":\"23\"},\"embeddableConfig\":{\"vis\":{\"defaultColors\":{\"0 - 100\":\"rgb(0,104,55)\"}}},\"id\":\"AWDG9Qx0xQT5EBNmq3_2\",\"type\":\"visualization\",\"version\":\"6.1.1\"},{\"panelIndex\":\"24\",\"gridData\":{\"x\":0,\"y\":17,\"w\":6,\"h\":6,\"i\":\"24\"},\"id\":\"dcda5680-2927-11e8-b2a2-09f3986ae284\",\"type\":\"visualization\",\"version\":\"6.2.2\"},{\"panelIndex\":\"25\",\"gridData\":{\"x\":6,\"y\":17,\"w\":6,\"h\":6,\"i\":\"25\"},\"id\":\"ff2af9b0-2927-11e8-b2a2-09f3986ae284\",\"type\":\"visualization\",\"version\":\"6.2.2\"},{\"panelIndex\":\"26\",\"gridData\":{\"x\":5,\"y\":5,\"w\":3,\"h\":6,\"i\":\"26\"},\"id\":\"22f7de30-4949-11e8-9576-313be7c6b44b\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"27\",\"gridData\":{\"x\":2,\"y\":5,\"w\":3,\"h\":6,\"i\":\"27\"},\"id\":\"0c338e50-4a4e-11e8-9b0a-f1d33346f773\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"28\",\"gridData\":{\"x\":8,\"y\":5,\"w\":4,\"h\":6,\"i\":\"28\"},\"id\":\"49e04860-4a4e-11e8-9b0a-f1d33346f773\",\"type\":\"visualization\",\"version\":\"6.2.4\"}]",
         "optionsJSON": "{\"darkTheme\":true,\"useMargins\":true}",
         "version": 1,
         "timeRestore": false,
