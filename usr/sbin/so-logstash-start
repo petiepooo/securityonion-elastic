@@ -19,7 +19,8 @@
 
 . /etc/nsm/securityonion.conf
 
-CUSTOM_CONF="/etc/logstash/custom"
+CUSTOM_CONFIGS="/etc/logstash/custom/configs"
+CUSTOM_TEMPLATES="/etc/logstash/custom/templates"
 INPUT_REDIS_CONF="/etc/logstash/conf.d/0900_input_redis.conf"
 OUTPUT_REDIS_CONF="/etc/logstash/conf.d.redis.output/9999_output_redis.conf"
 CONFD="/etc/logstash/conf.d"
@@ -30,12 +31,20 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                 echo "Already started!"
         else
 		docker rm so-logstash >/dev/null 2>&1
-                if [ -d $CUSTOM_CONF ]; then
-			rsync $CUSTOM_CONF/*.conf /etc/logstash/conf.d >/dev/null 2>&1
-                        rsync $CUSTOM_CONF/*.json /etc/logstash/ >/dev/null 2>&1
+		
+		# Sync custom config files
+		if [ -d $CUSTOM_CONFIGS ]; then
+			rsync $CUSTOM_CONFIGS/*.conf /etc/logstash/conf.d >/dev/null 2>&1
 		else
-			mkdir $CUSTOM_CONF
+			mkdir -p $CUSTOM_CONFIGS
 		fi
+		# Sync custom templates		
+		if [ -d $CUSTOM_TEMPLATES ]; then
+                        rsync $CUSTOM_TEMPLATES/*.json /etc/logstash/ >/dev/null 2>&1
+                else    
+                        mkdir -p $CUSTOM_TEMPLATES
+                fi
+
 		if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
 			ln -sf ../conf.d.available/8502_postprocess_freq_analysis_bro_dns.conf /etc/logstash/conf.d/8502_postprocess_freq_analysis_bro_dns.conf
 			ln -sf ../conf.d.available/8503_postprocess_freq_analysis_bro_http.conf /etc/logstash/conf.d/8503_postprocess_freq_analysis_bro_http.conf
@@ -129,9 +138,15 @@ EOF
                         --volume /etc/logstash/jvm.options:/usr/share/logstash/config/jvm.options:ro \
 			--volume /etc/logstash/log4j2.properties:/usr/share/logstash/config/log4j2.properties:ro \
                         --volume /etc/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:ro \
-                        --volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
-			--volume /etc/logstash/beats-template.json:/beats-template.json:ro \
-                        --volume $CONFD:/usr/share/logstash/pipeline/:ro \
+			--volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
+			--volume /etc/logstash/logstash-import-template.json:/logstash-import-template.json:ro \
+			--volume /etc/logstash/logstash-bro-template.json:/logstash-bro-template.json:ro \
+			--volume /etc/logstash/logstash-ids-template.json:/logstash-ids-template.json:ro \
+			--volume /etc/logstash/logstash-syslog-template.json:/logstash-syslog-template.json:ro \
+			--volume /etc/logstash/logstash-firewall-template.json:/logstash-firewall-template.json:ro \
+                        --volume /etc/logstash/beats-template.json:/beats-template.json:ro \
+                        --volume /etc/logstash/custom/templates/:/etc/logstash/custom/templates/:ro \
+			--volume $CONFD:/usr/share/logstash/pipeline/:ro \
                         --volume /etc/logstash/conf.d.available/:/usr/share/logstash/conf.d.available/:ro \
                         --volume /etc/nsm/rules:/etc/nsm/rules:ro \
                         --volume /lib/dictionaries:/lib/dictionaries:ro \
