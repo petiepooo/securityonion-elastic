@@ -449,13 +449,16 @@ The master server queries Storage Nodes via cross cluster search.\n"
 	Forward)
 		SENSOR=1
 		FORWARD="yes"
+		ELASTIC="no"
 		ELASTIC_ACTION_CONFIRM="- Forward logs to master server.\n"
 		;;
 	Heavy)
 		SENSOR=1
+		ELASTIC="yes"
 		;;	
 	Storage)
 		SENSOR=0
+		ELASTIC="yes"
 		LOGSTASH_INPUT_REDIS="yes"
 		IDS_LB_PROCS_CONFIRM=""
 		BRO_LB_PROCS_CONFIRM=""
@@ -918,7 +921,7 @@ fi
 #########################################
 # Ask whether or not to use Elastic
 #########################################
-if [ $CUSTOM -eq 1 ]; then
+if [ $CUSTOM -eq 1 ] && [ $SERVER -eq 1 ] && [ $SENSOR -eq 1 ]; then
 TEXT="The Elastic Stack is a platform for data ingestion, formatting, and visualization.\n\
 built on ElasticSearch, Logstash, and Kibana.  Our customized stack also includes \n\
 the use of DomainStats, FreqServer, Curator, and Elastalert.\n\
@@ -1273,6 +1276,14 @@ if [ "$SERVER" -ne 1 ]; then
 	# Save configuration
 	echo "SSH_USERNAME=$SSH_USERNAME" > $SSH_CONF
 	echo "SERVERNAME=$SERVERNAME" >> $SSH_CONF
+fi
+if [ "$FORWARD" = "yes" ]; then
+	# If AUTOSSH_OPTIONS is already in SSH_CONF, remove it and replace it with new value.
+	if grep "AUTOSSH_OPTIONS=" $SSH_CONF >/dev/null 2>&1; then
+		sed -i 's/AUTOSSH_OPTIONS.*/AUTOSSH_OPTIONS="-L 6050:localhost:6050"/' $SSH_CONF >> $LOG 2>&1
+	else
+		echo 'AUTOSSH_OPTIONS="-L 6050:localhost:6050"' >> $SSH_CONF
+	fi
 fi
 
 #########################################
@@ -1950,76 +1961,68 @@ EOF
     		echo "95"
 		echo "# Please wait while performing final node configuration..." | tee -a $LOG
 
-    		if [ "$FORWARD" = "yes" ]; then
-                        # If AUTOSSH_OPTIONS is already in SSH_CONF, remove it and replace it with new value.
-                        if grep "AUTOSSH_OPTIONS=" $SSH_CONF >/dev/null 2>&1; then
-                                sed -i 's/AUTOSSH_OPTIONS.*/AUTOSSH_OPTIONS="-L 6050:localhost:6050"/' $SSH_CONF >> $LOG 2>&1
-                        else
-                                echo 'AUTOSSH_OPTIONS="-L 6050:localhost:6050"' >> $SSH_CONF
-                        fi
+		if [ "$LOGSTASH_INPUT_REDIS" = "yes" ]; then
+			if grep "AUTOSSH_OPTIONS=" $SSH_CONF >/dev/null 2>&1; then
+				sed -i 's/AUTOSSH_OPTIONS.*/AUTOSSH_OPTIONS="-L 172.18.0.1:6379:localhost:6379"/' $SSH_CONF >> $LOG 2>&1
+			else
+				echo 'AUTOSSH_OPTIONS="-L 172.18.0.1:6379:localhost:6379"' >> $SSH_CONF
+			fi
+		ufw allow proto tcp from 172.18.0.0/24 to 172.18.0.1 port 6379 >> $LOG 2>&1
+		fi
+
+		# We need to determine a few things from the master server:
+
+		# DOCKER_INTERFACE, DOCKER_NETWORK, and REVERSE_PORT
+
+		# DOCKER_INTERFACE
+		SSH_CMD="sudo /usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Gateway'"
+		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
+		DOCKER_INTERFACE=$(echo $SSH_OUTPUT | cut -d\" -f2)
+		echo "DOCKER_INTERFACE is $DOCKER_INTERFACE" >> $LOG 2>&1
+
+		# DOCKER_NETWORK
+		SSH_CMD="sudo /usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Subnet'"
+		SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
+		DOCKER_NETWORK=$(echo $SSH_OUTPUT | cut -d\" -f2)
+		echo "DOCKER_NETWORK is $DOCKER_NETWORK" >> $LOG 2>&1
+
+		# REVERSE_PORT
+		SSH_CMD='sudo /usr/sbin/so-crossclustercheck | jq "." | grep ":5" | cut -d: -f2 | cut -d\" -f1 | sort | tail -1'
+		HIGHEST_REVERSE_PORT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
+		if [ "$HIGHEST_REVERSE_PORT" = "" ]; then
+			echo "Found no other nodes." >> $LOG 2>&1
+			REVERSE_PORT=50000
 		else
-			if [ "$LOGSTASH_INPUT_REDIS" = "yes" ]; then
-		                if grep "AUTOSSH_OPTIONS=" $SSH_CONF >/dev/null 2>&1; then
-		                        sed -i 's/AUTOSSH_OPTIONS.*/AUTOSSH_OPTIONS="-L 172.18.0.1:6379:localhost:6379"/' $SSH_CONF >> $LOG 2>&1
-		                else
-		                        echo 'AUTOSSH_OPTIONS="-L 172.18.0.1:6379:localhost:6379"' >> $SSH_CONF
-		                fi
-				ufw allow proto tcp from 172.18.0.0/24 to 172.18.0.1 port 6379 >> $LOG 2>&1
+			echo "HIGHEST_REVERSE_PORT is $HIGHEST_REVERSE_PORT" >> $LOG 2>&1
+			if [ ${HIGHEST_REVERSE_PORT} -gt 49999 ] && [ ${HIGHEST_REVERSE_PORT} -lt 59999 ]; then
+				let REVERSE_PORT=HIGHEST_REVERSE_PORT+1
 			fi
+		fi
+		echo "REVERSE_PORT is $REVERSE_PORT" >> $LOG 2>&1
 
-			# We need to determine a few things from the master server:
-
-			# DOCKER_INTERFACE, DOCKER_NETWORK, and REVERSE_PORT
-
-			# DOCKER_INTERFACE
-			SSH_CMD="sudo /usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Gateway'"
-			SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
-			DOCKER_INTERFACE=$(echo $SSH_OUTPUT | cut -d\" -f2)
-			echo "DOCKER_INTERFACE is $DOCKER_INTERFACE" >> $LOG 2>&1
-
-			# DOCKER_NETWORK
-			SSH_CMD="sudo /usr/sbin/so-elastic-network | jq '.[0].IPAM.Config[0].Subnet'"
-			SSH_OUTPUT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
-			DOCKER_NETWORK=$(echo $SSH_OUTPUT | cut -d\" -f2)
-			echo "DOCKER_NETWORK is $DOCKER_NETWORK" >> $LOG 2>&1
-
-			# REVERSE_PORT
-			SSH_CMD='sudo /usr/sbin/so-crossclustercheck | jq "." | grep ":5" | cut -d: -f2 | cut -d\" -f1 | sort | tail -1'
-			HIGHEST_REVERSE_PORT=`ssh -i $KEY $SSH_USERNAME@$SERVERNAME "$SSH_CMD"`
-			if [ "$HIGHEST_REVERSE_PORT" = "" ]; then
-				echo "Found no other nodes." >> $LOG 2>&1
-				REVERSE_PORT=50000
-			else
-				echo "HIGHEST_REVERSE_PORT is $HIGHEST_REVERSE_PORT" >> $LOG 2>&1
-				if [ ${HIGHEST_REVERSE_PORT} -gt 49999 ] && [ ${HIGHEST_REVERSE_PORT} -lt 59999 ]; then
-					let REVERSE_PORT=HIGHEST_REVERSE_PORT+1
-				fi
-			fi
-			echo "REVERSE_PORT is $REVERSE_PORT" >> $LOG 2>&1
-
-			# Now that we've determined those 3 values, we need to store DOCKER_INTERFACE and REVERSE_PORT in SSH_CONF.
+		# Now that we've determined those 3 values, we need to store DOCKER_INTERFACE and REVERSE_PORT in SSH_CONF.
 	
-    			# If DOCKER_INTERFACE is not already in SSH_CONF, then store it for future use.
-			if grep "DOCKER_INTERFACE=" $SSH_CONF >/dev/null 2>&1; then
-				echo "DOCKER_INTERFACE already exists in $SSH_CONF." >> $LOG 2>&1
-			else
-				echo "DOCKER_INTERFACE=$DOCKER_INTERFACE" >> $SSH_CONF
-			fi
+    		# If DOCKER_INTERFACE is not already in SSH_CONF, then store it for future use.
+		if grep "DOCKER_INTERFACE=" $SSH_CONF >/dev/null 2>&1; then
+			echo "DOCKER_INTERFACE already exists in $SSH_CONF." >> $LOG 2>&1
+		else
+			echo "DOCKER_INTERFACE=$DOCKER_INTERFACE" >> $SSH_CONF
+		fi
 
-	    		# If REVERSE_PORT is not already in SSH_CONF, then store it for future use.
-			if grep "REVERSE_PORT=" $SSH_CONF >/dev/null 2>&1; then
-				echo "REVERSE_PORT already exists in $SSH_CONF." >> $LOG 2>&1
-			else
-				echo "REVERSE_PORT=$REVERSE_PORT" >> $SSH_CONF
-			fi
+	    	# If REVERSE_PORT is not already in SSH_CONF, then store it for future use.
+		if grep "REVERSE_PORT=" $SSH_CONF >/dev/null 2>&1; then
+			echo "REVERSE_PORT already exists in $SSH_CONF." >> $LOG 2>&1
+		else
+			echo "REVERSE_PORT=$REVERSE_PORT" >> $SSH_CONF
+		fi
 
-			# Configure Elasticsearch
-			ELASTIC_CONFIG="/etc/elasticsearch/elasticsearch.yml"
-			echo "transport.bind_host: 0.0.0.0" >> $ELASTIC_CONFIG
-			echo "transport.publish_host: $DOCKER_INTERFACE" >> $ELASTIC_CONFIG
-			echo "transport.publish_port: $REVERSE_PORT" >> $ELASTIC_CONFIG
-			docker restart so-elasticsearch >> $LOG 2>&1
-			cat << EOF >> $SOSETUPSCP
+		# Configure Elasticsearch
+		ELASTIC_CONFIG="/etc/elasticsearch/elasticsearch.yml"
+		echo "transport.bind_host: 0.0.0.0" >> $ELASTIC_CONFIG
+		echo "transport.publish_host: $DOCKER_INTERFACE" >> $ELASTIC_CONFIG
+		echo "transport.publish_port: $REVERSE_PORT" >> $ELASTIC_CONFIG
+		docker restart so-elasticsearch >> $LOG 2>&1
+cat << EOF >> $SOSETUPSCP
 if ! grep "Match User $SSH_USERNAME" /etc/ssh/sshd_config >/dev/null 2>&1; then
 echo Match User $SSH_USERNAME >> /etc/ssh/sshd_config
 echo '   GatewayPorts clientspecified' >> /etc/ssh/sshd_config
@@ -2029,7 +2032,6 @@ ufw allow proto tcp from $DOCKER_NETWORK to $DOCKER_INTERFACE port $REVERSE_PORT
 source /etc/nsm/securityonion.conf
 curl -XPUT http://\$ELASTICSEARCH_HOST:\$ELASTICSEARCH_PORT/_cluster/settings -H'Content-Type: application/json' -d '{"persistent": {"search": {"remote": {"$HOSTNAME": {"skip_unavailable": "true", "seeds": ["$DOCKER_INTERFACE:$REVERSE_PORT"]}}}}}'
 EOF
-		fi
 
 	fi
 fi
