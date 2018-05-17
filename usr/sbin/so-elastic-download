@@ -81,7 +81,7 @@ function download {
 download
 
 # Check if successful
-if [ $? -eq 0 ]; then
+if dpkg -l |grep redis >/dev/null 2>&1 && dpkg -l |grep docker >/dev/null 2>&1 ; then
 	ELASTIC_DL_CONF="/etc/nsm/elasticdownload.conf"
 	if grep 'INSTALLED="yes"' $ELASTIC_DL_CONF; then
 		:
