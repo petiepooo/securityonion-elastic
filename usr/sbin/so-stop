@@ -19,11 +19,13 @@
 
 . /etc/nsm/securityonion.conf
 
+/usr/sbin/so-autossh-stop
+
 echo
 header "Stopping NSM services..."
 echo
 
-service nsm stop
+/usr/sbin/nsm --all --stop
 
 # If Elasticsearch is not enabled, then exit immediately
 [ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit

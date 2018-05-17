@@ -19,7 +19,7 @@
 
 . /etc/nsm/securityonion.conf
 
-if [ ${ELASTALERT_ENABLED} = "yes" ]; then
+if [ "${ELASTALERT_ENABLED}" = "yes" ]; then
 
 	header "Configuring ElastAlert"
 

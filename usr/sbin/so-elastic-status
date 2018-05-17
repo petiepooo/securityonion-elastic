@@ -20,13 +20,13 @@
 . /etc/nsm/securityonion.conf
 
 function ok(){
-	echo -ne "$STAT[${GREEN_BOLD}  OK  ${NORMAL}]"
+	echo -e "$STAT${NORMAL}[${GREEN_BOLD}  OK  ${NORMAL}]"
 }
 function fail(){
-	echo -ne "$STAT[${RED_BOLD} FAIL ${NORMAL}]"
+	echo -e "$STAT${NORMAL}[${RED_BOLD} FAIL ${NORMAL}]"
 }
 function warn(){
-	echo -ne "$STAT[${YELLOW_BOLD} WARN ${NORMAL}]"
+	echo -e "$STAT${NORMAL}[${YELLOW_BOLD} WARN ${NORMAL}]"
 }
 
 # If Elasticsearch is not enabled, then exit immediately
@@ -46,12 +46,12 @@ fi
 
 if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 	QUEUE_TYPE=$(curl -s "$LOGSTASH_HOST:$LOGSTASH_PORT/_node/stats" | jq .pipelines.main.queue.type | sed s/\"//g)
-	echo -ne "   ${BLUE}*${NORMAL} so-logstash"
+	echo -ne "  ${BLUE}*${NORMAL} so-logstash"
 	if docker ps |	grep -q so-logstash; then
 		if [ "$QUEUE_TYPE" == "memory" ] || [ "$QUEUE_TYPE" == "persisted" ]; then	
 			ok
 		else
-			echo -n " -- Logstash has started, but is still initializing...$(warn)"
+			echo " -- Logstash has started, but is still initializing...$(warn)"
 		fi
 	else
 		fail
@@ -59,7 +59,7 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 fi
 
 if [ "$KIBANA_ENABLED" = "yes" ]; then
-	echo -ne "   ${BLUE}*${NORMAL} so-kibana"
+	echo -ne "  ${BLUE}*${NORMAL} so-kibana"
 	if docker ps |  grep -q so-kibana; then
                 ok
         else
@@ -68,7 +68,7 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 fi
 
 if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
-	echo -ne "   ${BLUE}*${NORMAL} so-freqserver"	
+	echo -ne "  ${BLUE}*${NORMAL} so-freqserver"	
 	if docker ps |  grep -q so-freqserver; then
                 ok
         else
@@ -77,7 +77,7 @@ if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
 fi
 
 if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
-	echo -ne "   ${BLUE}*${NORMAL} so-domainstats"
+	echo -ne "  ${BLUE}*${NORMAL} so-domainstats"
 	if docker ps |  grep -q so-domainstats; then
 		ok
         else
@@ -86,7 +86,7 @@ if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
 fi
 
 if [ "$CURATOR_ENABLED" = "yes" ]; then
-	echo -ne "   ${BLUE}*${NORMAL} so-curator"
+	echo -ne "  ${BLUE}*${NORMAL} so-curator"
 	if docker ps |  grep -q so-curator; then
 		ok
         else
@@ -95,7 +95,7 @@ if [ "$CURATOR_ENABLED" = "yes" ]; then
 fi
 
 if [ "$ELASTALERT_ENABLED" = "yes" ]; then
-	echo -ne "   ${BLUE}*${NORMAL} so-elastalert"
+	echo -ne "  ${BLUE}*${NORMAL} so-elastalert"
         if docker ps |  grep -q so-elastalert; then
 		ok
 	else
@@ -104,7 +104,7 @@ if [ "$ELASTALERT_ENABLED" = "yes" ]; then
 fi
 
 if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ]; then
-	echo -ne "   ${BLUE}*${NORMAL} redis"
+	echo -ne "  ${BLUE}*${NORMAL} redis"
         if pgrep redis-server > /dev/null; then
 		ok
 	else

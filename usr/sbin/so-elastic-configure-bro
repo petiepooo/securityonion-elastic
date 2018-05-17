@@ -41,7 +41,7 @@ cat << EOF >> ${LOCALBRO}
 @load json-logs
 EOF
 
-		if [ ${BRO_ENABLED} = "yes" ]; then
+		if [ "${BRO_ENABLED}" = "yes" ]; then
 			/usr/sbin/nsm_sensor_ps-restart --only-bro
 		fi
 	fi

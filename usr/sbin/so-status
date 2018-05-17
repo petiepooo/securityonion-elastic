@@ -19,6 +19,8 @@
 . /usr/lib/nsmnow/lib-console-utils
 . /etc/nsm/securityonion.conf
 
-service nsm status
+/usr/sbin/so-autossh-status
+
+/usr/sbin/nsm --all --status
 
 /usr/sbin/so-elastic-status

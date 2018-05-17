@@ -19,11 +19,13 @@
 
 . /etc/nsm/securityonion.conf
 
+/usr/sbin/so-autossh-restart
+
 echo
 header "Restarting NSM services..."
 echo
 
-service nsm restart
+/usr/sbin/nsm --all --restart
 
 # If Elasticsearch is not enabled, then exit immediately
 [ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit

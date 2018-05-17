@@ -34,8 +34,6 @@ done
 
 . /usr/sbin/so-elastic-configure-syslog-ng
 
-. /usr/sbin/so-elastic-configure-ossec-rules
-
 cd $ELASTICDIR
 
 . /usr/sbin/so-elastic-configure-curator
