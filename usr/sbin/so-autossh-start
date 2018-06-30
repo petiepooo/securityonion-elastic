@@ -45,12 +45,6 @@ if [ -f ${CONFIG} ]; then
 	# create reverse port forward for cross cluster search
 	if [ "${ELASTICSEARCH_ENABLED}" = "yes" ] && [ -n ${REVERSE_PORT} ]; then
 		REVERSE_PORT_FORWARD="-R ${DOCKER_INTERFACE}:${REVERSE_PORT}:${ES_HOST}:${ES_TRANSPORT}"
-		# Wait up to 30 seconds for Docker to bring up ${DOCKER_INTERFACE}
-		for i in `seq 1 30`; do 
-			ping -c1 -w1 ${DOCKER_INTERFACE} &>/dev/null && break
-			DATE=$(date)
-			echo "${DATE} ping ${DOCKER_INTERFACE} - attempt $i failed" >> ${AUTOSSH_LOG}
-		done
 	fi
 
 	# Restart even if ssh fails on the first run
@@ -67,6 +61,7 @@ if [ -f ${CONFIG} ]; then
 		/usr/bin/autossh -M 0 -f -q -N \
 			-o "ServerAliveInterval ${SERVERALIVEINTERVAL}" \
 			-o "ServerAliveCountMax ${SERVERALIVECOUNTMAX}" \
+			-o "ExitOnForwardFailure yes" \
 			-i ${KEY} \
 			${REVERSE_PORT_FORWARD} \
 			${AUTOSSH_OPTIONS} \

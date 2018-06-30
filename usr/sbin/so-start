@@ -19,22 +19,18 @@
 
 . /etc/nsm/securityonion.conf
 
-# so-iso-boot is part of the securityonion-iso package and is considered optional
-[ -x /usr/sbin/so-iso-boot ] && /usr/sbin/so-iso-boot
-
-/usr/sbin/so-autossh-start
-
 echo
 header "Starting NSM services..."
 echo
-
 /usr/sbin/nsm --all --start
 
-# If Elasticsearch is not enabled, then exit immediately
-[ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit
+if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
+	echo
+	header "Starting Elastic stack..."
+	echo
+	/usr/sbin/so-elastic-start
 
-echo
-header "Starting Elastic stack..."
-echo
+fi
 
-/usr/sbin/so-elastic-start
+# Now that all services have started, bring up SSH tunnel
+/usr/sbin/so-autossh-start

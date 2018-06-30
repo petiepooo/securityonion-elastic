@@ -90,8 +90,10 @@ if [ ! -f /etc/elasticsearch/jvm.options ]; then
 	cp -av $SRC/etc/elasticsearch/jvm.options /etc/elasticsearch/jvm.options
 
 	# Elasticsearch Heap Size
-	# 25% of RAM up to a maximum of 25GB
-	if [ $TOTAL_MEM -ge 100000 ]; then
+	if [ -f /opt/bro/etc/node.cfg ] &&  grep "^type=standalone$" /opt/bro/etc/node.cfg > /dev/null; then
+		# If user chose Evaluation Mode, set ES heap to 1000MB
+		ES_HEAP_SIZE="1000m"
+	elif [ $TOTAL_MEM -ge 100000 ]; then
         	# Set a max of 25GB for heap size
 	        # https://www.elastic.co/guide/en/elasticsearch/guide/current/heap-sizing.html
 		# https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html
@@ -119,8 +121,10 @@ done
 if [ ! -f /etc/logstash/jvm.options ]; then
 	cp -av $SRC/etc/logstash/jvm.options /etc/logstash/jvm.options
 	# Logstash Heap Size
-	# 25% of RAM up to a maximum of 4GB
-	if [ $TOTAL_MEM -ge 16000 ]; then
+	if [ -f /opt/bro/etc/node.cfg ] &&  grep "^type=standalone$" /opt/bro/etc/node.cfg > /dev/null; then
+		# If user chose Evaluation Mode, set LS heap to 1600MB (any lower and Logstash fails to start)
+		LS_HEAP_SIZE="1600m"
+	elif [ $TOTAL_MEM -ge 16000 ]; then
         	LS_HEAP_SIZE="4000m"
 	else
         	# Set heap size to 25% of available memory

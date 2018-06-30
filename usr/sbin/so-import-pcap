@@ -288,10 +288,8 @@ cd - >/dev/null
 
 # split traffic into daily directories so that sguil's pcap_agent can find it
 if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
-	START=`capinfos $PCAP -a |grep "Start time:" | awk '{print $4,$5,$7}'`
-	START=`date +%Y-%m-%d --date="$START"`
-	END=`capinfos $PCAP -e |grep "End time:" | awk '{print $4,$5,$7}'`
-	END=`date +%Y-%m-%d --date="$END"`
+	START=`capinfos $PCAP -a |grep "First packet time:" | awk '{print $4}'`
+	END=`capinfos $PCAP -e |grep "Last packet time:" | awk '{print $4}'`
 	ENDNEXT=`date +%Y-%m-%d --date="$END 1 day"`
 	CURRENT="$START"
 	while [ "$CURRENT" != "$ENDNEXT" ]; do

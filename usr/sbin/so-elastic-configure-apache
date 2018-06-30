@@ -23,10 +23,21 @@ cp -av $SRC/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-av
 cp -av $SRC/var/www/so/* /var/www/so/
 
 # Enable necessary Apache2 modules
-a2enmod auth_form
-a2enmod request
-a2enmod session_cookie
-a2enmod session_crypto
+if ! [ -f /etc/apache2/mods-enabled/auth_form.load ]; then
+	a2enmod auth_form
+fi
+
+if ! [ -f /etc/apache2/mods-enabled/request.load ]; then
+	a2enmod request
+fi
+
+if ! [ -f /etc/apache2/mods-enabled/session_cookie.load ]; then
+	a2enmod session_cookie
+fi
+
+if ! [ -f /etc/apache2/mods-enabled/session_crypto.load ]; then
+	a2enmod session_crypto
+fi
 
 FILE="/etc/apache2/session"
 LC_ALL=C </dev/urandom tr -dc '[:alnum:]' | head -c 64 >> $FILE
@@ -46,20 +57,26 @@ if [ ! -f $FILE ]; then
 fi
 
 # Disable ELSA site and perl module
-a2dissite elsa
-a2dismod perl
+a2dissite elsa >/dev/null 2>&1
+a2dismod  perl >/dev/null 2>&1
 
-# Remove ELSA link from Squert
-mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e 'delete from filters where alias="ELSA";'
+# If mysqld is running, update links in Squert
+if pgrep mysqld >/dev/null 2>&1; then
+	# Remove ELSA link from Squert
+	mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e 'delete from filters where alias="ELSA";'
 
-# Add Elastic link to Squert
-MYSQL="mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e"
-ALIAS="Kibana"
-HEXALIAS=$(xxd -pu -c 256 <<< "$ALIAS")
-URL="/app/kibana#/dashboard/68563ed0-34bf-11e7-9b32-bb903919ead9?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(columns:!(_source),index:'*:logstash-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'\"\${var}\"')),sort:!('@timestamp',desc))"
-HEXURL=$(xxd -pu -c 356 <<< "$URL")
-$MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','$HEXALIAS','','$ALIAS','$HEXURL');"
+	# Add Elastic link to Squert
+	MYSQL="mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -e"
+	ALIAS="Kibana"
+	HEXALIAS=$(xxd -pu -c 256 <<< "$ALIAS")
+	URL="/app/kibana#/dashboard/68563ed0-34bf-11e7-9b32-bb903919ead9?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(columns:!(_source),index:'*:logstash-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'\"\${var}\"')),sort:!('@timestamp',desc))"
+	HEXURL=$(xxd -pu -c 356 <<< "$URL")
+	$MYSQL "REPLACE INTO filters (type,username,global,name,notes,alias,filter) VALUES ('url','','1','$HEXALIAS','','$ALIAS','$HEXURL');"
+fi
 
-service apache2 restart
+# If Apache is currently running, restart it
+if pgrep apache2 >/dev/null 2>&1; then
+	service apache2 restart
+fi
 
 echo "Done!"

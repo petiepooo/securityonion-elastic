@@ -15,15 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-. /usr/sbin/so-elastic-common
+. /usr/sbin/so-common
 
-header "Disabling ELSA"
-rm -f /etc/cron.d/elsa
-FILE="/etc/nsm/securityonion.conf"
-sed -i 's/ELSA=YES/ELSA=NO/' $FILE
-if [ -f /etc/init/sphinxsearch.conf ]; then
-	service sphinxsearch stop
-	echo "manual" > /etc/init/sphinxsearch.conf.override
-fi
+. /etc/nsm/securityonion.conf
 
-echo "Done!"
+# so-iso-boot is part of the securityonion-iso package and is considered optional
+[ -x /usr/sbin/so-iso-boot ] && /usr/sbin/so-iso-boot
+
+# Now start the rest of the services
+/usr/sbin/so-start
