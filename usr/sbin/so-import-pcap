@@ -278,11 +278,14 @@ else
 	suricata --user sguil --group sguil -c /etc/nsm/$SENSOR/suricata.yaml -l /nsm/sensor_data/$SENSOR --runmode single -r $PCAP >/dev/null 2>&1
 fi
 
-# generate Bro logs and write them to /nsm/import/bro/
+# generate Bro logs and write them to a unique subdirectory in /nsm/import/bro/
 BRODIR="/nsm/import/bro"
 echo "...analyzing traffic with Bro."
 mkdir -p $BRODIR
-cd $BRODIR
+BROLOGDIR=$(mktemp -d -p $BRODIR -t bro-XXXXXXXX)
+chown $(stat $BRODIR -c %u:%g) $BROLOGDIR
+chmod $(stat $BRODIR -c %a) $BROLOGDIR
+cd $BROLOGDIR
 /opt/bro/bin/bro -r $PCAP local >/dev/null 2>&1
 cd - >/dev/null
 
