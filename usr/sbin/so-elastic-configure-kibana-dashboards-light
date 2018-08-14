@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# Copyright 2014,2015,2016,2017,2018 Security Onion Solutions, LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. /usr/sbin/so-elastic-common
+
+cp -av /opt/elastic/src/kibana/dashboards /opt/elastic/src/kibana/dashboards.dark
+sed -i 's|\\"darkTheme\\":true|\\"darkTheme\\":false|g' /opt/elastic/src/kibana/dashboards/*.json
+/usr/sbin/so-elastic-configure-kibana-dashboards
+rm -rf /opt/elastic/src/kibana/dashboards
+mv /opt/elastic/src/kibana/dashboards.dark /opt/elastic/src/kibana/dashboards
