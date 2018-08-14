@@ -1,0 +1,139 @@
+#!/bin/bash
+#
+# Copyright 2014,2015,2016,2017,2018 Security Onion Solutions, LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+SKIP=0
+
+#########################################
+# Options
+#########################################
+usage()
+{
+cat <<EOF
+
+Add Elasticsearch Template
+  Options:
+  -h         This message
+  -s         Specify source template file (path)
+  -t         Specify name of template
+
+EOF
+}
+
+while getopts "h:t:s:" OPTION
+do
+        case $OPTION in
+                h)
+                        usage
+                        exit 0
+                        ;;
+                s)
+                        SOURCE=$OPTARG
+			SKIP=1
+                        ;;
+                t)
+                        TEMPLATE=$OPTARG
+                        SKIP=1
+                        ;;
+		*)
+                        usage
+                        exit 0
+                        ;;
+        esac
+done
+
+function ask_template(){
+  echo
+  echo "Please specify the name of the template you would like to add:"
+  echo
+  echo "Ex. logstash"
+  echo
+  read TEMPLATE
+}
+
+function ask_source(){
+  echo "Please specify the source of the template you would like to add (where it is stored):"
+  echo
+  echo "Ex. /etc/logstash/custom/logstash-template.json"
+  echo
+  read SOURCE
+}
+
+function ask_confirm(){
+  echo
+  echo "According to the input provided, you would like to add the following template:"
+  echo
+  echo "Template name: $TEMPLATE"
+  echo "Template source: $SOURCE"
+  echo
+  echo "Would you like to continue?"
+  echo "If so, please type YES and press [ENTER]"
+  echo
+  read YN
+  
+  if [ "$YN" == "YES" ]; then
+          :
+  else
+          echo
+          echo "User chose not to continue...exiting"
+          echo
+          exit 0
+  fi
+}
+
+function add_template(){
+  if [ "$TEMPLATE" == "*" ]; then
+          echo
+          echo "Wildcard not allowed!  Exiting..."
+          echo
+          exit 0
+  fi
+  if [ ! -f "$SOURCE" ]; then
+	  echo
+	  echo "$SOURCE is not a valid path or file location."
+	  echo "Please specify another file path:"
+	  echo
+	  read SOURCE
+  fi
+  if curl -s -XPUT -H 'Content-Type: application/json' http://localhost:9200/_template/$TEMPLATE -d@$SOURCE  | grep "acknowledged"; then
+          echo
+          echo "Template successfully added."
+          echo
+  else
+          echo
+          curl -s -XPUT -H 'Content-Type: application/json' http://localhost:9200/_template/$TEMPLATE -d@$SOURCE 
+          echo
+  fi
+}
+
+if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
+	if [ $SKIP -ne 1 ]; then
+		ask_template
+		ask_source	
+		ask_confirm
+		add_template
+	else
+		add_template
+	fi
+else
+	echo
+	echo "Elasticsearch is not enabled! Exiting..."
+	echo
+fi

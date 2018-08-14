@@ -1,0 +1,118 @@
+#!/bin/bash
+#
+# Copyright 2014,2015,2016,2017,2018 Security Onion Solutions, LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
+
+SKIP=0
+
+#########################################
+# Options
+#########################################
+usage()
+{
+cat <<EOF
+
+Remove Elasticsearch Template
+  Options:
+  -h         This message
+  -t         Specify name of template
+
+EOF
+}
+
+while getopts "h:t:" OPTION
+do
+        case $OPTION in
+                h)
+                        usage
+                        exit 0
+                        ;;
+                t)
+                        TEMPLATE=$OPTARG
+			SKIP=1
+                        ;;
+                *)
+                        usage
+                        exit 0
+                        ;;
+        esac
+done
+
+function ask_template(){
+  echo
+  echo "Please specify the template (or template pattern) you would like to remove:"
+  echo
+  echo "Ex. logstash*"
+  echo
+  read TEMPLATE
+}
+
+function ask_confirm(){
+  echo
+  echo "According to the input provided, templates matching the following pattern will be removed: '$TEMPLATE'."
+  echo
+  echo "Would you like to continue?"
+  echo "If so, please type YES and press [ENTER]"
+  echo
+  read YN
+
+  if [ "$YN" == "YES" ]; then
+  	:
+  else
+  	echo
+  	echo "User chose not to continue...exiting"
+  	echo
+  	exit 0
+  fi
+}
+
+function remove_template(){
+  if [ "$TEMPLATE" == "*" ]; then
+	  echo
+	  echo "Wildcard not allowed!  Exiting..."
+          echo
+          exit 0
+  fi
+  echo
+  if curl -s -XDELETE localhost:9200/_template/$TEMPLATE | grep "acknowledged"; then
+	  echo
+	  echo "Template successfully removed."
+          echo
+  else
+	  echo	
+	  curl -s -XDELETE localhost:9200/_template/$TEMPLATE
+          echo
+  fi
+}
+
+	if [ $SKIP -ne 1 ]; then
+
+		ask_template	
+		ask_confirm
+		remove_template
+	else
+		remove_template
+	fi
+else
+	echo
+	echo "Elasticsearch is not enabled! Exiting..."
+	echo
+fi
