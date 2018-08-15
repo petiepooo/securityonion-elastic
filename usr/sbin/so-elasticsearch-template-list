@@ -20,7 +20,7 @@
 . /etc/nsm/securityonion.conf
 
 function list_templates(){
-  curl -s localhost:9200/_template/* | jq 'keys'
+  curl -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/* | jq 'keys'
 }
 
 if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
