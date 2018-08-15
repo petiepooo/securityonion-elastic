@@ -1,0 +1,261 @@
+#!/bin/bash
+#
+# Copyright 2014,2015,2016,2017,2018 Security Onion Solutions, LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+IFILE=""
+INDEX="logstash-test*"
+SHARDS="4"
+ORDER=0
+DFILE=""
+TMP="/tmp/template.json"
+SKIP=0
+
+#########################################
+# Options
+#########################################
+usage()
+{
+cat <<EOF
+
+Create Elasticsearch Template
+  Options:
+  -h         This message
+  -c         CSV file containing fields
+  -d         Destination file
+  -i         Name of index
+  -k         Use keyword datatype
+  -o         Template order
+  -s         Number of shards
+
+EOF
+}
+
+while getopts "h:c:d:i:ko:s:" OPTION
+do
+        case $OPTION in
+                h)
+                        usage
+                        exit 0
+                        ;;
+                c)
+                        IFILE=$OPTARG
+                        SKIP=1
+			;;
+                d)
+                        DFILE=$OPTARG
+                        SKIP=1
+                        ;;
+		i)
+			INDEX=$OPTARG
+                        SKIP=1
+                        ;;
+		k)
+			KEYWORD=1
+			SKIP=1
+			;;
+		o)
+			ORDER=$OPTARG
+                        SKIP=1
+                        ;;
+		s)
+			SHARDS=$OPTARG
+                        SKIP=1
+                        ;;
+                *)
+                        usage
+                        exit 0
+                        ;;
+        esac
+done
+
+function create_template() {
+# Generate base config
+cat << EOF > $DFILE
+{
+  "index_patterns": ["$INDEX"],
+  "version":50001,
+  "order" : $ORDER,
+  "settings":{
+    "number_of_replicas":0,
+    "number_of_shards":$SHARDS,
+    "index.refresh_interval":"30s"
+  },
+  "mappings":{
+    "doc":{
+       "dynamic": false,
+       "date_detection": false,
+       "properties":{
+EOF
+
+  if [ $KEYWORD == "YES" ]; then
+	  KEYWORD=1
+  fi
+  if [[ $KEYWORD = 1 ]]; then
+	  # Add each mapping
+	  while IFS=',' read -r f1 f2
+	  do
+		  for line in $IFILE; do
+cat << EOF >> $DFILE
+        "$f1":{
+          "type":"$f2"
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+	},
+EOF
+		  done
+	  done < "$IFILE"
+  else
+	# Add each mapping
+          while IFS=',' read -r f1 f2
+          do
+                  for line in $IFILE; do
+cat << EOF >> $DFILE
+        "$f1":{
+          "type":"$f2"
+        },
+EOF
+                  done
+          done < "$IFILE"
+  fi
+
+# Add closing braces
+cat << EOF >> $DFILE
+      }
+    }
+  }
+}
+EOF
+
+  # Clean up
+  tac $DFILE > $TMP
+  sed -i '0,/,/ s/,//' $TMP
+  tac $TMP > $DFILE
+  rm $TMP
+}
+
+function ask_index(){
+  echo
+  echo "Please specify the index to which this template will pertain:"
+  echo
+  echo "Ex. logstash-test-*"
+  echo
+  read TEMPLATE
+}
+
+function ask_shards(){
+  echo
+  echo "Please specify the number of shards to be used for this index:"
+  echo
+  echo "Ex. 4"
+  echo
+  echo "See the following for more guidance:"
+  echo "https://www.elastic.co/guide/en/elasticsearch/reference/current/_basic_concepts.html#getting-started-shards-and-replicas"
+  echo
+  read SHARDS
+}
+
+function ask_order(){
+  echo "Please specify the order for the template:"
+  echo
+  echo "Ex. 0"
+  echo
+  echo "An order of 1 will allow mappings to be overriden when matches from multiple templates occur."
+  echo
+  echo "See the following for more guidance:"
+  echo "https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html#multiple-templates"
+  echo
+  read ORDER
+}
+
+function ask_keyword(){
+  echo "Would you like to enable keyword fields? [YES|NO]"
+  echo
+  echo "Per Elastic documentation:"
+  echo
+  echo "A field to index structured content such as email addresses, hostnames, status codes, zip codes or tags."
+  echo "They are typically used for filtering (Find me all blog posts where status is published), for sorting, and for aggregations." 
+  echo "Keyword fields are only searchable by their exact value."
+  echo
+  echo "See the following for more guidance:"
+  echo "https://www.elastic.co/guide/en/elasticsearch/reference/current/keyword.html#keyword"
+  echo
+  read KEYWORD
+}
+
+function ask_ifile(){
+  echo "Please specify an input file to use for this template..."
+  echo
+  echo "The input file should be in CSV format,similar to below:"
+  echo
+  echo "<name_of_field>,<datatype>"
+  echo
+  echo "Ex."
+  echo "field1, text"
+  echo "field2, long"
+  echo
+  echo "The file path should be specified like:"
+  echo
+  echo "/home/<user>/template.csv"
+  echo
+  echo "See the following for more guidance:"
+  echo "https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html"
+  echo
+  read IFILE
+}
+
+function ask_dfile(){
+  echo "Please specify a destination file for this template"
+  echo
+  echo "Ex."
+  echo
+  echo "/etc/logstash/custom/custom-template.json"
+  echo
+  read DFILE
+}
+
+function ask_confirm(){
+  echo "We are about to create the template..."
+  echo
+  echo "Would you like to continue?"
+  echo "If so, please type YES and press [ENTER]"
+  echo
+  read YN
+
+  if [ "$YN" == "YES" ]; then
+	  :
+  else
+	  echo
+	  echo "User chose not to continue...exiting"
+	  echo
+	  exit 0
+  fi
+}
+
+if [ $SKIP -ne 1 ]; then
+	ask_index
+	ask_shards
+	ask_order
+	ask_keyword
+	ask_ifile
+	ask_dfile
+	ask_confirm
+	create_template	
+else
+	create_template
+fi
