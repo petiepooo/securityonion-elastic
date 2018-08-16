@@ -17,4 +17,4 @@
 
 . /usr/sbin/so-elastic-common
 
-/usr/sbin/pkill -HUP -f /usr/share/kibana/bin/../node/bin/node
+/usr/bin/pkill -HUP -f /usr/share/kibana/bin/../node/bin/node
