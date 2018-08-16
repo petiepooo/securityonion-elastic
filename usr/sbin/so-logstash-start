@@ -109,15 +109,17 @@ EOF
 
                 if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ]; then
 			# this is a master server outputting to redis
-			# logstash just needs 2 config files:
-			# syslog input
-			# redis output
-			# create a new config directory for these 2 files
+			# logstash just needs inputs and a redis output
+			# create a new config directory for these files
 			CONFD="/etc/logstash/conf.d.redis.output/"
 			mkdir -p $CONFD
 
-			# create symbolic link for syslog input
-			ln -sf ../conf.d.available/0000_input_syslogng.conf /etc/logstash/conf.d.redis.output/0000_input_syslogng.conf
+			# create a symbolic link for each input
+			cd /etc/logstash/conf.d.available
+			for i in 0???_input_*.conf; do
+				ln -sf ../conf.d.available/$i /etc/logstash/conf.d.redis.output/$i
+			done
+			cd - >/dev/null
 
 			# create the redis output if it doesn't already exist
 			if ! [ -f $OUTPUT_REDIS_CONF ]; then
