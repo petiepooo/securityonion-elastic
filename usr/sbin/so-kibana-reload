@@ -17,22 +17,4 @@
 
 . /usr/sbin/so-elastic-common
 
-if [ "${KIBANA_ENABLED}" = "no" ]; then
-
-	echo "Kibana is disabled, skipping config"
-
-else
-
-	# Load dashboards and index patterns first
-	. /usr/sbin/so-elastic-configure-kibana-dashboards
-
-	# Then set default index pattern and other config
-	. /usr/sbin/so-elastic-configure-kibana-config
-
-	# Create a logrotate file to rotate kibana.log
-	. /usr/sbin/so-elastic-configure-kibana-logrotate
-
-	# Finally, fix all shortcuts
-	. /usr/sbin/so-elastic-configure-kibana-shortcuts
-
-fi
+/usr/sbin/pkill -HUP -f /usr/share/kibana/bin/../node/bin/node
