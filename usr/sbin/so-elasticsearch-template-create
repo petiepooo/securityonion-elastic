@@ -110,7 +110,7 @@ EOF
 		  for line in $IFILE; do
 cat << EOF >> $DFILE
         "$f1":{
-          "type":"$f2"
+          "type":"$f2",
           "fields":{
             "keyword":{
               "type":"keyword"
