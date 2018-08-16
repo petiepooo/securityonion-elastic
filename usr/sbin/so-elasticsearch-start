@@ -19,6 +19,39 @@
 
 . /etc/nsm/securityonion.conf
 
+LOG="/var/log/elasticsearch/$(hostname).log"
+
+#########################################
+# Options
+#########################################
+usage()
+{
+cat <<EOF
+Start Elasticsearch
+  Options:
+  -h         This message
+  -v         Tail the Elasticsearch log after starting
+
+EOF
+}
+
+while getopts "h:v" OPTION
+do
+        case $OPTION in
+                h)
+                        usage
+                        exit 0
+                        ;;
+                v)
+                        TAIL=1
+                        ;;
+                *)
+                        usage
+                        exit 0
+                        ;;
+        esac
+done
+
 if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
         echo -n "so-elasticsearch: "
 
@@ -48,5 +81,10 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
 
 		# Other containers will connect to Elasticsearch over $DOCKERNET
 		docker network connect --alias elasticsearch $DOCKERNET so-elasticsearch
-        fi
+        	
+		# Tail log if -v option provided
+                if [[ "$TAIL" == 1 ]]; then
+                        tail -f $LOG
+                fi
+	fi
 fi

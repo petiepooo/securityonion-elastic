@@ -23,6 +23,39 @@ CUSTOM_CONF="/etc/logstash/custom"
 INPUT_REDIS_CONF="/etc/logstash/conf.d/0900_input_redis.conf"
 OUTPUT_REDIS_CONF="/etc/logstash/conf.d.redis.output/9999_output_redis.conf"
 CONFD="/etc/logstash/conf.d"
+LOG="/var/log/logstash/logstash.log"
+
+#########################################
+# Options
+#########################################
+usage()
+{
+cat <<EOF
+Start Logtash
+  Options:
+  -h         This message
+  -v         Tail the Logstash log after starting
+
+EOF
+}
+
+while getopts "h:v" OPTION
+do
+        case $OPTION in
+                h)
+                        usage
+                        exit 0
+                        ;;
+                v)
+                        TAIL=1
+                        ;;
+                *)
+                        usage
+                        exit 0
+                        ;;
+        esac
+done
+
 
 if [ "$LOGSTASH_ENABLED" = "yes" ]; then
         echo -n "so-logstash: "
@@ -143,5 +176,10 @@ EOF
 
 		# logstash will connect to elasticsearch, domainstats, and freqserver over $DOCKERNET
 		docker network connect --alias logstash $DOCKERNET so-logstash
-        fi
+        	
+		# Tail log if -v option provided
+		if [[ "$TAIL" == 1 ]]; then
+			tail -f $LOG
+		fi
+	fi
 fi
