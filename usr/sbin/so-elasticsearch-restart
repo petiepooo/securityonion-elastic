@@ -15,5 +15,40 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#########################################
+# Options
+#########################################
+usage()
+{
+cat <<EOF
+Restart Elasticsearch
+  Options:
+  -h         This message
+  -v         Tail the Elasticsearch log after starting
+
+EOF
+}
+
+while getopts "h:v" OPTION
+do
+        case $OPTION in
+                h)
+                        usage
+                        exit 0
+                        ;;
+                v)
+                        TAIL=1
+                        ;;
+                *)
+                        usage
+                        exit 0
+                        ;;
+        esac
+done
+
 /usr/sbin/so-elasticsearch-stop
-/usr/sbin/so-elasticsearch-start
+if [[ "$TAIL" == 1 ]]; then
+        /usr/sbin/so-elasticsearch-start -v
+else
+        /usr/sbin/so-elasticsearch-start
+fi
