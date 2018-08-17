@@ -38,7 +38,7 @@ Remove Elasticsearch Template
 EOF
 }
 
-while getopts "h:t:" OPTION
+while getopts "ht:" OPTION
 do
         case $OPTION in
                 h)
