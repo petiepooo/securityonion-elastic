@@ -19,8 +19,6 @@
 #
 # Purpose:  This script will allow you to test your elastalert rule without entering the Docker container.
 
-. /usr/sbin/so-elastic-common
-
 ######################################################
 #               Universal Rule Options               #
 ######################################################
