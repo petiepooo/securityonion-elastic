@@ -43,7 +43,7 @@ Create Elasticsearch Template
 EOF
 }
 
-while getopts "h:c:d:i:ko:s:" OPTION
+while getopts "hc:d:i:ko:s:" OPTION
 do
         case $OPTION in
                 h)
@@ -100,7 +100,7 @@ cat << EOF > $DFILE
        "properties":{
 EOF
 
-  if [ $KEYWORD == "YES" ]; then
+  if [[ $KEYWORD == "YES" ]]; then
 	  KEYWORD=1
   fi
   if [[ $KEYWORD = 1 ]]; then

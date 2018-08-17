@@ -29,7 +29,7 @@ Restart Logtash
 EOF
 }
 
-while getopts "h:v" OPTION
+while getopts "hv" OPTION
 do
         case $OPTION in
                 h)

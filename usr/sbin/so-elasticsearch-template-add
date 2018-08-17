@@ -37,7 +37,7 @@ Add Elasticsearch Template
 EOF
 }
 
-while getopts "h:t:s:" OPTION
+while getopts "ht:s:" OPTION
 do
         case $OPTION in
                 h)
