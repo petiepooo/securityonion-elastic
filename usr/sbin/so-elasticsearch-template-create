@@ -100,7 +100,7 @@ cat << EOF > $DFILE
        "properties":{
 EOF
 
-  if [ $KEYWORD == "YES" ]; then
+  if [[ $KEYWORD == "YES" ]]; then
 	  KEYWORD=1
   fi
   if [[ $KEYWORD = 1 ]]; then
