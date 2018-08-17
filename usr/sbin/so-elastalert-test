@@ -13,8 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Based on:
+# Originally written by Bryant Treacle
 # https://raw.githubusercontent.com/bryant-treacle/so-elastalert-test-rule/master/so-elastalert-test
+# Modified by Doug Burks
 #
 # Purpose:  This script will allow you to test your elastalert rule without entering the Docker container.
 
