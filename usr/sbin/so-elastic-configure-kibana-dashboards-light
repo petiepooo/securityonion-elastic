@@ -19,6 +19,10 @@
 
 cp -av /opt/elastic/src/kibana/dashboards /opt/elastic/src/kibana/dashboards.dark
 sed -i 's|\\"darkTheme\\":true|\\"darkTheme\\":false|g' /opt/elastic/src/kibana/dashboards/*.json
-/usr/sbin/so-elastic-configure-kibana-dashboards
+/usr/sbin/so-elastic-configure-kibana-dashboards >/dev/null
+echo
+echo -n "Please wait..."
+for i in `seq 1 10`; do echo -n "."; sleep 1s; done
+echo
 rm -rf /opt/elastic/src/kibana/dashboards
 mv /opt/elastic/src/kibana/dashboards.dark /opt/elastic/src/kibana/dashboards
