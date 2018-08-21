@@ -24,7 +24,7 @@
 echo
 echo
 echo "This script will allow you to test an Elastalert rule."
-echo "Note: The rule must be accesssble by the Elastalert docker container."
+echo "Note: The rule must be accessible by the Elastalert docker container."
 echo
 echo "Please enter the file path and rule name you want to test."
 read -e rulename
