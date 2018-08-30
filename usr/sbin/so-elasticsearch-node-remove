@@ -50,20 +50,16 @@ cat <<EOF
 Security Onion Node Removal
   Options:
   -h         This message
-  -y         Skip interactive mode
 
 EOF
 }
 
-while getopts "h:y" OPTION
+while getopts "h:" OPTION
 do
         case $OPTION in
                 h)
                         usage
                         exit 0
-                        ;;
-                y)
-                        SKIP=1
                         ;;
                 *)
                         usage
