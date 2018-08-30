@@ -80,8 +80,11 @@ echo
 
 # Delete data
 echo "Deleting data..."
-curl -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/logstash-*" > /dev/null 2>&1
-curl -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/elastalert_status" > /dev/null 2>&1
+INDXS=$(curl -s -XGET ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v | egrep 'logstash|elastalert' | awk '{ print $3 }')
+for INDX in ${INDXS}
+do
+    curl -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${INDX}" > /dev/null 2>&1
+done
 
 # Start syslog-ng
 echo
