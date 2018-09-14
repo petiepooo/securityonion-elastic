@@ -91,8 +91,8 @@ if [ ! -f /etc/elasticsearch/jvm.options ]; then
 
 	# Elasticsearch Heap Size
 	if [ -f /opt/bro/etc/node.cfg ] &&  grep "^type=standalone$" /opt/bro/etc/node.cfg > /dev/null; then
-		# If user chose Evaluation Mode, set ES heap to 1000MB
-		ES_HEAP_SIZE="1000m"
+		# If user chose Evaluation Mode, set ES heap to 600MB
+		ES_HEAP_SIZE="600m"
 	elif [ $TOTAL_MEM -ge 100000 ]; then
         	# Set a max of 25GB for heap size
 	        # https://www.elastic.co/guide/en/elasticsearch/guide/current/heap-sizing.html
@@ -117,18 +117,18 @@ for i in /nsm/logstash /var/log/logstash; do
 	chown -R logstash:logstash $i
 done
 
-# Logstash jvm.options contains heap size and we don't want to overwrite that
-if [ ! -f /etc/logstash/jvm.options ]; then
+# Logstash jvm.options
+if [ -f /etc/logstash/jvm.options ]; then
+	# If the file already exists, check to see if it has the old 1600m setting
+	sed -i 's|-Xms1600m|-Xms2000m|g' /etc/logstash/jvm.options
+	sed -i 's|-Xmx1600m|-Xmx2000m|g' /etc/logstash/jvm.options
+else
+	# If the file doesn't already exist, copy it into place and set heap appropriately
 	cp -av $SRC/etc/logstash/jvm.options /etc/logstash/jvm.options
-	# Logstash Heap Size
-	if [ -f /opt/bro/etc/node.cfg ] &&  grep "^type=standalone$" /opt/bro/etc/node.cfg > /dev/null; then
-		# If user chose Evaluation Mode, set LS heap to 1600MB (any lower and Logstash fails to start)
-		LS_HEAP_SIZE="1600m"
-	elif [ $TOTAL_MEM -ge 16000 ]; then
-        	LS_HEAP_SIZE="4000m"
+	if [ $TOTAL_MEM -lt 16000 ]; then
+        	LS_HEAP_SIZE="2000m"
 	else
-        	# Set heap size to 25% of available memory
-	        LS_HEAP_SIZE=$(($TOTAL_MEM / 4))"m"
+        	LS_HEAP_SIZE="4000m"
 	fi
 	sed -i "s/^-Xms.*/-Xms$LS_HEAP_SIZE/" /etc/logstash/jvm.options
 	sed -i "s/^-Xmx.*/-Xmx$LS_HEAP_SIZE/" /etc/logstash/jvm.options
