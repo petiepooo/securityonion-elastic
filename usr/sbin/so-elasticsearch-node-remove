@@ -1,0 +1,99 @@
+#!/bin/bash
+#
+# Copyright 2014,2015,2016,2017,2018 Security Onion Solutions, LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. /usr/sbin/so-elastic-common
+. /etc/nsm/securityonion.conf
+
+header "Security Onion Elasticsearch Node Removal"
+
+RESULTS=0
+function list_nodes(){
+  for i in $(curl -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings | jq  .persistent.search.remote | jq 'keys' | jq .[] | sed 's/"//g'); do
+    if curl -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings | jq -r '[ .persistent.search.remote | to_entries[] | select(.key | startswith("'$i'")) | .value = .value.seeds ] | from_entries | .[] | .[]' | grep -q 9300; then
+        : #do nothing
+    else
+	let RESULTS=$RESULTS+1
+	echo $i;
+    fi 
+  done
+}
+
+function remove_node(){
+  echo "Removing node..."
+  echo
+  curl -XPUT -H 'Content-Type: application/json' ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -d '{"persistent":{"search":{"remote":{"'$node'":{"skip_unavailable":null,"seeds":null}}}}}'
+}
+
+# If Elasticsearch is not enabled, then exit immediately
+[ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit
+
+#########################################
+# Options
+#########################################
+usage()
+{
+cat <<EOF
+Security Onion Node Removal
+  Options:
+  -h         This message
+
+EOF
+}
+
+while getopts "h:" OPTION
+do
+        case $OPTION in
+                h)
+                        usage
+                        exit 0
+                        ;;
+                *)
+                        usage
+                        exit 0
+                        ;;
+        esac
+done
+
+	# List nodes
+	echo
+	echo "Current nodes eligible for removal:"
+	echo
+	list_nodes
+
+if [[ $RESULTS -ge 1 ]];then
+
+	echo
+	echo "Which node would you like to remove?"
+	read node
+	echo
+
+	# Delete node
+	remove_node
+	echo
+
+	# List nodes again
+	echo
+	echo "Remaining nodes:"
+	echo
+	list_nodes
+	echo
+else
+    echo
+    echo "No nodes eligible for removal!"
+    echo 
+fi
+
