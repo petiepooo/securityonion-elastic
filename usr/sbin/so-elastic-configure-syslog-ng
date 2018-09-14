@@ -47,5 +47,12 @@ if ! grep s_bro_smb_mapping $FILE >/dev/null 2>&1; then
         sed -i '/^source s_bro_sip/a source s_bro_smb_mapping { file("/nsm/bro/logs/current/smb_mapping.log" flags(no-parse) program_override("bro_smb_mapping")); };' $FILE
         sed -i '/source(s_bro_ssh);/a \\tsource(s_bro_smb_mapping);' $FILE
 fi
+
+# If syslog-ng is still configured for old OSSEC logs, migrate to Wazuh JSON format
+if grep "/var/ossec/logs/archives/archives.log" $FILE >/dev/null 2>&1; then
+	sed -i 's|source s_ossec { file("/var/ossec/logs/archives/archives.log" program_override(\'ossec_archive\') follow_freq(1) flags(no-parse)); };|source s_ossec { file("/var/ossec/logs/alerts/alerts.json" program_override("ossec") follow_freq(1) flags(no-parse)); };\nsource s_ossec_archive { file("/var/ossec/logs/archives/archives.json" program_override("ossec_archive") follow_freq(1) flags(no-parse)); };|g' $FILE
+	sed -i 's|source(s_ossec);|source(s_ossec);\n\tsource(s_ossec_archive);|g' $FILE
+fi
+
 service syslog-ng restart
 echo "Done!"
