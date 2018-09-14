@@ -164,6 +164,7 @@ EOF
                         --volume /etc/logstash/jvm.options:/usr/share/logstash/config/jvm.options:ro \
 			--volume /etc/logstash/log4j2.properties:/usr/share/logstash/config/log4j2.properties:ro \
                         --volume /etc/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:ro \
+                        --volume /etc/logstash/logstash-ossec-template.json:/logstash-ossec-template.json:ro \
                         --volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
 			--volume /etc/logstash/beats-template.json:/beats-template.json:ro \
                         --volume $CONFD:/usr/share/logstash/pipeline/:ro \
