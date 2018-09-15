@@ -2595,7 +2595,7 @@
             }
           }
         },
-	"rule":{
+	"wazuh-rule":{
           "type":"object",
 	  "dynamic": true
         },
