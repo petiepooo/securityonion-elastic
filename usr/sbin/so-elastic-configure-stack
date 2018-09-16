@@ -134,10 +134,17 @@ else
 	sed -i "s/^-Xmx.*/-Xmx$LS_HEAP_SIZE/" /etc/logstash/jvm.options
 fi
 
+# /etc/logstash/conf.d.available/
+# This directory stores all available config
 CONFDAVAILABLE="/etc/logstash/conf.d.available/"
 cp -av $SRC/configfiles/*.conf $CONFDAVAILABLE
 cp -av $SRC/configfiles-setup_required/8*_postprocess_dns_*.conf $CONFDAVAILABLE
 cp -av $SRC/configfiles-setup_required/85*_postprocess_freq_analysis_*.conf $CONFDAVAILABLE
+
+# /etc/logstash/conf.d/
+# This directory stores the currently enabled config and consists of symlinks to files in /etc/logstash/conf.d.available
+# Only create symbolic links in /etc/logstash/conf.d/ if this is the first run
+# Don't try to create them after that because the user may have intentionally removed parts of the config
 README="/etc/logstash/conf.d/README.txt"
 if ! [ -f $README ]; then
 	for i in `ls $CONFDAVAILABLE/* | sed 's|/etc/logstash/conf.d.available/||g'`; do 
@@ -153,6 +160,12 @@ If you want to add to the default logstash config, you can add your own files in
 If you want to disable parts of the default logstash config, you can remove the symlink for the corresponding file.
 
 EOF
+fi
+
+# If upgrading to the new Wazuh/OSSEC integration, create the output file
+FILE="/etc/logstash/logstash-ossec-template.json"
+if ! [ -f $FILE ]; then
+	ln -s ../conf.d.available/9600_output_ossec.conf /etc/logstash/conf.d/9600_output_ossec.conf
 fi
 
 # copy the rest of the logstash config
