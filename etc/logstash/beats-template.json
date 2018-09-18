@@ -28,15 +28,6 @@
           }
         },
         {
-          "event_data": {
-            "mapping": {
-              "type": "keyword"
-            },
-            "match_mapping_type": "string",
-            "path_match": "event_data.*"
-          }
-        },
-        {
           "user_data": {
             "mapping": {
               "type": "keyword"
@@ -59,7 +50,11 @@
         "@timestamp": {
           "type": "date"
         },
-        "activity_id": {
+        "event_data": {
+          "type":"object",
+          "dynamic": true	
+	},
+	"activity_id": {
           "ignore_above": 1024,
           "type": "keyword"
         },
@@ -80,6 +75,14 @@
             "version": {
               "ignore_above": 1024,
               "type": "keyword"
+            }
+          }
+        },
+	"username":{
+          "type":"text",
+          "fields": {
+            "keyword":{
+              "type":"keyword"
             }
           }
         },
@@ -128,9 +131,6 @@
               "type": "keyword"
             }
           }
-        },
-        "event_data": {
-          "type": "object"
         },
         "event_id": {
           "type": "long"
