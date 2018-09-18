@@ -168,6 +168,7 @@ if ! [ -f $FILE ]; then
 	ln -s ../conf.d.available/6600_winlogbeat_sysmon.conf /etc/logstash/conf.d/6600_winlogbeat_sysmon.conf
 	ln -s ../conf.d.available/9600_output_ossec.conf /etc/logstash/conf.d/9600_output_ossec.conf
 	ln -s ../conf.d.available/9601_output_ossec_sysmon.conf /etc/logstash/conf.d/9601_output_ossec_sysmon.conf
+	ln -s ../conf.d.available/9602_output_ossec_autoruns.conf /etc/logstash/conf.d/9602_output_ossec_autoruns.conf
 fi
 
 # copy the rest of the logstash config
