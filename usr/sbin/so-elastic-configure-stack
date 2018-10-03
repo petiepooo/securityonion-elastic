@@ -117,6 +117,21 @@ for i in /nsm/logstash /var/log/logstash; do
 	chown -R logstash:logstash $i
 done
 
+# Back up logstash.yml
+LS_YAML="/etc/logstash/logstash.yml"
+LS_YAML_BAK="/etc/logstash/logstash.yml.bak"
+if [ ! -f "$LS_YAML" ]; then
+        # If no config, create it
+        cp -av $SRC/$LS_YAML $LS_YAML
+else
+        # If config exists, back it up, write the new config file, and then migrate custom settings
+        cp -av $LS_YAML $LS_YAML_BAK
+        cp -av $SRC/$LS_YAML $LS_YAML
+
+        # Migrate pipeline.workers
+        grep "pipeline.workers" $LS_YAML_BAK >> $LS_YAML
+fi
+
 # Logstash jvm.options
 if [ -f /etc/logstash/jvm.options ]; then
 	# If the file already exists, check to see if it has the old 1600m setting
@@ -134,7 +149,7 @@ else
 	sed -i "s/^-Xmx.*/-Xmx$LS_HEAP_SIZE/" /etc/logstash/jvm.options
 fi
 
-# /etc/logstash/conf.d.available/
+#/etc/logstash/conf.d.available/
 # This directory stores all available config
 CONFDAVAILABLE="/etc/logstash/conf.d.available/"
 cp -av $SRC/configfiles/*.conf $CONFDAVAILABLE
@@ -183,13 +198,14 @@ if [ -f "$LS_TMPL" ]; then
 	cp -av $LS_TMPL $LS_TMPL_BAK
 fi
 # write the new logstash-template.json
-cp -av $SRC/etc/logstash/log* /etc/logstash/
+cp -av $SRC/etc/logstash/logstash-* /etc/logstash/
 # now that we've written the new logstash-template.json, update it with number_of_shards value if necessary
 if [ -f "$LS_TMPL_BAK" ]; then
 	# If backup exists, migrate number_of_shards to new file
 	SHARDS=$(grep "number_of_shards" $LS_TMPL_BAK | tail -1)
 	sed -i "s|^.*number_of_shards.*$|$SHARDS|g" $LS_TMPL
 fi
+
 echo "Done!"
 
 header "Configuring Kibana"
