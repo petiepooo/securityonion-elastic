@@ -12,7 +12,7 @@ while [[ "$usage_gb" -ge "$LOG_SIZE_LIMIT" ]]; do
 	
 	# Create an array for index key and name
 	declare -A indices
-	for i in $(curl -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices | grep close | sort -n | awk '{print $2 "|" $3}'); do
+	for i in $(curl -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices | grep -E '^[ \t]+close.*' | sort -n | awk '{print $2 "|" $3}'); do
 		iname=$(echo $i | awk -F'[|]' '{print $1}')
 		iid=$(echo $i | awk -F'[|]' '{print $2}')
 		indices[$iid]=$iname
