@@ -78,6 +78,11 @@ echo
 service syslog-ng stop
 echo
 
+# Restart bro to clear logs
+echo
+so-bro-restart > /dev/null 2>&1
+echo
+
 # Delete data
 echo "Deleting data..."
 INDXS=$(curl -s -XGET ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v | egrep 'logstash|elastalert' | awk '{ print $3 }')
