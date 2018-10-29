@@ -80,7 +80,7 @@ echo
 
 # Restart bro to clear logs
 echo
-so-bro-restart > /dev/null 2>&1
+/usr/sbin/so-bro-restart > /dev/null 2>&1
 echo
 
 # Delete data
