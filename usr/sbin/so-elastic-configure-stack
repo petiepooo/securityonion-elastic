@@ -149,7 +149,7 @@ else
 	sed -i "s/^-Xmx.*/-Xmx$LS_HEAP_SIZE/" /etc/logstash/jvm.options
 fi
 
-#/etc/logstash/conf.d.available/
+# /etc/logstash/conf.d.available/
 # This directory stores all available config
 CONFDAVAILABLE="/etc/logstash/conf.d.available/"
 cp -av $SRC/configfiles/*.conf $CONFDAVAILABLE
@@ -190,6 +190,7 @@ cp -av $SRC/lib/dictionaries /lib/
 #cp -rf $SRC/grok-patterns /lib/
 cp -av $SRC/etc/logstash/beats* /etc/logstash/
 cp -av $SRC/etc/logstash/conf* /etc/logstash/
+cp -av $SRC/etc/logstash/log4j* /etc/logstash/
 # /etc/logstash/logstash-template.json contains number_of_shards which may have been customized by user, so let's create a backup copy before overwriting
 LS_TMPL="/etc/logstash/logstash-template.json"
 LS_TMPL_BAK="/etc/logstash/logstash-template.json.bak"
