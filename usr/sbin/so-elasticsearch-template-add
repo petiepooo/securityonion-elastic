@@ -121,7 +121,7 @@ function add_template(){
           echo
   else
           echo
-            echo $TEMPLATE_ADD | jq . 
+          echo $TEMPLATE_ADD | jq . 
           echo
   fi
 }
