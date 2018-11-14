@@ -22,6 +22,21 @@ log="/var/log/nsm/so-curator-closed-delete.log"
 index_usage=$(du -s /nsm/elasticsearch/nodes/0/indices | awk '{print $1}')
 usage_gb=$(($index_usage / 10**6))
 
+# If logrotate script doesn't already exist, create it
+FILE="/etc/logrotate.d/so-curator-closed-delete"
+if ! [ -f ${FILE} ]; then
+        cat << EOF > ${FILE}
+/var/log/nsm/so-curator-closed-delete.log {
+    daily
+    rotate 7
+    copytruncate
+    compress
+    missingok
+    notifempty
+}
+EOF
+fi
+
 while [[ "$usage_gb" -ge "$LOG_SIZE_LIMIT" ]]; do
 	
 	# Create an array for index key and name
