@@ -112,13 +112,16 @@ function add_template(){
 	  echo
 	  read SOURCE
   fi
-  if curl -s -XPUT -H 'Content-Type: application/json' http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/$TEMPLATE -d@$SOURCE  | grep "acknowledged"; then
+  
+  TEMPLATE_ADD=$(curl -s -XPUT -H 'Content-Type: application/json' http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/$TEMPLATE -d@$SOURCE)
+  
+  if echo $TEMPLATE_ADD  | grep -q "acknowledged"; then
           echo
           echo "Template successfully added."
           echo
   else
           echo
-          curl -s -XPUT -H 'Content-Type: application/json' http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/$TEMPLATE -d@$SOURCE 
+          echo $TEMPLATE_ADD | jq . 
           echo
   fi
 }
