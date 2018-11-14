@@ -23,4 +23,4 @@
 [ -x /usr/sbin/so-iso-boot ] && /usr/sbin/so-iso-boot
 
 # Now start the rest of the services
-/usr/sbin/so-start
+/usr/sbin/so-start > /var/log/so-boot.log 2>&1
