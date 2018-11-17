@@ -18,52 +18,26 @@
 . /usr/sbin/so-elastic-common
 . /etc/nsm/securityonion.conf
 
-log="/var/log/nsm/so-curator-closed-delete.log"
-index_usage=$(du -s /nsm/elasticsearch/nodes/0/indices | awk '{print $1}')
-usage_gb=$(($index_usage / 10**6))
+LOG="/var/log/nsm/so-curator-closed-delete.log"
 
-while [[ "$usage_gb" -ge "$LOG_SIZE_LIMIT" ]]; do
-	
-	# Create an array for index key and name
-	declare -A indices
-	for i in $(curl -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices | grep -E '^[ \t]+close.*' | sort -n | awk '{print $2 "|" $3}'); do
-		iname=$(echo $i | awk -F'[|]' '{print $1}')
-		iid=$(echo $i | awk -F'[|]' '{print $2}')
-		indices[$iid]=$iname
-	done
+# Check for 2 conditions:
+# 1. Are Elasticsearch indices using more disk space than LOG_SIZE_LIMIT?
+# 2. Are there any closed logstash- indices that we can delete?
+# If both conditions are true, keep on looping until one of the conditions is false.
+while [[ $(du -hs --block-size=1GB /nsm/elasticsearch/nodes | awk '{print $1}' ) -gt "${LOG_SIZE_LIMIT}" ]] &&
+curl -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices | grep "^      close logstash-" > /dev/null; do
 
-	# Find oldest files in index directories, and compile an array with index key and file epoch
-	declare -A ifiles 
-	for i in ${!indices[@]}; do
-		oldest_file=$(find /nsm/elasticsearch/nodes/0/indices/$i/0/index/ -type f -printf "%C@\n"  | sort | head -n 1)
-		ifiles[$oldest_file]=$i
-	done
+	# We need to determine OLDEST_INDEX.
+	# First, get the list of closed indices that are prefixed with "logstash-".
+	# For example: logstash-ids-YYYY.MM.DD
+	# Then, sort by date by telling sort to use hyphen as delimiter and then sort on the third field.
+	# Finally, select the first entry in that sorted list.
+	OLDEST_INDEX=$(curl -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices | grep "^      close logstash-" | awk '{print $2}' | sort -t- -k3 | head -1)
 
-	# Sort files and retrieve the oldest
-	ifilesort=($(for i in ${!ifiles[@]}; do echo $i; done | sort)) 
-	filetime=$(echo ${ifilesort})	
-	
-	# Get index id from filetime
-	index_id=${ifiles[${filetime}]}
-	
-	# Get index name from index id 
-	index_name=${indices[${index_id}]}
-	#echo $index_name
-	#echo $index_id
+	# Now that we've determined OLDEST_INDEX, ask Elasticsearch to delete it.
+	curl -XDELETE ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${OLDEST_INDEX}
 
-	# Delete index
-	curl -s -XDELETE ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/$index_name
+	# Finally, write a log entry that says we deleted it.
+	echo "$(date) - Used disk space exceeds LOG_SIZE_LIMIT (${LOG_SIZE_LIMIT} GB) - Index ${OLDEST_INDEX} deleted ..." >> ${LOG}
 
-	# Write to log	
-        echo "$(date) - $usage_gb GB used...exceeds LOG_SIZE_LIMIT ($LOG_SIZE_LIMIT GB) - Index $index_name deleted ..." >> $log
-	
-	# Unset arrays in case we have to run again
-	unset indices
-	unset ifiles
-	unset ifilesort
-	
 done
-
-if [[ "$usage_gb" -lt "$LOG_SIZE_LIMIT" ]]; then
-	echo "$(date) - $usage_gb GB used...less than LOG_SIZE_LIMIT ($LOG_SIZE_LIMIT GB), so not deleting anything." >> $log
-fi

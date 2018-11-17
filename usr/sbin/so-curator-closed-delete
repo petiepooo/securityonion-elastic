@@ -34,7 +34,7 @@ EOF
 fi
 
 # Avoid starting multiple instances
-if pgrep -f "/usr/sbin/so-curator-closed-delete-delete" >/dev/null; then
+if pgrep -f "so-curator-closed-delete-delete" >/dev/null; then
 	echo "Script is already running."
 else
 	/usr/sbin/so-curator-closed-delete-delete
