@@ -615,6 +615,14 @@
         "creation_time":{  
           "type":"date"
         },
+	"client_host_key_algorithms":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "current_directory":{  
           "type":"text",
           "fields":{  
@@ -1252,6 +1260,46 @@
             }
           }
         },
+	"hassh":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
+	"hassh_algorithms":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
+	"hassh_server":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
+	"hassh_server_algorithms":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
+	"hassh_version":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "height":{  
           "type":"long"
         },
@@ -1603,6 +1651,22 @@
           "type":"text",
           "fields":{  
             "keyword":{  
+              "type":"keyword"
+            }
+          }
+        },
+	"ja3":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
+	"ja3s":{
+          "type":"text",
+          "fields":{
+            "keyword":{
               "type":"keyword"
             }
           }
@@ -2899,6 +2963,14 @@
           "type":"text",
           "fields":{  
             "keyword":{  
+              "type":"keyword"
+            }
+          }
+        },
+	"server_host_key_algorithms":{
+          "type":"text",
+          "fields":{
+            "keyword":{
               "type":"keyword"
             }
           }
