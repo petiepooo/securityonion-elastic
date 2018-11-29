@@ -149,6 +149,7 @@ EOF
 				sed -i "/# maxmemory <bytes>/ a maxmemory $REDISMEM" $REDISCONF
 				sed -i "/# maxmemory-policy volatile-lru/ a maxmemory-policy noeviction" $REDISCONF
 			fi
+			update-rc.d -f redis-server enable >/dev/null
 			service redis-server start >/dev/null
 		fi
 
