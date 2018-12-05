@@ -40,11 +40,18 @@ else
 		sleep 1s;
 	done
 
+	# Give Kibana just a few more seconds to fully initialize
+	sleep 5s
+
 	# Load dashboards, visualizations, index pattern(s), etc.
 	for i in /opt/elastic/src/kibana/dashboards/*.json; do
 		curl -XPOST localhost:5601/api/kibana/dashboards/import?force=true -H 'kbn-xsrf:true' -H 'Content-type:application/json' -d @$i >> /var/log/nsm/so-elastic-configure-kibana-dashboards.log 2>&1 &
 		echo -n "."
 	done
+
+	# Give Kibana a few more seconds to fully digest all of those dashboards
+	sleep 5s
+
 	echo
 
 fi

@@ -35,11 +35,11 @@ echo
 # Start so-elasticsearch
 . /usr/sbin/so-elasticsearch-start
 
-# Start so-logstash
-. /usr/sbin/so-logstash-start
-
 # Start so-kibana
 . /usr/sbin/so-kibana-start
+
+# Start so-logstash
+. /usr/sbin/so-logstash-start
 
 # Start so-elastalert
 . /usr/sbin/so-elastalert-start

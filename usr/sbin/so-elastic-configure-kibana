@@ -26,7 +26,7 @@ else
 	# Load dashboards and index patterns first
 	. /usr/sbin/so-elastic-configure-kibana-dashboards
 
-	# Then set default index pattern and other config
+	# Import config again just in case
 	. /usr/sbin/so-elastic-configure-kibana-config
 
 	# Create a logrotate file to rotate kibana.log
