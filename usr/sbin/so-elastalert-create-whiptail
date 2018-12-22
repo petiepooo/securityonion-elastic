@@ -1,4 +1,4 @@
-#!/bin/bash #-i
+#!/bin/bash -i
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,13 @@
 # Modified by Doug Burks
 #
 # Purpose:  This script will allow you to create basic elastalert rules.
+
+# Need elevated privilages to write blacklist/whitelist files to /etc/elastalert/rules directory.
+
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+        echo "This script needs to be run as root.  Please try again using sudo."
+        exit
+fi
 
 ################################
 #   Dialog box color scheme    #
