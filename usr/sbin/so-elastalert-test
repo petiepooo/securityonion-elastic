@@ -21,10 +21,16 @@
 
 . /usr/sbin/so-elastic-common
 
-echo
+
+current_rules=$(sudo ls /etc/elastalert/rules/)
 echo
 echo "This script will allow you to test an Elastalert rule."
-echo "Note: The rule must be accessible by the Elastalert docker container."
+echo
+echo "Below is a list of active rules in the /etc/elastalert/rules/ directory."
+echo 
+echo "$current_rules"
+echo 
+echo "Note: To test a rule it must be accessible by the Elastalert docker container."
 echo
 echo "Please enter the file path and rule name you want to test."
 read -e rulename
