@@ -17,5 +17,5 @@
 
 . /usr/sbin/so-elastic-common
 
-sed -i 's|KIBANA_DARK_THEME.*$|KIBANA_DARK_THEME="no"|g' /etc/nsm/securityonion.conf
+sed -i 's|KIBANA_DARK_THEME.*$|KIBANA_DARK_THEME="yes"|g' /etc/nsm/securityonion.conf
 /usr/sbin/so-elastic-configure-kibana-dashboards

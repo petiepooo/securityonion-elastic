@@ -21,14 +21,7 @@
 
 echo
 
-if [ "${KIBANA_ENABLED}" = "no" ]; then
-
-	header "Kibana is disabled, skipping dashboard config"
-
-else
-
-	header "Configuring Kibana dashboards"
-
+function load_dashboards {
 	# Check to see if Kibana is available
 	max_wait=240
 	until curl -s -XGET http://localhost:5601/ > /dev/null ; do
@@ -40,8 +33,8 @@ else
 		sleep 1s;
 	done
 
-	# Give Kibana just a few more seconds to fully initialize
-	sleep 5s
+	# Give Kibana a few more seconds to fully initialize
+	for i in `seq 1 5`; do echo -n "."; sleep 1s; done
 
 	# Load dashboards, visualizations, index pattern(s), etc.
 	for i in /opt/elastic/src/kibana/dashboards/*.json; do
@@ -50,7 +43,31 @@ else
 	done
 
 	# Give Kibana a few more seconds to fully digest all of those dashboards
-	sleep 5s
+	for i in `seq 1 5`; do echo -n "."; sleep 1s; done
+}
+
+function dark_disable {
+	cp -av /opt/elastic/src/kibana/dashboards /opt/elastic/src/kibana/dashboards.dark >/dev/null
+	sed -i 's|\\"darkTheme\\":true|\\"darkTheme\\":false|g' /opt/elastic/src/kibana/dashboards/*.json
+	load_dashboards
+	rm -rf /opt/elastic/src/kibana/dashboards
+	mv /opt/elastic/src/kibana/dashboards.dark /opt/elastic/src/kibana/dashboards
+}
+
+if [ "${KIBANA_ENABLED}" = "yes" ]; then
+	header "Configuring Kibana dashboards"
+
+	# Enable or disable dark theme based on the setting in securityonion.conf (default to dark theme)
+	if ! grep -q "KIBANA_DARK_THEME" /etc/nsm/securityonion.conf; then
+		sed -i '/KIBANA_ENABLED="yes"/a KIBANA_DARK_THEME="yes"' /etc/nsm/securityonion.conf
+		KIBANA_DARK_THEME="yes"
+	fi
+
+	if [ "${KIBANA_DARK_THEME}" = "yes" ]; then
+		load_dashboards
+	else
+		dark_disable
+	fi
 
 	echo
 
