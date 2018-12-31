@@ -75,11 +75,19 @@ else
 
 	# transport settings
 	# https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-transport.html
-	grep "transport" $ES_YAML_BAK >> $ES_YAML
+	grep "^transport.*:" $ES_YAML_BAK >> $ES_YAML
        
 	# cluster.routing.allocation.disk settings
 	# https://www.elastic.co/guide/en/elasticsearch/reference/current/disk-allocator.html#disk-allocator
-        grep "cluster.routing.allocation.disk" $ES_YAML_BAK >> $ES_YAML
+        grep "^cluster.routing.allocation.disk.*:" $ES_YAML_BAK >> $ES_YAML
+
+	# node settings
+	# https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html
+	grep "^node.*:" $ES_YAML_BAK >> $ES_YAML
+
+	# disovery.zen.ping settings
+	# https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-discovery-zen.html
+	grep "^discovery.zen.ping.*:" $ES_YAML_BAK >> $ES_YAML
 fi
 
 # Get total installed memory
@@ -214,7 +222,20 @@ for i in /etc/kibana /var/log/kibana; do
 	[ ! -d $i ] && mkdir -p $i
 	chown -R kibana:kibana $i
 done
-cp -av $SRC/etc/kibana/* /etc/kibana/
+# Preserve custom settings in kibana.yml
+KIB_YAML="/etc/kibana/kibana.yml"
+KIB_YAML_BAK="/etc/kibana/kibana.yml.bak"
+if [ ! -f "$KIB_YAML" ]; then
+        # If no config, create it
+        cp -av $SRC/$KIB_YAML $KIB_YAML
+else
+        # If config exists, back it up, write the new config file, and then migrate custom settings
+        cp -av $KIB_YAML $KIB_YAML_BAK
+        cp -av $SRC/$KIB_YAML $KIB_YAML
+
+        # migrate certain settings
+        grep "^elasticsearch.requestTimeout:" $KIB_YAML_BAK >> $KIB_YAML
+fi
 echo "Done!"
 
 header "Configuring Elastalert"
