@@ -489,6 +489,14 @@
             }
           }
         },
+        "client_fqdn":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "client_issuer":{  
           "type":"text",
           "fields":{  
@@ -497,10 +505,26 @@
             }
           }
         },
+        "client_ip": {
+         "type":"ip",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "client_major_version":{  
           "type":"long",
           "fields":{  
             "keyword":{  
+              "type":"keyword"
+            }
+          }
+        },
+        "client_message":{
+          "type":"text",
+          "fields":{
+            "keyword":{
               "type":"keyword"
             }
           }
@@ -1874,6 +1898,14 @@
             }
           }
         },
+        "message_types":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "method":{  
           "type":"text",
           "fields":{  
@@ -2497,6 +2529,14 @@
             }
           }
         },
+       "requested_ip": {
+        "type":"ip",
+         "fields":{
+           "keyword":{
+             "type":"keyword"
+           }
+         }
+       }, 
         "resp_filenames":{  
           "type":"text",
           "fields":{  
@@ -2737,10 +2777,34 @@
             }
           }
         },
+        "server_dns_computer_name":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
+        "server_ip": {
+         "type":"ip",
+          "fields":{
+            "keyword":{
+             "type":"keyword"
+            }
+          }
+        },
         "server_major_version":{  
           "type":"text",
           "fields":{  
             "keyword":{  
+              "type":"keyword"
+            }
+          }
+        },
+        "server_message":{
+          "type":"text",
+          "fields":{
+            "keyword":{
               "type":"keyword"
             }
           }
@@ -2766,6 +2830,22 @@
         },
         "server_name_length":{  
           "type":"long"
+        },
+        "server_nb_computer_name":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
+        "server_tree_name":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
         },
         "service":{  
           "type":"text",
