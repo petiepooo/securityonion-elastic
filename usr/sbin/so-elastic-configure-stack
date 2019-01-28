@@ -101,6 +101,9 @@ if [ ! -f /etc/elasticsearch/jvm.options ]; then
 	if [ -f /opt/bro/etc/node.cfg ] &&  grep "^type=standalone$" /opt/bro/etc/node.cfg > /dev/null; then
 		# If user chose Evaluation Mode, set ES heap to 600MB
 		ES_HEAP_SIZE="600m"
+	elif [ $TOTAL_MEM -lt 10000 ]; then
+		# If less than 10GB RAM, set heap size to 1GB
+        	ES_HEAP_SIZE="1000m"
 	elif [ $TOTAL_MEM -ge 100000 ]; then
         	# Set a max of 25GB for heap size
 	        # https://www.elastic.co/guide/en/elasticsearch/guide/current/heap-sizing.html
