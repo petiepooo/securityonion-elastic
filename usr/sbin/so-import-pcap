@@ -144,15 +144,63 @@ Press Enter to continue or Ctrl-c to cancel.
 EOF
 read input
 
-# create temp pcap and set permissions
 echo "Please wait while..."
-echo "...creating temp pcap for processing."
-PCAP=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
-if ! mergecap -w $PCAP $@; then
-	echo "Error while merging!"
-	exit
+
+# check for pcapfix and install if necessary
+if ! dpkg -l |grep pcapfix >/dev/null; then
+	echo "...installing pcapfix."
+	apt-get install pcapfix >/dev/null
+	if ! dpkg -l |grep pcapfix >/dev/null; then
+		echo "Error! Unable to install pcapfix.  Please install manually."
+		exit
+	fi
 fi
-chmod 444 $PCAP
+
+# track any temporary pcaps so they can be deleted when finished
+TEMP_PCAPS=()
+
+# are we processing a single pcap or multiple pcaps?
+if [ $# -eq 1 ]; then
+	# single pcap
+	PCAP=$1
+	echo "...checking ${PCAP} for corruption."
+	if ! /usr/bin/capinfos ${PCAP} >/dev/null 2>&1; then
+		# try to fix pcap and then process the fixed pcap directly
+		PCAP_FIXED=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
+		echo "...attempting to recover ${PCAP} to ${PCAP_FIXED}."
+		/usr/bin/pcapfix ${PCAP} -o ${PCAP_FIXED} >/dev/null
+		PCAP="${PCAP_FIXED}"
+		TEMP_PCAPS+=(${PCAP_FIXED})
+	fi
+else
+	# multiple pcaps
+	PCAPS=()
+	for PCAP in $@; do
+		echo "...checking $PCAP for corruption."
+		if /usr/bin/capinfos $PCAP >/dev/null 2>&1; then
+			# if the pcap is valid, add it to the PCAPS array
+			echo "...adding $PCAP to array for merging."
+			PCAPS+=(${PCAP})
+		else
+			# otherwise, try to fix it and then add the fixed pcap to PCAPS and TEMP_PCAPS arrays
+			PCAP_FIXED=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
+			echo "...attempting to recover ${PCAP} to ${PCAP_FIXED}."
+			/usr/bin/pcapfix ${PCAP} -o ${PCAP_FIXED} >/dev/null
+			PCAPS+=(${PCAP_FIXED})
+			TEMP_PCAPS+=(${PCAP_FIXED})
+		fi
+	done
+
+	# create temp pcap and set permissions
+	PCAP=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
+	echo "...creating temp pcap $PCAP for processing."
+	if ! /usr/bin/mergecap -F pcap -w $PCAP ${PCAPS[@]}; then
+		echo "Error while merging!"
+		exit
+	fi
+	chmod 444 $PCAP
+	TEMP_PCAPS+=(${PCAP})
+fi
 
 # check to see if file is a valid PCAP
 capinfos $PCAP 2>&1 | grep "The file appears to be damaged or corrupt." && exit
@@ -301,14 +349,17 @@ if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
 		FILE="$PCAPDIR/snort.log.$EPOCH"
 		mkdir -p $PCAPDIR
 		CURRENTNEXT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
-		echo "...writing $FILE"
+		echo "...writing $FILE."
 		editcap -F libpcap -A "$CURRENT 00:00:00" -B "$CURRENTNEXT 00:00:00" $PCAP $FILE
 		CURRENT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
 	done
 fi
 
-# remove temp file
-rm -f $PCAP
+# remove temp files
+for TEMP_PCAP in ${TEMP_PCAPS[@]}; do
+	echo "...removing temporary pcap $TEMP_PCAP."
+	rm -f $TEMP_PCAP
+done
 
 # output final message
 cat << EOF
