@@ -158,6 +158,7 @@ if [ -f $LS_JVM ]; then
 
 	# Add Xss option for Java Execution Engine if necessary
 	if ! grep -q "^-Xss" $LS_JVM; then
+		echo "" >> $LS_JVM
 		echo "# Avoid StackOverflowError when enabling Java Execution Engine" >> $LS_JVM
 		echo "# https://github.com/elastic/logstash/issues/10131" >> $LS_JVM
 		echo "-Xss16M" >> $LS_JVM
