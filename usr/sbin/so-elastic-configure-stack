@@ -141,23 +141,37 @@ else
 
         # Migrate pipeline.workers
         grep "pipeline.workers" $LS_YAML_BAK >> $LS_YAML
+
+	# Enable Java Execution Engine if necessary
+	if ! grep -q "^pipeline.java_execution: " $LS_YAML; then
+		echo "# Java Execution Engine provides much better performance" >> $LS_YAML
+		echo "pipeline.java_execution: true" >> $LS_YAML
+	fi
 fi
 
 # Logstash jvm.options
-if [ -f /etc/logstash/jvm.options ]; then
+LS_JVM="/etc/logstash/jvm.options"
+if [ -f $LS_JVM ]; then
 	# If the file already exists, check to see if it has the old 1600m setting
-	sed -i 's|-Xms1600m|-Xms2000m|g' /etc/logstash/jvm.options
-	sed -i 's|-Xmx1600m|-Xmx2000m|g' /etc/logstash/jvm.options
+	sed -i 's|-Xms1600m|-Xms2000m|g' $LS_JVM
+	sed -i 's|-Xmx1600m|-Xmx2000m|g' $LS_JVM
+
+	# Add Xss option for Java Execution Engine if necessary
+	if ! grep -q "^-Xss" $LS_JVM; then
+		echo "# Avoid StackOverflowError when enabling Java Execution Engine" >> $LS_JVM
+		echo "# https://github.com/elastic/logstash/issues/10131" >> $LS_JVM
+		echo "-Xss16M" >> $LS_JVM
+	fi
 else
 	# If the file doesn't already exist, copy it into place and set heap appropriately
-	cp -av $SRC/etc/logstash/jvm.options /etc/logstash/jvm.options
+	cp -av $SRC/etc/logstash/jvm.options $LS_JVM
 	if [ $TOTAL_MEM -lt 16000 ]; then
         	LS_HEAP_SIZE="2000m"
 	else
         	LS_HEAP_SIZE="4000m"
 	fi
-	sed -i "s/^-Xms.*/-Xms$LS_HEAP_SIZE/" /etc/logstash/jvm.options
-	sed -i "s/^-Xmx.*/-Xmx$LS_HEAP_SIZE/" /etc/logstash/jvm.options
+	sed -i "s/^-Xms.*/-Xms$LS_HEAP_SIZE/" $LS_JVM
+	sed -i "s/^-Xmx.*/-Xmx$LS_HEAP_SIZE/" $LS_JVM
 fi
 
 # /etc/logstash/conf.d.available/

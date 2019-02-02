@@ -6,6 +6,10 @@
 -Xms1g
 -Xmx1g
 
+# Avoid StackOverflowError when enabling Java Execution Engine
+# https://github.com/elastic/logstash/issues/10131
+-Xss16M
+
 ################################################################
 ## Expert settings
 ################################################################
