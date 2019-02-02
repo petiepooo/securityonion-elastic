@@ -213,9 +213,7 @@ fi
 
 # copy the rest of the logstash config
 cp -av $SRC/lib/dictionaries /lib/
-#cp -rf $SRC/grok-patterns /lib/
 cp -av $SRC/etc/logstash/beats* /etc/logstash/
-cp -av $SRC/etc/logstash/conf* /etc/logstash/
 cp -av $SRC/etc/logstash/log4j* /etc/logstash/
 # /etc/logstash/logstash-template.json contains number_of_shards which may have been customized by user, so let's create a backup copy before overwriting
 LS_TMPL="/etc/logstash/logstash-template.json"
