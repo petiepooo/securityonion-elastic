@@ -140,7 +140,7 @@ else
         cp -av $SRC/$LS_YAML $LS_YAML
 
         # Migrate pipeline.workers
-        grep "pipeline.workers" $LS_YAML_BAK >> $LS_YAML
+        grep "^pipeline.workers" $LS_YAML_BAK >> $LS_YAML
 
 	# Enable Java Execution Engine if necessary
 	if ! grep -q "^pipeline.java_execution: " $LS_YAML; then
