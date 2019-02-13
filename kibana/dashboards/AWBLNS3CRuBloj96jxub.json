@@ -1,10 +1,10 @@
 {
-  "version": "6.5.2",
+  "version": "6.5.4",
   "objects": [
     {
       "id": "AWBLMr9vRuBloj96jxp1",
       "type": "search",
-      "updated_at": "2019-01-02T13:49:35.976Z",
+      "updated_at": "2019-02-13T19:09:42.623Z",
       "version": 1,
       "attributes": {
         "title": "All Beats Logs",
@@ -30,7 +30,7 @@
     {
       "id": "AWBLNriuRuBloj96jxv3",
       "type": "visualization",
-      "updated_at": "2019-01-02T13:49:35.976Z",
+      "updated_at": "2019-02-13T19:09:42.623Z",
       "version": 1,
       "attributes": {
         "title": "Beats - Computer Names",
@@ -46,7 +46,7 @@
     {
       "id": "AWBLN7X2RuBloj96jxxY",
       "type": "visualization",
-      "updated_at": "2019-01-02T13:49:35.976Z",
+      "updated_at": "2019-02-13T19:09:42.623Z",
       "version": 1,
       "attributes": {
         "title": "Beats - Process IDs",
@@ -62,7 +62,7 @@
     {
       "id": "AWBLOT8MRuBloj96jx0N",
       "type": "visualization",
-      "updated_at": "2019-01-02T13:49:35.976Z",
+      "updated_at": "2019-02-13T19:09:42.623Z",
       "version": 1,
       "attributes": {
         "title": "Beats - Event IDs",
@@ -78,7 +78,7 @@
     {
       "id": "AWBLONJCRuBloj96jxzY",
       "type": "visualization",
-      "updated_at": "2019-01-02T13:49:35.976Z",
+      "updated_at": "2019-02-13T19:09:42.623Z",
       "version": 1,
       "attributes": {
         "title": "Beats - Usernames",
@@ -94,7 +94,7 @@
     {
       "id": "AWBLQ2__RuBloj96jyDn",
       "type": "visualization",
-      "updated_at": "2019-01-02T13:49:35.976Z",
+      "updated_at": "2019-02-13T19:09:42.623Z",
       "version": 1,
       "attributes": {
         "title": "Beats - Log Count Over Time",
@@ -110,7 +110,7 @@
     {
       "id": "b3b449d0-3429-11e7-9d52-4f090484f59e",
       "type": "visualization",
-      "updated_at": "2019-01-02T13:49:36.232Z",
+      "updated_at": "2019-02-13T19:09:42.807Z",
       "version": 53,
       "attributes": {
         "title": "Navigation",
@@ -126,7 +126,7 @@
     {
       "id": "AWDHHHR8xQT5EBNmq4z7",
       "type": "visualization",
-      "updated_at": "2019-01-02T13:49:35.976Z",
+      "updated_at": "2019-02-13T19:09:42.623Z",
       "version": 1,
       "attributes": {
         "title": "Beats - Log Count",
@@ -142,7 +142,7 @@
     {
       "id": "AWBLHZaBRuBloj96jvrD",
       "type": "index-pattern",
-      "updated_at": "2019-01-02T13:49:35.976Z",
+      "updated_at": "2019-02-13T19:09:42.623Z",
       "version": 1,
       "attributes": {
         "title": "*:logstash-beats-*",
@@ -155,7 +155,7 @@
     {
       "id": "AWBLNS3CRuBloj96jxub",
       "type": "dashboard",
-      "updated_at": "2019-01-02T13:49:35.976Z",
+      "updated_at": "2019-02-13T19:09:42.623Z",
       "version": 1,
       "attributes": {
         "title": "Beats",
