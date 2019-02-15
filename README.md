@@ -4,5 +4,5 @@ This repo contains files which will configure the Elastic Stack on Security Onio
 * Logstash
 * Kibana
 
-For more information, please see the Elastic pages on our Wiki:
-https://securityonion.net/wiki/elastic
+For more information, please see our Elastic documentation:
+https://securityonion.net/docs/elastic
