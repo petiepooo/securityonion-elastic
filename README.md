@@ -5,4 +5,4 @@ This repo contains files which will configure the Elastic Stack on Security Onio
 * Kibana
 
 For more information, please see our Elastic documentation:
-https://securityonion.net/docs/elastic
+https://securityonion.net/docs/Elastic
