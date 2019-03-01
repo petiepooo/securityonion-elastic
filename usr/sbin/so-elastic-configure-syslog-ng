@@ -54,5 +54,18 @@ if grep "/var/ossec/logs/archives/archives.log" $FILE >/dev/null 2>&1; then
 	sed -i "s|source(s_ossec);|source(s_ossec);\n\tsource(s_ossec_archive);|g" $FILE
 fi
 
+# securityonion-elastic: remove Wazuh's alerts.json from syslog-ng config #1467
+# https://github.com/Security-Onion-Solutions/security-onion/issues/1467
+if grep -q "/var/ossec/logs/alerts/alerts.json" $FILE ; then
+
+	# change source s_ossec from alerts.json to archives.json
+	sed -i 's|source s_ossec { file("/var/ossec/logs/alerts/alerts.json" program_override("ossec") follow_freq(1) flags(no-parse)); };|source s_ossec { file("/var/ossec/logs/archives/archives.json" program_override("ossec") follow_freq(1) flags(no-parse)); };|g' $FILE
+
+	# delete s_ossec_archive
+	sed -i '|source s_ossec_archive { file("/var/ossec/logs/archives/archives.json" program_override("ossec_archive") follow_freq(1) flags(no-parse)); };|d' $FILE
+	sed -i '|source(s_ossec_archive);|d' $FILE
+
+fi
+
 service syslog-ng restart
 echo "Done!"
