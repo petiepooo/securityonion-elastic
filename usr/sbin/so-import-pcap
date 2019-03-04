@@ -31,22 +31,6 @@ if ! [ -f $CONF ]; then
 fi
 source $CONF
 
-SENSORTAB="/etc/nsm/sensortab"
-if ! [ -f $SENSORTAB ]; then
-	echo "$SENSORTAB not found."
-	echo "This machine must be configured for network sensor services."
-	exit
-fi
-SENSOR=`grep -v "^#" $SENSORTAB  |head -1 |awk '{print $1}'`
-
-SENSORCONF="/etc/nsm/$SENSOR/sensor.conf"
-if ! [ -f $SENSORCONF ]; then
-	echo "$SENSORCONF not found."
-	echo "This machine must be configured for network sensor services to continue."
-	exit
-fi
-source $SENSORCONF
-
 SGUILDCONF="/etc/sguild/sguild.conf"
 if ! [ -f $SGUILDCONF ]; then
 	echo "$SGUILDCONF not found."
@@ -205,6 +189,67 @@ fi
 # check to see if file is a valid PCAP
 capinfos $PCAP 2>&1 | grep "The file appears to be damaged or corrupt." && exit
 
+# create Sguil import sensor
+HOST_ORIG=`hostname`
+HOSTNAME=${HOST_ORIG,,}
+SENSORNAME="$HOSTNAME-import"
+SENSOR="$HOSTNAME-import"
+INTERFACE=`awk '/:/ {print $1}' /proc/net/dev | tr -d ':' | grep -v "^lo$" | grep -v "^docker" | grep -v "^br-" | grep -v "^veth" | sort | head -1`
+if ! [ -d /etc/nsm/$SENSORNAME ]; then
+	echo "...while creating Sguil sensor(s)..."
+	BY2PORT=7900
+
+        # Add the sensor
+        /usr/sbin/nsm_sensor_add --sensor-name="$SENSORNAME" --sensor-interface="$INTERFACE" --sensor-interface-auto=no \
+                                        --sensor-server-host="$SERVERNAME" --sensor-server-port=7736 \
+                                        --sensor-barnyard2-port=$BY2PORT --sensor-auto=yes --sensor-utc=yes \
+                                        --sensor-vlan-tagging=no --sensor-net-group="$SENSORNAME" --force-yes >/dev/null 2>&1
+
+        # Copy our customized snort.conf (and associated files) into place
+        cp /etc/nsm/templates/snort/attribute_table.dtd /etc/nsm/"$SENSORNAME"/
+        cp /etc/nsm/templates/snort/snort.conf /etc/nsm/"$SENSORNAME"/
+        cp /etc/nsm/templates/snort/unicode.map /etc/nsm/"$SENSORNAME"/
+        cp /etc/nsm/templates/suricata/suricata.yaml.in /etc/nsm/"$SENSORNAME"/suricata.yaml
+
+        # Write IDS config to files
+        sed -i "s|classification-file: /etc/suricata/classification.config|classification-file: /etc/nsm/$SENSORNAME/classification.config|g" /etc/nsm/"$SENSORNAME"/suricata.yaml
+        sed -i "s|reference-config-file: /etc/suricata/reference.config|reference-config-file: /etc/nsm/$SENSORNAME/reference.config|g" /etc/nsm/"$SENSORNAME"/suricata.yaml
+        sed -i "s|# threshold-file: /etc/suricata/threshold.config|threshold-file: /etc/nsm/$SENSORNAME/threshold.conf|g" /etc/nsm/"$SENSORNAME"/suricata.yaml
+        sed -i "s|filename: unified2.alert|filename: snort.unified2|g" /etc/nsm/"$SENSORNAME"/suricata.yaml
+        sed -i "s|interface: eth0|interface: $INTERFACE|g" /etc/nsm/"$SENSORNAME"/suricata.yaml
+        sed -i "s|cluster-id: 99|cluster-id: $BY2PORT|g" /etc/nsm/"$SENSORNAME"/suricata.yaml
+        sed -i "s|    HOME_NET:.*|    HOME_NET: \"[$HOME_NET]\"|g" /etc/nsm/"$SENSORNAME"/suricata.yaml
+        mkdir -p /usr/local/lib/snort_dynamicrules
+
+        # /etc/nsm/rules/
+        if [ ! -f /etc/nsm/rules/bpf.conf ]; then touch /etc/nsm/rules/bpf.conf; fi
+        if [ ! -f /etc/nsm/rules/threshold.conf ]; then cp /etc/nsm/templates/snort/threshold.conf /etc/nsm/rules/; fi
+        if [ ! -f /etc/nsm/rules/gen-msg.map ]; then cp /etc/nsm/templates/snort/gen-msg.map /etc/nsm/rules/; fi
+        if [ ! -f /etc/nsm/rules/classification.config ]; then
+                grep -h -v "^#" /etc/nsm/templates/snort/classification.config /etc/nsm/templates/suricata/classification.config |sort -u > /etc/nsm/rules/classification.config
+        fi
+        if [ ! -f /etc/nsm/rules/reference.config ]; then
+                grep -h -v "^#" /etc/nsm/templates/snort/reference.config /etc/nsm/templates/suricata/reference.config |sort -u > /etc/nsm/rules/reference.config
+        fi
+
+        # Create symbolic links for bpf.conf, threshold.conf, sid-msg.map, gen-msg.map, classification.config, and reference.config
+        for FILENAME in bpf.conf threshold.conf sid-msg.map gen-msg.map classification.config reference.config
+        do
+                rm -f /etc/nsm/"$SENSORNAME"/$FILENAME
+                ln -s /etc/nsm/rules/$FILENAME /etc/nsm/"$SENSORNAME"/$FILENAME
+        done
+
+	# Allow sguild to find rules for Snort or Suricata
+	ln -s /etc/nsm/rules /nsm/server_data/securityonion/rules/"$SENSORNAME"
+	ln -s /etc/nsm/rules /nsm/server_data/securityonion/rules/"$SENSORNAME"-1
+
+fi
+SENSORCONF="/etc/nsm/$SENSOR/sensor.conf"
+source $SENSORCONF
+
+# Fix barnyard
+sed -i 's|^output database: alert, mysql, user=root dbname=snorby host=127.0.0.1|#output database: alert, mysql, user=root dbname=snorby host=127.0.0.1|g' /etc/nsm/*/barnyard2*.conf
+
 # make sure sguild is running with DEBUG 2
 if ! grep "set DEBUG 2" $SGUILDCONF >/dev/null 2>&1; then
 	echo "...setting sguild debug to 2 and restarting sguild."
@@ -230,9 +275,9 @@ EOF
 fi
 
 # disable barnyard syslog output
-if grep "^output alert_syslog: LOG_LOCAL6 LOG_ALERT$" /etc/nsm/$SENSOR/barnyard*.conf >/dev/null 2>&1; then
+if grep "^output alert_syslog: LOG_LOCAL6 LOG_ALERT$" /etc/nsm/$SENSORNAME/barnyard*.conf >/dev/null 2>&1; then
 	echo "...disabling syslog output in barnyard."
-	sed -i 's|^output alert_syslog: LOG_LOCAL6 LOG_ALERT$|#output alert_syslog: LOG_LOCAL6 LOG_ALERT|g' /etc/nsm/$SENSOR/barnyard*.conf
+	sed -i 's|^output alert_syslog: LOG_LOCAL6 LOG_ALERT$|#output alert_syslog: LOG_LOCAL6 LOG_ALERT|g' /etc/nsm/$SENSORNAME/barnyard*.conf
 	nsm_sensor_ps-restart --only-barnyard2 >/dev/null 2>&1
 fi
 
@@ -297,6 +342,13 @@ if [ "$IDS_ENGINE_ENABLED" = "yes" ]; then
 	sed -i 's|IDS_ENGINE_ENABLED="yes"|IDS_ENGINE_ENABLED="no"|g' $SENSORCONF
 fi
 
+# disable legacy services
+sed -i 's|PRADS_ENABLED="yes"|PRADS_ENABLED="no"|g' $SENSORCONF
+sed -i 's|PADS_AGENT_ENABLED="yes"|PADS_AGENT_ENABLED="no"|g' $SENSORCONF
+sed -i 's|SANCP_AGENT_ENABLED="yes"|SANCP_AGENT_ENABLED="no"|g' $SENSORCONF
+sed -i 's|HTTP_AGENT_ENABLED="yes"|HTTP_AGENT_ENABLED="no"|g' $SENSORCONF
+sed -i 's|ARGUS_ENABLED="yes"|ARGUS_ENABLED="no"|g' $SENSORCONF
+
 # stop netsniff-ng if running
 if nsm_sensor_ps-status --only-pcap | grep OK >/dev/null 2>&1; then
 	echo "...stopping netsniff-ng."
@@ -317,13 +369,17 @@ if grep " - 5 " /var/www/so/capme/.inc/callback-elastic.php >/dev/null 2>&1; the
 	sed -i 's| - 5 | - 50 |g' /var/www/so/capme/.inc/callback-elastic.php
 fi
 
+# start all sensor services
+echo "...starting services."
+nsm_sensor_ps-start >/dev/null 2>&1
+
 # generate IDS alerts and write them to standard pipeline for consumption via Sguil agents
 if [ "$ENGINE" = "snort" ]; then
 	echo "...analyzing traffic with Snort."
-	snort --daq pcap -c /etc/nsm/$SENSOR/snort.conf -u sguil -g sguil -l /nsm/sensor_data/$SENSOR/snort-1 -r $PCAP >/dev/null 2>&1
+	snort --daq pcap -c /etc/nsm/$SENSORNAME/snort.conf -u sguil -g sguil -l /nsm/sensor_data/$SENSORNAME/snort-1 -r $PCAP >/dev/null 2>&1
 else
 	echo "...analyzing traffic with Suricata."
-	suricata --user sguil --group sguil -c /etc/nsm/$SENSOR/suricata.yaml -l /nsm/sensor_data/$SENSOR --runmode single -r $PCAP >/dev/null 2>&1
+	suricata --user sguil --group sguil -c /etc/nsm/$SENSORNAME/suricata.yaml -l /nsm/sensor_data/$SENSORNAME --runmode single -r $PCAP >/dev/null 2>&1
 fi
 
 # generate Bro logs and write them to a unique subdirectory in /nsm/import/bro/
@@ -345,7 +401,7 @@ if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
 	CURRENT="$START"
 	while [ "$CURRENT" != "$ENDNEXT" ]; do
 		EPOCH=`date +%s --date="$CURRENT"`
-		PCAPDIR="/nsm/sensor_data/$SENSOR/dailylogs/$CURRENT"
+		PCAPDIR="/nsm/sensor_data/$SENSORNAME/dailylogs/$CURRENT"
 		FILE="$PCAPDIR/snort.log.$EPOCH"
 		mkdir -p $PCAPDIR
 		CURRENTNEXT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
