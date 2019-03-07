@@ -376,10 +376,10 @@ nsm_sensor_ps-start >/dev/null 2>&1
 # generate IDS alerts and write them to standard pipeline for consumption via Sguil agents
 if [ "$ENGINE" = "snort" ]; then
 	echo "...analyzing traffic with Snort."
-	snort --daq pcap -c /etc/nsm/$SENSORNAME/snort.conf -u sguil -g sguil -l /nsm/sensor_data/$SENSORNAME/snort-1 -r $PCAP >/dev/null 2>&1
+	snort --daq pcap -c /etc/nsm/$SENSORNAME/snort.conf -u sguil -g sguil -l /nsm/sensor_data/$SENSORNAME/snort-1 -k none -r $PCAP >/dev/null 2>&1
 else
 	echo "...analyzing traffic with Suricata."
-	suricata --user sguil --group sguil -c /etc/nsm/$SENSORNAME/suricata.yaml -l /nsm/sensor_data/$SENSORNAME --runmode single -r $PCAP >/dev/null 2>&1
+	suricata --user sguil --group sguil -c /etc/nsm/$SENSORNAME/suricata.yaml -l /nsm/sensor_data/$SENSORNAME --runmode single -k none -r $PCAP >/dev/null 2>&1
 fi
 
 # generate Bro logs and write them to a unique subdirectory in /nsm/import/bro/
