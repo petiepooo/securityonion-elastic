@@ -23,34 +23,6 @@ if ! [ -f $COMMON ]; then
 fi
 source $COMMON
 
-CONF="/etc/nsm/securityonion.conf"
-if ! [ -f $CONF ]; then
-	echo "$CONF not found."
-	echo "Please run Setup."
-	exit
-fi
-source $CONF
-
-SGUILDCONF="/etc/sguild/sguild.conf"
-if ! [ -f $SGUILDCONF ]; then
-	echo "$SGUILDCONF not found."
-	echo "This machine must be running sguild to continue. Please run Setup."
-	exit
-fi
-
-SYSLOGCONF="/etc/syslog-ng/syslog-ng.conf"
-if ! [ -f $SYSLOGCONF ]; then
-	echo "$SYSLOGCONF not found."
-	echo "This machine must be running syslog-ng to continue. Please run Setup."
-	exit
-fi
-
-LOGSTASH_SNORT=/etc/logstash/conf.d/1033_preprocess_snort.conf
-if ! [ -f $LOGSTASH_SNORT ]; then
-	echo "$LOGSTASH_SNORT not found."
-	exit
-fi
-
 # check to see if this is a sensor before continuing
 if [ -f /root/.ssh/securityonion_ssh.conf ]; then
 	echo "This machine appears to be a sensor connected to a distributed deployment."
@@ -66,10 +38,11 @@ so-import-pcap
 This is a quick and dirty EXPERIMENTAL script that will import one or more pcaps into Security Onion and preserve original timestamps.
 
 It will do the following:
+- run Setup if necessary
 - stop and disable Curator to avoid closing old indices
 - stop and disable all active sniffing processes (Bro, Snort, Suricata, and netsniff-ng)
 - stop and disable ossec_agent
-- reconfigure and restart sguild, syslog-ng, and Logstash where necessary
+- reconfigure and restart sguild and syslog-ng where necessary
 - generate IDS alerts using Snort or Suricata
 - generate Bro logs
 - store IDS alerts and Bro logs with original timestamps
@@ -125,6 +98,65 @@ If this is the first time so-import-pcap has been run on this system, then it wi
 Press Enter to continue or Ctrl-c to cancel.
 EOF
 read input
+
+if ! [ -f /etc/sguild/sguild.conf ]; then
+	echo "It looks like you haven't run Setup yet, so let's do that now."
+	echo "We need to create a username and password that you will use to log into Sguil, Squert, and Kibana."
+
+	until [ "$USERNAME_CONFIRMED" = "yes" ]; do
+		echo "What would you like the username to be? (alphanumeric characters only)"
+		read USERNAME
+		COMPRESSED="$(echo $USERNAME | sed -e 's/[^[:alnum:]]//g')"
+                if [ "$COMPRESSED" != "$USERNAME" ] || [ x$USERNAME = "x" ] ; then
+                        echo "Invalid username!"
+		else
+			USERNAME_CONFIRMED="yes"
+		fi
+	done
+
+	until [ "$PASSWORD_CONFIRMED" = "yes" ]; do
+		echo "What would you like the password to be?"
+		read -s PASSWORD_1
+		echo
+		echo "Please confirm the password."
+		read -s PASSWORD_2
+		echo
+		if [ "$PASSWORD_1" = "$PASSWORD_2" ]; then
+			PASSWORD_CONFIRMED="yes"
+		else
+			echo "Passwords didn't match!"
+		fi
+	done
+
+	echo "# Added by /usr/sbin/so-import-pcap for Security Onion" >> /etc/network/interfaces
+
+	SOSETUP_CONF=`mktemp /tmp/sosetup-import-XXXXXXXXXX.conf`
+	cp /usr/share/securityonion/sosetup-master.conf $SOSETUP_CONF
+	sed -i "s|onionuser|$USERNAME|g" 					$SOSETUP_CONF
+	sed -i "s|asdfasdf|$PASSWORD_1|g" 					$SOSETUP_CONF
+	sed -i "s|LOGSTASH_OUTPUT_REDIS='yes'|LOGSTASH_OUTPUT_REDIS='no'|g" 	$SOSETUP_CONF
+	sed -i "s|OSSEC_AGENT_ENABLED='yes'|OSSEC_AGENT_ENABLED='no'|g" 	$SOSETUP_CONF
+	sed -i "s|SALT='yes'|SALT='no'|g" 					$SOSETUP_CONF
+	echo yes | /usr/sbin/sosetup -f $SOSETUP_CONF
+	shred -u $SOSETUP_CONF
+
+	# Tune Elasticsearch - decrease heap to 600MB and refresh interval to 1s
+	/usr/sbin/so-elasticsearch-stop >/dev/null 2>&1
+	/usr/sbin/so-logstash-stop >/dev/null 2>&1
+	sed -i 's|-Xms1000m|-Xms600m|g' /etc/elasticsearch/jvm.options
+	sed -i 's|-Xmx1000m|-Xmx600m|g' /etc/elasticsearch/jvm.options
+	sed -i 's|30s|1s|g' /etc/logstash/*-template.json
+	/usr/sbin/so-elasticsearch-start >/dev/null 2>&1
+	/usr/sbin/so-logstash-start >/dev/null 2>&1
+
+	echo -n "Since we just ran Setup for the first time, we need to wait until services are fully initialized (this may take a few minutes)..."
+	until fgrep -q "Cluster health status changed from [YELLOW] to [GREEN] (reason: [shards started [[logstash-" /var/log/elasticsearch/*.log; do
+		echo -n "."
+		sleep 1s
+	done
+	echo
+	echo
+fi
 
 echo "Please wait while:"
 
@@ -193,6 +225,7 @@ HOST_ORIG=`hostname`
 HOSTNAME=${HOST_ORIG,,}
 SENSORNAME="$HOSTNAME-import"
 SENSOR="$HOSTNAME-import"
+SENSORCONF="/etc/nsm/$SENSORNAME/sensor.conf"
 INTERFACE=`awk '/:/ {print $1}' /proc/net/dev | tr -d ':' | grep -v "^lo$" | grep -v "^docker" | grep -v "^br-" | grep -v "^veth" | sort | head -1`
 if ! [ -d /etc/nsm/$SENSORNAME ]; then
 	echo "- creating Sguil sensor named $SENSORNAME."
@@ -243,9 +276,55 @@ if ! [ -d /etc/nsm/$SENSORNAME ]; then
 	ln -s /etc/nsm/rules /nsm/server_data/securityonion/rules/"$SENSORNAME"
 	ln -s /etc/nsm/rules /nsm/server_data/securityonion/rules/"$SENSORNAME"-1
 
+	# disable barnyard snorby output
+	if grep "^output database: alert, mysql, user=root dbname=snorby host=127.0.0.1" /etc/nsm/$SENSORNAME/barnyard*.conf >/dev/null 2>&1; then
+		echo "- disabling snorby output in barnyard config."
+		sed -i 's|^output database: alert, mysql, user=root dbname=snorby host=127.0.0.1|#output database: alert, mysql, user=root dbname=snorby host=127.0.0.1|g' /etc/nsm/$SENSORNAME/barnyard*.conf
+	fi
+
+	# disable barnyard syslog output
+	if grep "^output alert_syslog: LOG_LOCAL6 LOG_ALERT$" /etc/nsm/$SENSORNAME/barnyard*.conf >/dev/null 2>&1; then
+		echo "- disabling syslog output in barnyard config."
+		sed -i 's|^output alert_syslog: LOG_LOCAL6 LOG_ALERT$|#output alert_syslog: LOG_LOCAL6 LOG_ALERT|g' /etc/nsm/$SENSORNAME/barnyard*.conf
+	fi
+
+	echo "- stopping sensor services."
+	/usr/sbin/so-sensor-stop >/dev/null 2>&1
+
+	echo "- backing up /etc/nsm/sensortab to /etc/nsm/sensortab.orig"
+	cp /etc/nsm/sensortab /etc/nsm/sensortab.orig
+
+	echo "- enabing $SENSORNAME in /etc/nsm/sensortab"
+	grep "$SENSORNAME" /etc/nsm/sensortab.orig > /etc/nsm/sensortab
+
+	# disable unnecessary services
+	sed -i 's|PRADS_ENABLED="yes"|PRADS_ENABLED="no"|g' 		$SENSORCONF
+	sed -i 's|PCAP_ENABLED="yes"|PCAP_ENABLED="no"|g' 		$SENSORCONF
+	sed -i 's|PADS_AGENT_ENABLED="yes"|PADS_AGENT_ENABLED="no"|g'	$SENSORCONF
+	sed -i 's|SANCP_AGENT_ENABLED="yes"|SANCP_AGENT_ENABLED="no"|g' $SENSORCONF
+	sed -i 's|HTTP_AGENT_ENABLED="yes"|HTTP_AGENT_ENABLED="no"|g' 	$SENSORCONF
+	sed -i 's|ARGUS_ENABLED="yes"|ARGUS_ENABLED="no"|g' 		$SENSORCONF
+	sed -i 's|IDS_ENGINE_ENABLED="yes"|IDS_ENGINE_ENABLED="no"|g' 	$SENSORCONF
+
+	# start all sensor services
+	echo "- starting sensor services."
+	/usr/sbin/so-sensor-start >/dev/null 2>&1
+
 fi
 
+# create /opt/bro/etc/node.cfg so that pivoting from Kibana to CapMe will work
+NODE_CFG="/opt/bro/etc/node.cfg"
+if ! [ -f $NODE_CFG ]; then
+cat << EOF > $NODE_CFG
+[bro]
+type=standalone
+host=localhost
+interface=$INTERFACE
+EOF
+fi
+	
 # make sure sguild is running with DEBUG 2
+SGUILDCONF="/etc/sguild/sguild.conf"
 if ! grep "set DEBUG 2" $SGUILDCONF >/dev/null 2>&1; then
 	echo "- setting sguild debug to 2 and restarting sguild."
 	sed -i 's|set DEBUG.*$|set DEBUG 2|g' $SGUILDCONF
@@ -253,6 +332,7 @@ if ! grep "set DEBUG 2" $SGUILDCONF >/dev/null 2>&1; then
 fi
 
 # make sure syslog-ng is configured to pick up sguild logs
+SYSLOGCONF="/etc/syslog-ng/syslog-ng.conf"
 if ! grep "/var/log/nsm/securityonion/sguild.log" $SYSLOGCONF >/dev/null 2>&1; then
 	echo "- configuring syslog-ng to pick up sguild logs."
 cat << EOF >> $SYSLOGCONF
@@ -269,18 +349,8 @@ EOF
 	service syslog-ng restart >/dev/null 2>&1
 fi
 
-# make sure Logstash is configured to parse sguild logs
-if ! grep "DATA:timestamp" $LOGSTASH_SNORT > /dev/null 2>&1; then
-	echo -n "- configuring logstash to parse sguild logs (this may take a few minutes, but should only need to be done once)."
-	sed -i 's|"message", "%{GREEDYDATA:alert}"]|"message", "\\A%{TIME} pid\\(%{INT}\\)  Alert Received: %{INT} %{INT:priority} %{DATA:classification} %{DATA:interface} \\{%{DATA:timestamp}} %{INT} %{INT} \\{%{DATA:alert}\} %{IP:source_ip} %{IP:destination_ip} %{INT:protocol} %{INT:source_port} %{INT:destination_port} %{INT:gid} %{INT:sid} %{INT:rev} %{INT} %{INT}\\Z",\n                "message", "%{GREEDYDATA:alert}"]\n    }\n\n    if [timestamp] {\n        mutate {\n                add_field => { "logstash_timestamp" => "%{@timestamp}" }\n        }\n        mutate {\n                convert => { "logstash_timestamp" => "string" }\n        }\n        date {\n                match => [ "timestamp", "yyyy-MM-dd HH:mm:ss" ]\n        }\n        mutate {\n                rename => { "logstash_timestamp" => "timestamp" }\n        }|g' $LOGSTASH_SNORT
-	/usr/bin/docker restart so-logstash >/dev/null 2>&1
-	if (timeout 10m tail -F -n0 "/var/log/logstash/logstash.log" &) | grep -q "Pipelines running" ; then
-	    echo "done."
-	else
-	    echo "failed."
-	    exit
-	fi
-fi
+CONF="/etc/nsm/securityonion.conf"
+source $CONF
 
 # stop curator if running
 if docker ps |grep curator >/dev/null 2>&1; then
@@ -292,6 +362,18 @@ fi
 if [ "$CURATOR_ENABLED" = "yes" ]; then
 	echo "- disabling curator."
 	sed -i 's|CURATOR_ENABLED="yes"|CURATOR_ENABLED="no"|g' $CONF
+fi
+
+# stop elastalert if running
+if docker ps |grep elastalert >/dev/null 2>&1; then
+	echo "- stopping elastalert."
+	docker stop so-elastalert >/dev/null 2>&1
+fi
+
+# disable elastalert
+if [ "$ELASTALERT_ENABLED" = "yes" ]; then
+	echo "- disabling elastalert."
+	sed -i 's|ELASTALERT_ENABLED="yes"|ELASTALERT_ENABLED="no"|g' $CONF
 fi
 
 # stop ossec_agent if running
@@ -317,46 +399,6 @@ if [ "$BRO_ENABLED" = "yes" ]; then
 	echo "- disabling Bro sniffing process."
 	sed -i 's|BRO_ENABLED=yes|BRO_ENABLED=no|g' $CONF
 fi
-
-SENSORCONF="/etc/nsm/$SENSOR/sensor.conf"
-
-# disable unnecessary services
-sed -i 's|PRADS_ENABLED="yes"|PRADS_ENABLED="no"|g' $SENSORCONF
-sed -i 's|PCAP_ENABLED="yes"|PCAP_ENABLED="no"|g' $SENSORCONF
-sed -i 's|PADS_AGENT_ENABLED="yes"|PADS_AGENT_ENABLED="no"|g' $SENSORCONF
-sed -i 's|SANCP_AGENT_ENABLED="yes"|SANCP_AGENT_ENABLED="no"|g' $SENSORCONF
-sed -i 's|HTTP_AGENT_ENABLED="yes"|HTTP_AGENT_ENABLED="no"|g' $SENSORCONF
-sed -i 's|ARGUS_ENABLED="yes"|ARGUS_ENABLED="no"|g' $SENSORCONF
-sed -i 's|IDS_ENGINE_ENABLED="yes"|IDS_ENGINE_ENABLED="no"|g' $SENSORCONF
-
-# disable barnyard snorby output
-if grep "^output database: alert, mysql, user=root dbname=snorby host=127.0.0.1" /etc/nsm/$SENSORNAME/barnyard*.conf >/dev/null 2>&1; then
-	echo "- disabling snorby output in barnyard config."
-	sed -i 's|^output database: alert, mysql, user=root dbname=snorby host=127.0.0.1|#output database: alert, mysql, user=root dbname=snorby host=127.0.0.1|g' /etc/nsm/$SENSORNAME/barnyard*.conf
-fi
-
-# disable barnyard syslog output
-if grep "^output alert_syslog: LOG_LOCAL6 LOG_ALERT$" /etc/nsm/$SENSORNAME/barnyard*.conf >/dev/null 2>&1; then
-	echo "- disabling syslog output in barnyard config."
-	sed -i 's|^output alert_syslog: LOG_LOCAL6 LOG_ALERT$|#output alert_syslog: LOG_LOCAL6 LOG_ALERT|g' /etc/nsm/$SENSORNAME/barnyard*.conf
-fi
-
-# disable any other sniffing interfaces
-ACTIVE=$(grep -v "^#" /etc/nsm/sensortab | wc -l)
-if [ $ACTIVE -gt 1 ]; then
-	echo "- stopping sensor services."
-	/usr/sbin/so-sensor-stop >/dev/null 2>&1
-
-	echo "- backing up /etc/nsm/sensortab to /etc/nsm/sensortab.orig"
-	cp /etc/nsm/sensortab /etc/nsm/sensortab.orig
-
-	echo "- enabing $SENSORNAME in /etc/nsm/sensortab"
-	grep "$SENSORNAME" /etc/nsm/sensortab.orig > /etc/nsm/sensortab
-fi
-
-# start all sensor services
-echo "- starting sensor services."
-/usr/sbin/so-sensor-start >/dev/null 2>&1
 
 # generate IDS alerts and write them to standard pipeline for consumption via Sguil agents
 if [ "$ENGINE" = "snort" ]; then
