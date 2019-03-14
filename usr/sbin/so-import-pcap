@@ -226,7 +226,13 @@ HOSTNAME=${HOST_ORIG,,}
 SENSORNAME="$HOSTNAME-import"
 SENSOR="$HOSTNAME-import"
 SENSORCONF="/etc/nsm/$SENSORNAME/sensor.conf"
-INTERFACE=`awk '/:/ {print $1}' /proc/net/dev | tr -d ':' | grep -v "^lo$" | grep -v "^docker" | grep -v "^br-" | grep -v "^veth" | sort | head -1`
+# If the user had already run Setup, let's re-use their first enabled interface in /etc/nsm/sensortab.
+# Otherwise, pick the first available interface.
+if [ $(grep -v "^#" /etc/nsm/sensortab | wc -l) -gt 0 ]; then
+	INTERFACE=$(grep -v "^#" /etc/nsm/sensortab | head -1 | awk '{print $4}')
+else
+	INTERFACE=`awk '/:/ {print $1}' /proc/net/dev | tr -d ':' | grep -v "^lo$" | grep -v "^docker" | grep -v "^br-" | grep -v "^veth" | sort | head -1`
+fi
 if ! [ -d /etc/nsm/$SENSORNAME ]; then
 	echo "- creating Sguil sensor named $SENSORNAME."
 	BY2PORT=7900
