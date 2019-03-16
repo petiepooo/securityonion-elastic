@@ -29,11 +29,11 @@ usage()
 {
 cat <<EOF
 
-Create Elastalert Rule
+Test Elastalert Rule
   Options:
   -h         		This message
   -a         		Trigger real alerts instead of the debug alert
-  -l <path_to_file>      Write results to specified log file
+  -l <path_to_file>     Write results to specified log file
   -o '<options>'	Specify Elastalert options ( Ex. --schema-only , --count-only, --days N ) 
   -r <rule_name>        Specify path/name of rule to test
 
