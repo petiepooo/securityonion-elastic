@@ -1,4 +1,4 @@
-#!/bin/bash
+#!_bin/bash
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,46 +21,103 @@
 
 . /usr/sbin/so-elastic-common
 
-# This script now optionally accepts two command line arguments ($1 and $2):
-# $1 - the Elastalert rule that you want to test
-# $2 - the file that you want to save output to
-# If one or both of these optional parameters are omitted, we will prompt the user for input.
+options=""
+skip=0
+resultstolog="n"
 
-if [ -z "$1" ]; then
-	echo
-	echo "This script will allow you to test an Elastalert rule."
-	echo
-	echo "Below is a list of active rules in the /etc/elastalert/rules/ directory."
-	echo 
-	# piping ls to cat to emulate original behavior of one file per line
-	ls /etc/elastalert/rules/ | cat
-	echo 
-	echo "Note: To test a rule it must be accessible by the Elastalert docker container."
-	echo
-	echo "Please enter the file path and rule name you want to test."
-	read -e TEST_RULE
-else
-	TEST_RULE=$1
+usage()
+{
+cat <<EOF
+
+Create Elastalert Rule
+  Options:
+  -h         		This message
+  -a         		Trigger real alerts instead of the debug alert
+  -l <path_to_file      Write results to specified log file
+  -o '<options>'	Specify Elastalert options ( Ex. --schema-only , --count-only, --days N )
+  -r <rule_name>        Specify path/name of rule to test
+
+EOF
+}
+
+while getopts "hal:o:r:" OPTION
+do
+        case $OPTION in
+                h)
+                        usage
+                        exit 0
+                        ;;
+                a)
+                        options="--alert"
+                        ;;
+                l)
+                        resultstolog="y"
+                        filesavelocation=$OPTARG
+                        ;;
+
+                o)
+			options=$OPTARG
+                        ;;
+
+                r)
+                        rulename=$OPTARG
+                        skip=1
+                        ;;
+                *)
+                        usage
+                        exit 0
+                        ;;
+        esac
+done
+
+docker_exec(){
+	if [ ${resultstolog,,} = "y" ] ; then
+		docker exec -it so-elastalert bash -c "elastalert-test-rule $rulename $options" > $filesavelocation
+	else
+		docker exec -it so-elastalert bash -c "elastalert-test-rule $rulename $options"
+	fi
+}
+
+rule_prompt(){
+	current_rules=$(sudo ls /etc/elastalert/rules/)
+        echo
+        echo "This script will allow you to test an Elastalert rule."
+        echo
+        echo "Below is a list of active rules in the /etc/elastalert/rules/ directory."
+        echo
+        echo "$current_rules"
+        echo
+        echo "Note: To test a rule it must be accessible by the Elastalert docker container."
+        echo
+        echo "Please enter the file path and rule name you want to test."
+        read -e rulename
+}
+
+log_save_prompt(){
+	echo "The results can be rather long.  Would you like to write the results to a file? (Y/N)"
+        read resultstolog
+}
+
+log_path_prompt(){
+	echo "Please enter the file path and file name."
+        read -e filesavelocation
+        echo "Depending on the rule this may take a while."
+}
+
+if [ $skip -ne 1 ]; then
+	rule_prompt
+	log_save_prompt
+        if [ ${resultstolog,,} = "y" ] ; then
+		log_path_prompt
+        fi
 fi
 
-if [ -z "$2" ]; then
-	echo
-	echo "The results can be rather long."
-	echo "If you would like to write the results to a file, please enter the filename."
-	echo "Otherwise, just press the Enter key."
-	read FILE_SAVE_LOCATION
-else
-	FILE_SAVE_LOCATION=$2
-fi
+docker_exec
 
-if [ -z ${FILE_SAVE_LOCATION} ] ; then
-	docker exec -it so-elastalert bash -c "elastalert-test-rule $TEST_RULE"
+if [ $? -eq 0 ]; then
+	echo "Test completed successfully!"
+        echo
 else
-	echo
-	echo "Depending on the rule this may take a while."
-	docker exec -it so-elastalert bash -c "elastalert-test-rule $TEST_RULE" > ${FILE_SAVE_LOCATION}
-	OUTPUT="You can check the output in ${FILE_SAVE_LOCATION}."
+	echo "Something went wrong..."
+        echo
 fi
-
-echo
-echo "Complete! ${OUTPUT}"
