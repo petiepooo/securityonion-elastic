@@ -79,7 +79,7 @@ docker_exec(){
 }
 
 rule_prompt(){
-	CURRENT_RULES=$(ls /etc/elastalert/rules/*)
+	CURRENT_RULES=$(ls /etc/elastalert/rules/*.yaml)
         echo
         echo "This script will allow you to test an Elastalert rule."
         echo
