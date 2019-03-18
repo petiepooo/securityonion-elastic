@@ -129,8 +129,8 @@ docker_exec
 
 if [ $? -eq 0 ]; then
 	echo "Test completed successfully!"
-        echo
 else
 	echo "Something went wrong..."
-        echo
 fi
+
+echo
