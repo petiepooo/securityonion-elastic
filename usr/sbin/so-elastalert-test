@@ -15,52 +15,122 @@
 #
 # Originally written by Bryant Treacle
 # https://raw.githubusercontent.com/bryant-treacle/so-elastalert-test-rule/master/so-elastalert-test
-# Modified by Doug Burks
+# Modified by Doug Burks and Wes Lambert
 #
 # Purpose:  This script will allow you to test your elastalert rule without entering the Docker container.
 
 . /usr/sbin/so-elastic-common
 
-# This script now optionally accepts two command line arguments ($1 and $2):
-# $1 - the Elastalert rule that you want to test
-# $2 - the file that you want to save output to
-# If one or both of these optional parameters are omitted, we will prompt the user for input.
+OPTIONS=""
+SKIP=0
+RESULTS_TO_LOG="n"
+RULE_NAME=""
+FILE_SAVE_LOCATION=""
 
-if [ -z "$1" ]; then
-	echo
-	echo "This script will allow you to test an Elastalert rule."
-	echo
-	echo "Below is a list of active rules in the /etc/elastalert/rules/ directory."
+usage()
+{
+cat <<EOF
+
+Test Elastalert Rule
+  Options:
+  -h         		This message
+  -a         		Trigger real alerts instead of the debug alert
+  -l <path_to_file>     Write results to specified log file
+  -o '<options>'	Specify Elastalert options ( Ex. --schema-only , --count-only, --days N ) 
+  -r <rule_name>        Specify path/name of rule to test
+
+EOF
+}
+
+while getopts "hal:o:r:" OPTION
+do
+        case $OPTION in
+                h)
+                        usage
+                        exit 0
+                        ;;
+                a)
+                        OPTIONS="--alert"
+                        ;;
+                l)
+                        RESULTS_TO_LOG="y"
+                        FILE_SAVE_LOCATION=$OPTARG
+                        ;;
+                
+                o)
+			OPTIONS=$OPTARG
+                        ;;  
+                
+                r)
+                        RULE_NAME=$OPTARG
+                        SKIP=1
+                        ;;
+                *)
+                        usage
+                        exit 0
+                        ;;
+        esac
+done
+
+docker_exec(){
+	if [ ${RESULTS_TO_LOG,,} = "y" ] ; then
+        	docker exec -it so-elastalert bash -c "elastalert-test-rule $RULE_NAME $OPTIONS" > $FILE_SAVE_LOCATION
+	else
+        	docker exec -it so-elastalert bash -c "elastalert-test-rule $RULE_NAME $OPTIONS"
+	fi	
+}
+
+rule_prompt(){
+	CURRENT_RULES=$(ls /etc/elastalert/rules/*.yaml)
+        echo
+        echo "This script will allow you to test an Elastalert rule."
+        echo
+        echo "Below is a list of active Elastalert rules:"
+        echo
+	echo "-----------------------------------"
+        echo
+        echo "$CURRENT_RULES"
+        echo
+	echo "-----------------------------------"
 	echo 
-	# piping ls to cat to emulate original behavior of one file per line
-	ls /etc/elastalert/rules/ | cat
-	echo 
-	echo "Note: To test a rule it must be accessible by the Elastalert docker container."
-	echo
-	echo "Please enter the file path and rule name you want to test."
-	read -e TEST_RULE
-else
-	TEST_RULE=$1
+        echo "Note: To test a rule it must be accessible by the Elastalert Docker container."
+        echo
+        while [ -z $RULE_NAME ]; do
+		echo "Please enter the file path and rule name you want to test."
+		read -e RULE_NAME
+	done
+}
+
+log_save_prompt(){
+	RESULTS_TO_LOG=""
+        while [ -z $RESULTS_TO_LOG ]; do
+		echo "The results can be rather long.  Would you like to write the results to a file? (Y/N)"
+		read RESULTS_TO_LOG
+	done
+}
+
+log_path_prompt(){
+        while [ -z $FILE_SAVE_LOCATION ]; do
+		echo "Please enter the file path and file name."
+		read -e FILE_SAVE_LOCATION
+        done
+		echo "Depending on the rule this may take a while."
+}
+
+if [ $SKIP -eq 0 ]; then
+	rule_prompt
+	log_save_prompt
+        if [ ${RESULTS_TO_LOG,,} = "y" ] ; then
+        	log_path_prompt
+        fi
 fi
 
-if [ -z "$2" ]; then
-	echo
-	echo "The results can be rather long."
-	echo "If you would like to write the results to a file, please enter the filename."
-	echo "Otherwise, just press the Enter key."
-	read FILE_SAVE_LOCATION
-else
-	FILE_SAVE_LOCATION=$2
-fi
+docker_exec
 
-if [ -z ${FILE_SAVE_LOCATION} ] ; then
-	docker exec -it so-elastalert bash -c "elastalert-test-rule $TEST_RULE"
+if [ $? -eq 0 ]; then
+	echo "Test completed successfully!"
+        echo
 else
-	echo
-	echo "Depending on the rule this may take a while."
-	docker exec -it so-elastalert bash -c "elastalert-test-rule $TEST_RULE" > ${FILE_SAVE_LOCATION}
-	OUTPUT="You can check the output in ${FILE_SAVE_LOCATION}."
+	echo "Something went wrong..."
+        echo
 fi
-
-echo
-echo "Complete! ${OUTPUT}"
