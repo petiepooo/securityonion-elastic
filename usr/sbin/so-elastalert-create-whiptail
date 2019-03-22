@@ -306,7 +306,7 @@ final_prompt()
 current_directory=$(pwd)
 if (whiptail --yesno "\nWriting rule to the following location:\n\n $current_directory/$rulename.yaml\n\nIf you would like to test this rule, a copy will be placed in the production directory </etc/elastalert/rules> and will be tested by so-elastalert-test.\n\n Testing the rule will exit so-elastalert-create. \n\nWould you like to test the $rulename now?" 20 90 --title "Rule Test") then
 sudo cp "$rulename.yaml" /etc/elastalert/rules/
-sudo /usr/sbin/so-elastalert-test
+sudo /usr/sbin/so-elastalert-test -r /etc/elastalert/rules/$rulename.yaml
 fi
 }
 
