@@ -143,9 +143,11 @@ else
         grep "^pipeline.workers" $LS_YAML_BAK >> $LS_YAML
 
 	# Enable Java Execution Engine if necessary
-	if ! grep -q "^pipeline.java_execution: " $LS_YAML; then
-		echo "# Java Execution Engine provides much better performance" >> $LS_YAML
-		echo "pipeline.java_execution: true" >> $LS_YAML
+	if ! grep -q "pipeline.java_execution:" $LS_YAML; then
+		echo "# Java Execution Engine provides better performance." >> $LS_YAML
+		echo "# However, it is not considered stable until version 6.6." >> $LS_YAML
+		echo "# If you enable this, make sure to enable the -Xss setting in jvm.options as well." >> $LS_YAML
+		echo "#pipeline.java_execution: true" >> $LS_YAML
 	fi
 fi
 
@@ -157,11 +159,11 @@ if [ -f $LS_JVM ]; then
 	sed -i 's|-Xmx1600m|-Xmx2000m|g' $LS_JVM
 
 	# Add Xss option for Java Execution Engine if necessary
-	if ! grep -q "^-Xss" $LS_JVM; then
+	if ! grep -q "Xss" $LS_JVM; then
 		echo "" >> $LS_JVM
 		echo "# Avoid StackOverflowError when enabling Java Execution Engine" >> $LS_JVM
 		echo "# https://github.com/elastic/logstash/issues/10131" >> $LS_JVM
-		echo "-Xss16M" >> $LS_JVM
+		echo "#-Xss16M" >> $LS_JVM
 	fi
 else
 	# If the file doesn't already exist, copy it into place and set heap appropriately
