@@ -118,6 +118,10 @@ if [ ! -f /etc/elasticsearch/jvm.options ]; then
 	sed -i "s/^-Xmx.*/-Xmx$ES_HEAP_SIZE/" /etc/elasticsearch/jvm.options
 fi
 
+# Elasticsearch ingest node parsers
+mkdir -p /etc/elasticsearch/ingest
+cp -av /opt/elastic/src/etc/elasticsearch/ingest/* /etc/elasticsearch/ingest
+
 echo "Done!"
 
 header "Configuring Logstash"
