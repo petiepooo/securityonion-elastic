@@ -137,10 +137,30 @@ if ! [ -f /etc/sguild/sguild.conf ]; then
 	sed -i "s|LOGSTASH_OUTPUT_REDIS='yes'|LOGSTASH_OUTPUT_REDIS='no'|g" 	$SOSETUP_CONF
 	sed -i "s|OSSEC_AGENT_ENABLED='yes'|OSSEC_AGENT_ENABLED='no'|g" 	$SOSETUP_CONF
 	sed -i "s|SALT='yes'|SALT='no'|g" 					$SOSETUP_CONF
-	sed -i "s|IDS_ENGINE='snort'|IDS_ENGINE='suricata'|g"			$SOSETUP_CONF
 	echo yes | /usr/sbin/sosetup -f $SOSETUP_CONF
 	shred -u $SOSETUP_CONF
 
+	# reconfigure Elasticsearch and Logstash
+	/usr/sbin/so-elasticsearch-stop >/dev/null 2>&1
+	/usr/sbin/so-logstash-stop >/dev/null 2>&1
+	sed -i 's|-Xms1000m|-Xms600m|g' /etc/elasticsearch/jvm.options
+	sed -i 's|-Xmx1000m|-Xmx600m|g' /etc/elasticsearch/jvm.options
+	/usr/sbin/so-elasticsearch-start >/dev/null 2>&1
+	sed -i 's|30s|1s|g' /etc/logstash/*-template.json
+	sed -i 's|-Xms2000m|-Xms200m|g' /etc/logstash/jvm.options
+	sed -i 's|-Xmx2000m|-Xmx200m|g' /etc/logstash/jvm.options
+	if ! grep -q "LOGSTASH_OUTPUT_INGEST" /etc/nsm/securityonion.conf; then
+		echo 'LOGSTASH_OUTPUT_INGEST="yes"' >> /etc/nsm/securityonion.conf
+	fi
+	/usr/sbin/so-logstash-start >/dev/null 2>&1
+
+	echo -n "Since we just ran Setup for the first time, we need to wait until services are fully initialized (this may take a few minutes)..."
+	until fgrep -q "Cluster health status changed from [YELLOW] to [GREEN] (reason: [shards started [[logstash-" /var/log/elasticsearch/*.log; do
+		echo -n "."
+		sleep 1s
+	done
+	echo
+	echo
 fi
 
 echo "Please wait while:"
@@ -339,11 +359,6 @@ log {
 EOF
 	service syslog-ng restart >/dev/null 2>&1
 fi
-# older so-import-pcap installs may still have this line, so we need to remove it
-if grep -q "log { destination(d_logstash); };" $SYSLOGCONF; then
-	sed '/log { destination(d_logstash); };/d' $SYSLOGCONF
-	service syslog-ng restart >/dev/null 2>&1
-fi
 
 CONF="/etc/nsm/securityonion.conf"
 source $CONF
@@ -394,26 +409,6 @@ fi
 if [ "$BRO_ENABLED" = "yes" ]; then
 	echo "- disabling Bro sniffing process."
 	sed -i 's|BRO_ENABLED=yes|BRO_ENABLED=no|g' $CONF
-fi
-
-# reconfigure Elasticsearch and Logstash
-if ! grep -q "LOGSTASH_OUTPUT_INGEST" /etc/nsm/securityonion.conf; then
-	echo 'LOGSTASH_OUTPUT_INGEST="yes"' >> /etc/nsm/securityonion.conf
-	/usr/sbin/so-elasticsearch-stop >/dev/null 2>&1
-	/usr/sbin/so-logstash-stop >/dev/null 2>&1
-	sed -i 's|-Xms1000m|-Xms600m|g' /etc/elasticsearch/jvm.options
-	sed -i 's|-Xmx1000m|-Xmx600m|g' /etc/elasticsearch/jvm.options
-	/usr/sbin/so-elasticsearch-start >/dev/null 2>&1
-	sed -i 's|30s|1s|g' /etc/logstash/*-template.json
-	sed -i 's|-Xms2000m|-Xms200m|g' /etc/logstash/jvm.options
-	sed -i 's|-Xmx2000m|-Xmx200m|g' /etc/logstash/jvm.options
-	/usr/sbin/so-logstash-start >/dev/null 2>&1
-	echo -n "- initializing Elasticsearch and Logstash (this may take a few minutes)..."
-	until fgrep -q "Cluster health status changed from [YELLOW] to [GREEN] (reason: [shards started [[logstash-" /var/log/elasticsearch/*.log; do
-		echo -n "."
-		sleep 1s
-	done
-	echo
 fi
 
 # generate IDS alerts and write them to standard pipeline for consumption via Sguil agents
