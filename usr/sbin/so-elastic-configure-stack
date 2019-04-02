@@ -151,7 +151,7 @@ else
 		echo "# Java Execution Engine provides better performance." >> $LS_YAML
 		echo "# However, it is not considered stable until version 6.6." >> $LS_YAML
 		echo "# If you enable this, make sure to enable the -Xss setting in jvm.options as well." >> $LS_YAML
-		echo "#pipeline.java_execution: true" >> $LS_YAML
+		echo "pipeline.java_execution: true" >> $LS_YAML
 	fi
 fi
 
@@ -167,7 +167,7 @@ if [ -f $LS_JVM ]; then
 		echo "" >> $LS_JVM
 		echo "# Avoid StackOverflowError when enabling Java Execution Engine" >> $LS_JVM
 		echo "# https://github.com/elastic/logstash/issues/10131" >> $LS_JVM
-		echo "#-Xss16M" >> $LS_JVM
+		echo "-Xss16M" >> $LS_JVM
 	fi
 else
 	# If the file doesn't already exist, copy it into place and set heap appropriately

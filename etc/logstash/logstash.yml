@@ -219,4 +219,4 @@ path.logs: /var/log/logstash
 # Java Execution Engine provides better performance.
 # However, it is not considered stable until version 6.6.
 # If you enable this, make sure to enable the -Xss setting in jvm.options as well.
-#pipeline.java_execution: true
+pipeline.java_execution: true
