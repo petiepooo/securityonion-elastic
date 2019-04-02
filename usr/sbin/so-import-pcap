@@ -140,13 +140,18 @@ if ! [ -f /etc/sguild/sguild.conf ]; then
 	echo yes | /usr/sbin/sosetup -f $SOSETUP_CONF
 	shred -u $SOSETUP_CONF
 
-	# Tune Elasticsearch - decrease heap to 600MB and refresh interval to 1s
+	# reconfigure Elasticsearch and Logstash
 	/usr/sbin/so-elasticsearch-stop >/dev/null 2>&1
 	/usr/sbin/so-logstash-stop >/dev/null 2>&1
 	sed -i 's|-Xms1000m|-Xms600m|g' /etc/elasticsearch/jvm.options
 	sed -i 's|-Xmx1000m|-Xmx600m|g' /etc/elasticsearch/jvm.options
-	sed -i 's|30s|1s|g' /etc/logstash/*-template.json
 	/usr/sbin/so-elasticsearch-start >/dev/null 2>&1
+	sed -i 's|30s|1s|g' /etc/logstash/*-template.json
+	sed -i 's|-Xms2000m|-Xms200m|g' /etc/logstash/jvm.options
+	sed -i 's|-Xmx2000m|-Xmx200m|g' /etc/logstash/jvm.options
+	if ! grep -q "LOGSTASH_OUTPUT_INGEST" /etc/nsm/securityonion.conf; then
+		echo 'LOGSTASH_OUTPUT_INGEST="yes"' >> /etc/nsm/securityonion.conf
+	fi
 	/usr/sbin/so-logstash-start >/dev/null 2>&1
 
 	echo -n "Since we just ran Setup for the first time, we need to wait until services are fully initialized (this may take a few minutes)..."

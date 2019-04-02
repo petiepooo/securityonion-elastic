@@ -19,10 +19,10 @@
 
 . /etc/nsm/securityonion.conf
 
+LOGSTASH_CONFD="/etc/logstash/conf.d"
 CUSTOM_CONF="/etc/logstash/custom"
 INPUT_REDIS_CONF="/etc/logstash/conf.d/0900_input_redis.conf"
 OUTPUT_REDIS_CONF="/etc/logstash/conf.d.redis.output/9999_output_redis.conf"
-CONFD="/etc/logstash/conf.d"
 LOG="/var/log/logstash/logstash.log"
 
 #########################################
@@ -87,6 +87,53 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                         rm -f /etc/logstash/conf.d/8008_postprocess_dns_whois_age.conf
                 fi
 
+                if [ "$LOGSTASH_OUTPUT_INGEST" = "yes" ]; then
+			# move parsing from logstash to elasticsearch ingest node
+
+			# add pipelines to elasticsearch
+			/usr/sbin/so-elasticsearch-pipelines
+
+			# logstash just needs inputs and an ingest node pipeline output
+			# create a new config directory for these files
+			LOGSTASH_CONFD="/etc/logstash/conf.d.ingest.output/"
+			mkdir -p $LOGSTASH_CONFD
+
+			INPUT_SYSLOG_CONF=$LOGSTASH_CONFD/0000_input_syslogng.conf
+			if ! [ -f $INPUT_SYSLOG_CONF ]; then
+cat << EOF >> $INPUT_SYSLOG_CONF
+input {
+  tcp {
+    port => 6050
+    codec =>   json
+    type => "syslogng"
+    tags => "syslogng"
+  }
+}
+EOF
+			fi
+
+			INPUT_IMPORT=$LOGSTASH_CONFD/0007_input_import.conf
+			if ! [ -f $INPUT_IMPORT ]; then
+				cp /etc/logstash/conf.d.available/0007_input_import.conf $INPUT_IMPORT
+			fi
+
+			OUTPUT_INGEST=$LOGSTASH_CONFD/9002_output_import.conf
+			if ! [ -f $OUTPUT_INGEST ]; then
+cat << EOF >> $OUTPUT_INGEST	
+output {
+    elasticsearch {
+      hosts => elasticsearch
+      index => "logstash-import-%{+YYYY.MM.dd}"
+      pipeline => "%{type}"
+      template_name => "logstash-*"
+      template => "/logstash-template.json"
+      template_overwrite => true
+    }
+}
+EOF
+			fi
+		fi
+
                 if [ "$LOGSTASH_INPUT_REDIS" = "yes" ]; then
 			# this is a storage node consuming from redis
 			# need to add an input if it doesn't already exist
@@ -111,8 +158,8 @@ EOF
 			# this is a master server outputting to redis
 			# logstash just needs inputs and a redis output
 			# create a new config directory for these files
-			CONFD="/etc/logstash/conf.d.redis.output/"
-			mkdir -p $CONFD
+			LOGSTASH_CONFD="/etc/logstash/conf.d.redis.output/"
+			mkdir -p $LOGSTASH_CONFD
 
 			# create a symbolic link for each input
 			cd /etc/logstash/conf.d.available
@@ -168,7 +215,7 @@ EOF
                         --volume /etc/logstash/logstash-ossec-template.json:/logstash-ossec-template.json:ro \
                         --volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
 			--volume /etc/logstash/beats-template.json:/beats-template.json:ro \
-                        --volume $CONFD:/usr/share/logstash/pipeline/:ro \
+                        --volume $LOGSTASH_CONFD:/usr/share/logstash/pipeline/:ro \
                         --volume /etc/logstash/conf.d.available/:/usr/share/logstash/conf.d.available/:ro \
                         --volume /etc/nsm/rules:/etc/nsm/rules:ro \
                         --volume /lib/dictionaries:/lib/dictionaries:ro \
