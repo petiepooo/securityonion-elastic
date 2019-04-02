@@ -341,7 +341,7 @@ EOF
 fi
 # older so-import-pcap installs may still have this line, so we need to remove it
 if grep -q "log { destination(d_logstash); };" $SYSLOGCONF; then
-	sed '/log { destination(d_logstash); };/d' $SYSLOGCONF
+	sed -i '/log { destination(d_logstash); };/d' $SYSLOGCONF
 	service syslog-ng restart >/dev/null 2>&1
 fi
 
