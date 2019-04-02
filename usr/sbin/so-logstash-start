@@ -91,7 +91,7 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 			# move parsing from logstash to elasticsearch ingest node
 
 			# add pipelines to elasticsearch
-			/usr/sbin/so-elasticsearch-pipelines
+			/usr/sbin/so-elasticsearch-pipelines > /var/log/nsm/so-elasticsearch-pipelines.log 2>/dev/null
 
 			# logstash just needs inputs and an ingest node pipeline output
 			# create a new config directory for these files

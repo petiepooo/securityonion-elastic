@@ -409,7 +409,7 @@ if ! grep -q "LOGSTASH_OUTPUT_INGEST" /etc/nsm/securityonion.conf; then
 	sed -i 's|-Xmx2000m|-Xmx200m|g' /etc/logstash/jvm.options
 	/usr/sbin/so-logstash-start >/dev/null 2>&1
 	echo -n "- initializing Elasticsearch and Logstash (this may take a few minutes)..."
-	until fgrep -q "Cluster health status changed from [YELLOW] to [GREEN] (reason: [shards started [[logstash-" /var/log/elasticsearch/*.log; do
+	until fgrep -q "adding template [logstash-" /var/log/elasticsearch/*.log; do
 		echo -n "."
 		sleep 1s
 	done
