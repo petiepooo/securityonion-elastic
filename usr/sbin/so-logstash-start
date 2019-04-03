@@ -222,6 +222,7 @@ EOF
                         --volume /nsm/import:/nsm/import:ro \
                         --volume /nsm/logstash:/usr/share/logstash/data/ \
                         --volume /var/log/logstash:/var/log/logstash \
+                        --volume /var/log/nsm/securityonion/sguild.log:/var/log/nsm/securityonion/sguild.log:ro \
                         $LOGSTASH_OPTIONS \
                         $DOCKERHUB/so-logstash
 
