@@ -1,0 +1,23 @@
+{
+  "description" : "sguild_nids",
+  "processors" : [
+    { "dissect": { "field": "message",		"pattern" : "%{} %{} %{}  Alert Received: %{} %{priority} %{classification} %{interface} {%{alerttime}} %{} %{} {%{alert}} %{source_ip} %{destination_ip} %{protocol} %{source_port} %{destination_port} %{gid} %{sid} %{rev} ", "ignore_failure": true } },
+    { "set": 	{ "field": "event_type", 	"value": "snort" 											} },
+    { "remove": { "field": "type",												"ignore_missing": true	} },
+    { "geoip":  { "field": "destination_ip",    "target_field": "destination_geo",      "database_file": "GeoLite2-City.mmdb", 	"ignore_missing": true	} },
+    { "geoip":  { "field": "source_ip",         "target_field": "source_geo",           "database_file": "GeoLite2-City.mmdb", 	"ignore_missing": true	} },
+    { "rename": { "field": "@timestamp",        "target_field": "timestamp",							"ignore_missing": true	} },
+    { "date":   { "field": "alerttime",		"target_field": "@timestamp",		"formats": ["yyyy-MM-dd HH:mm:ss"], 	"ignore_failure": true 	} },
+    { "remove": { "field": "alerttime", 											"ignore_missing": true	} },
+    { "split":  { "field": "_index",            "target_field": "index_name_prefix",    "separator": "-"						} },
+    { "date_index_name":{
+        "field": "@timestamp",
+        "index_name_prefix": "{{index_name_prefix.0}}-{{index_name_prefix.1}}-",
+        "date_rounding": "d",
+        "ignore_failure": true,
+        "index_name_format": "yyyy.MM.dd"
+        }
+    },
+    { "remove": { "field": "index_name_prefix", 										"ignore_failure": true	} }
+  ]
+}

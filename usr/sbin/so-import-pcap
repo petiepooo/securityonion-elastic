@@ -42,7 +42,7 @@ It will do the following:
 - stop and disable Curator to avoid closing old indices
 - stop and disable all active sniffing processes (Bro, Snort, Suricata, and netsniff-ng)
 - stop and disable ossec_agent
-- reconfigure and restart sguild and syslog-ng where necessary
+- reconfigure and restart sguild where necessary
 - generate IDS alerts using Snort or Suricata
 - generate Bro logs
 - store IDS alerts and Bro logs with original timestamps
@@ -320,29 +320,6 @@ if ! grep "set DEBUG 2" $SGUILDCONF >/dev/null 2>&1; then
 	echo "- setting sguild debug to 2 and restarting sguild."
 	sed -i 's|set DEBUG.*$|set DEBUG 2|g' $SGUILDCONF
 	so-sguild-restart >/dev/null 2>&1
-fi
-
-# make sure syslog-ng is configured to pick up sguild logs
-SYSLOGCONF="/etc/syslog-ng/syslog-ng.conf"
-if ! grep "/var/log/nsm/securityonion/sguild.log" $SYSLOGCONF >/dev/null 2>&1; then
-	echo "- configuring syslog-ng to pick up sguild logs."
-cat << EOF >> $SYSLOGCONF
-
-# added by so-import-pcap
-source s_sguil { file("/var/log/nsm/securityonion/sguild.log" program_override("snort")); };
-filter f_sguil { message("Alert Received"); };
-log {
-        source(s_sguil);
-        filter(f_sguil);
-        destination(d_logstash);
-};
-EOF
-	service syslog-ng restart >/dev/null 2>&1
-fi
-# older so-import-pcap installs may still have this line, so we need to remove it
-if grep -q "log { destination(d_logstash); };" $SYSLOGCONF; then
-	sed -i '/log { destination(d_logstash); };/d' $SYSLOGCONF
-	service syslog-ng restart >/dev/null 2>&1
 fi
 
 CONF="/etc/nsm/securityonion.conf"

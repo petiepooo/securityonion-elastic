@@ -98,28 +98,28 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 			LOGSTASH_CONFD="/etc/logstash/conf.d.ingest.output/"
 			mkdir -p $LOGSTASH_CONFD
 
-			INPUT_SYSLOG_CONF=$LOGSTASH_CONFD/0000_input_syslogng.conf
-			if ! [ -f $INPUT_SYSLOG_CONF ]; then
-cat << EOF >> $INPUT_SYSLOG_CONF
+			INPUT_SGUILD_NIDS=$LOGSTASH_CONFD/0000_input_sguild_nids.conf
+			if ! [ -f $INPUT_SGUILD_NIDS ]; then
+cat << EOF > $INPUT_SGUILD_NIDS
 input {
-  tcp {
-    port => 6050
-    codec =>   json
-    type => "syslogng"
-    tags => "syslogng"
-  }
+	file {
+		path => "/var/log/nsm/securityonion/sguild.log"
+		type => "sguild_nids"
+	    	tags => ["nids", "import"]
+	}
 }
 EOF
 			fi
 
 			INPUT_IMPORT=$LOGSTASH_CONFD/0007_input_import.conf
 			if ! [ -f $INPUT_IMPORT ]; then
-				cp /etc/logstash/conf.d.available/0007_input_import.conf $INPUT_IMPORT
+				# copy 0007_input_import.conf but exclude last 7 lines
+				head --lines=-7 /etc/logstash/conf.d.available/0007_input_import.conf > $INPUT_IMPORT
 			fi
 
 			OUTPUT_INGEST=$LOGSTASH_CONFD/9002_output_import.conf
 			if ! [ -f $OUTPUT_INGEST ]; then
-cat << EOF >> $OUTPUT_INGEST	
+cat << EOF > $OUTPUT_INGEST	
 output {
     elasticsearch {
       hosts => elasticsearch
