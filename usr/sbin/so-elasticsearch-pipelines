@@ -18,7 +18,7 @@
 . /usr/sbin/so-elastic-common
 
 # Define a default directory to load pipelines from
-INGEST_DIR="/etc/elasticsearch/ingest"
+ELASTICSEARCH_INGEST_PIPELINES="/etc/elasticsearch/ingest"
 
 # Allow the user to override that default setting
 . /etc/nsm/securityonion.conf
@@ -45,7 +45,7 @@ if [ "$ELASTICSEARCH_CONNECTED" == "no" ]; then
 	echo
 fi
 
-cd ${INGEST_DIR}
+cd ${ELASTICSEARCH_INGEST_PIPELINES}
 
 echo "Temporarily increasing script.max_compilations.rate..."
 curl -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -H 'Content-Type: application/json' -d'{ "transient" : { "script.max_compilations_rate" : "100000/1m" } }'
