@@ -285,7 +285,7 @@ if ! [ -d /etc/nsm/$SENSORNAME ]; then
 	echo "- backing up /etc/nsm/sensortab to /etc/nsm/sensortab.orig"
 	cp /etc/nsm/sensortab /etc/nsm/sensortab.orig
 
-	echo "- enabing $SENSORNAME in /etc/nsm/sensortab"
+	echo "- enabling $SENSORNAME in /etc/nsm/sensortab"
 	grep "$SENSORNAME" /etc/nsm/sensortab.orig > /etc/nsm/sensortab
 
 	# disable unnecessary services
