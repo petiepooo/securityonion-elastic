@@ -198,6 +198,22 @@
         "basic_constraints_path_length":{  
           "type":"long"
         },
+        "bound_host": {
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
+        "bound_name": {
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "bound_port":{
           "type":"long"
         },
@@ -2473,6 +2489,22 @@
         "request_from":{  
           "type":"text"
         },
+        "request_host":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
+        "request_name":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
         "request_path":{  
           "type":"text",
           "fields":{  
@@ -2832,6 +2864,14 @@
           "type":"long"
         },
         "server_nb_computer_name":{
+          "type":"text",
+          "fields":{
+            "keyword":{
+              "type":"keyword"
+            }
+          }
+        },
+        "server_status":{
           "type":"text",
           "fields":{
             "keyword":{
