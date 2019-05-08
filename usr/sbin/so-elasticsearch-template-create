@@ -108,6 +108,7 @@ EOF
 	  while IFS=',' read -r f1 f2
 	  do
 		  for line in $IFILE; do
+                      if [ "${f2,,}" = "text" ]; then
 cat << EOF >> $DFILE
         "$f1":{
           "type":"$f2",
@@ -118,6 +119,13 @@ cat << EOF >> $DFILE
           }
 	},
 EOF
+                      else
+cat << EOF >> $DFILE
+        "$f1":{
+          "type":"$f2"
+        },
+EOF
+                      fi
 		  done
 	  done < "$IFILE"
   else
@@ -155,7 +163,7 @@ function ask_index(){
   echo
   echo "Ex. logstash-test-*"
   echo
-  read TEMPLATE
+  read INDEX
 }
 
 function ask_shards(){
