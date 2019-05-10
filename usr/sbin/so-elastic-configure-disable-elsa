@@ -17,7 +17,6 @@
 
 . /usr/sbin/so-elastic-common
 
-header "Disabling ELSA"
 rm -f /etc/cron.d/elsa
 FILE="/etc/nsm/securityonion.conf"
 sed -i 's/ELSA=YES/ELSA=NO/' $FILE
@@ -25,5 +24,3 @@ if [ -f /etc/init/sphinxsearch.conf ]; then
 	service sphinxsearch stop
 	echo "manual" > /etc/init/sphinxsearch.conf.override
 fi
-
-echo "Done!"
