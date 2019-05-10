@@ -20,7 +20,6 @@
 header "Configuring Apache"
 
 cp -av $SRC/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
-cp -av $SRC/var/www/so/* /var/www/so/
 
 # Enable necessary Apache2 modules
 if ! [ -f /etc/apache2/mods-enabled/auth_form.load ]; then
