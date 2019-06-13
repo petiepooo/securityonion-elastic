@@ -1373,6 +1373,9 @@
             }
           }
         },
+        "image_timestamp":{  
+          "type":"date"
+        },
         "in_reply_to":{  
           "type":"text",
           "fields":{  
