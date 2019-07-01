@@ -161,7 +161,9 @@ TEMP_PCAPS=()
 # are we processing a single pcap or multiple pcaps?
 if [ $# -eq 1 ]; then
 	# single pcap
-	PCAP=$1
+	# so-import-pcap: improve handling of single pcap without full path #1540
+	# https://github.com/Security-Onion-Solutions/security-onion/issues/1540
+	PCAP=$(/usr/bin/realpath $1)
 	echo "- checking ${PCAP} for corruption."
 	if ! /usr/bin/capinfos ${PCAP} >/dev/null 2>&1; then
 		# try to fix pcap and then process the fixed pcap directly
