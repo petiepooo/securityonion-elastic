@@ -29,8 +29,8 @@
     { "rename": 	{ "field": "message2.status_code", 	"target_field": "status_code",		"ignore_missing": true 	} },
     { "rename": 	{ "field": "message2.status_msg",	"target_field": "status_msg",		"ignore_missing": true 	} },
     { "rename": 	{ "field": "message2.warning", 		"target_field": "warning",		"ignore_missing": true 	} },
-    { "rename": 	{ "field": "message2.request_body_len",	"target_field": "request_body_len",	"ignore_missing": true 	} },
-    { "rename": 	{ "field": "message2.response_body_len","target_field": "response_body_len",	"ignore_missing": true 	} },
+    { "rename": 	{ "field": "message2.request_body_len",	"target_field": "request_body_length",	"ignore_missing": true 	} },
+    { "rename": 	{ "field": "message2.response_body_len","target_field": "response_body_length",	"ignore_missing": true 	} },
     { "rename": 	{ "field": "message2.content_type", 	"target_field": "content_type",		"ignore_missing": true 	} },
     { "pipeline":       { "name": "bro_common"                                                                                   } }
   ]
