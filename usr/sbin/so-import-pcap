@@ -429,8 +429,22 @@ if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
 		FILE="$PCAPDIR/snort.log.$EPOCH"
 		mkdir -p $PCAPDIR
 		CURRENTNEXT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
-		echo "- writing $FILE."
-		/usr/bin/editcap -F libpcap -A "$CURRENT 00:00:00" -B "$CURRENTNEXT 00:00:00" $PCAP $FILE
+		if [ -f $FILE ]; then
+			PCAPNEW=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
+			echo "- copying traffic to $PCAPNEW."
+			/usr/bin/editcap -F libpcap -A "$CURRENT 00:00:00" -B "$CURRENTNEXT 00:00:00" $PCAP $PCAPNEW
+			FILEOLD=`mktemp /tmp/so-import-pcap-XXXXXXXXXX.pcap`
+			echo "- copying $FILE to $FILEOLD."
+			cp $FILE $FILEOLD
+			echo "- merging $FILEOLD and $PCAPNEW into $FILE."
+			/usr/bin/mergecap -F pcap -w $FILE $FILEOLD $PCAPNEW		
+			echo "- removing $FILEOLD and $PCAPNEW."
+			rm $FILEOLD $PCAPNEW
+		else
+			echo "- writing $FILE."
+			/usr/bin/editcap -F libpcap -A "$CURRENT 00:00:00" -B "$CURRENTNEXT 00:00:00" $PCAP $FILE
+		fi
+
 		CURRENT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
 	done
 fi
