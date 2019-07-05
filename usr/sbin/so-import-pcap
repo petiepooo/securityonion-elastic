@@ -23,6 +23,14 @@ if ! [ -f $COMMON ]; then
 fi
 source $COMMON
 
+# check to see if another instance of so-import-pcap is already running
+LOCK="/var/lock/so-import-pcap"
+if [ -f $LOCK ] ; then
+	echo "Lock file $LOCK found!"
+	echo "If another instance of so-import-pcap is running, please wait for it to complete before running again."
+	exit
+fi
+
 # check to see if this is a sensor before continuing
 if [ -f /root/.ssh/securityonion_ssh.conf ]; then
 	echo "This machine appears to be a sensor connected to a distributed deployment."
@@ -99,6 +107,10 @@ Press Enter to continue or Ctrl-c to cancel.
 EOF
 read input
 
+# create lock file before making changes
+touch $LOCK
+
+# if Setup hasn't been run yet, run it now
 if ! [ -f /etc/sguild/sguild.conf ]; then
 	echo "It looks like you haven't run Setup yet, so let's do that now."
 	echo "We need to create a username and password that you will use to log into Sguil, Squert, and Kibana."
@@ -468,3 +480,6 @@ From: $START    To: $ENDNEXT
 
 Please note that it may take 30 seconds or more for events to appear in Kibana.
 EOF
+
+# remove lock file
+rm $LOCK
