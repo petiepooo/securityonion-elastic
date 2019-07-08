@@ -20,7 +20,7 @@
 if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ]; then
         if pgrep redis-server > /dev/null; then
         	REDIS_COUNT=$(redis-cli llen logstash:redis | awk '{print $1}')
-		echo "Records in queue: $REDIS_COUNT"
+		echo "$REDIS_COUNT"
 	else
 		fail
 		echo "Redis is not running.  Try starting it with 'so-redis-start'"
