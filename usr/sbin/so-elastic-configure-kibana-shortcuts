@@ -23,7 +23,7 @@ if [ "${KIBANA_ENABLED}" = "no" ]; then
 
 else
 
-	header "Replacing ELSA shortcuts with Kibana shortcuts"
+	header "Verifying Kibana shortcuts"
 	for i in /home/*/Desktop /etc/skel/Desktop /usr/share/applications; do
         	echo "Checking $i"
 	        ELSA="$i/securityonion-elsa.desktop"
