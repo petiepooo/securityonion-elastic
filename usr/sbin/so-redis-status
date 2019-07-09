@@ -18,7 +18,7 @@
 . /usr/sbin/so-common-status
 
 if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ]; then
-        echo -ne "   ${BLUE}*${NORMAL} redis"
+        echo -ne "  ${BLUE}*${NORMAL} redis"
         if pgrep redis-server > /dev/null; then
                 ok
         else

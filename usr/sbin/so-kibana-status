@@ -18,7 +18,7 @@
 . /usr/sbin/so-common-status
 
 if [ "$KIBANA_ENABLED" = "yes" ]; then
-        echo -ne "   ${BLUE}*${NORMAL} so-kibana"
+        echo -ne "  ${BLUE}*${NORMAL} so-kibana"
         if docker ps |  grep -q so-kibana; then
                 ok
         else

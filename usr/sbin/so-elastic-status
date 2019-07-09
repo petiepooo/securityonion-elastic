@@ -15,19 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-. /usr/sbin/so-elastic-common
-. /usr/lib/nsmnow/lib-console-utils
-. /etc/nsm/securityonion.conf
-
-function ok(){
-	echo -e "$STAT${NORMAL}[${GREEN_BOLD}  OK  ${NORMAL}]"
-}
-function fail(){
-	echo -e "$STAT${NORMAL}[${RED_BOLD} FAIL ${NORMAL}]"
-}
-function warn(){
-	echo -e "$STAT${NORMAL}[${YELLOW_BOLD} WARN ${NORMAL}]"
-}
+. /usr/sbin/so-common-status
 
 # If Elasticsearch is not enabled, then exit immediately
 [ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit
@@ -35,81 +23,20 @@ function warn(){
 echo -ne "${BLUE_BOLD}Status: Elastic stack${NORMAL}"
 echo
 
-if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
-	echo -ne "  ${BLUE}*${NORMAL} so-elasticsearch"
-	if docker ps |  grep -q so-elasticsearch; then
-		ok
-	else
-		fail
-	fi
-fi
+/usr/sbin/so-elasticsearch-status
 
-if [ "$LOGSTASH_ENABLED" = "yes" ]; then
-	QUEUE_TYPE=$(curl -s "$LOGSTASH_HOST:$LOGSTASH_PORT/_node/stats" | jq .pipelines.main.queue.type | sed s/\"//g)
-	echo -ne "  ${BLUE}*${NORMAL} so-logstash"
-	if docker ps |	grep -q so-logstash; then
-		if [ "$QUEUE_TYPE" == "memory" ] || [ "$QUEUE_TYPE" == "persisted" ]; then	
-			ok
-		else
-			echo " -- Logstash has started, but is still initializing...$(warn)"
-		fi
-	else
-		fail
-	fi
-fi
+/usr/sbin/so-logstash-status
 
-if [ "$KIBANA_ENABLED" = "yes" ]; then
-	echo -ne "  ${BLUE}*${NORMAL} so-kibana"
-	if docker ps |  grep -q so-kibana; then
-                ok
-        else
-                fail
-        fi
-fi
+/usr/sbin/so-kibana-status
 
-if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
-	echo -ne "  ${BLUE}*${NORMAL} so-freqserver"	
-	if docker ps |  grep -q so-freqserver; then
-                ok
-        else
-                fail
-        fi
-fi
+/usr/sbin/so-freqserver-status
 
-if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
-	echo -ne "  ${BLUE}*${NORMAL} so-domainstats"
-	if docker ps |  grep -q so-domainstats; then
-		ok
-        else
-		fail
-        fi
-fi
+/usr/sbin/so-domainstats-status
 
-if [ "$CURATOR_ENABLED" = "yes" ]; then
-	echo -ne "  ${BLUE}*${NORMAL} so-curator"
-	if docker ps |  grep -q so-curator; then
-		ok
-        else
-		fail
-        fi
-fi
+/usr/sbin/so-curator-status
 
-if [ "$ELASTALERT_ENABLED" = "yes" ]; then
-	echo -ne "  ${BLUE}*${NORMAL} so-elastalert"
-        if docker ps |  grep -q so-elastalert; then
-		ok
-	else
-		fail
-        fi
-fi
+/usr/sbin/so-elastalert-status
 
-if [ "$LOGSTASH_OUTPUT_REDIS" = "yes" ]; then
-	echo -ne "  ${BLUE}*${NORMAL} redis"
-        if pgrep redis-server > /dev/null; then
-		ok
-	else
-		fail
-        fi
-fi
+/usr/sbin/so-redis-status
 
 echo

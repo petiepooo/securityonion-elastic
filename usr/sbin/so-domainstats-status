@@ -18,7 +18,7 @@
 . /usr/sbin/so-common-status
 
 if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
-        echo -ne "   ${BLUE}*${NORMAL} so-domainstats"
+        echo -ne "  ${BLUE}*${NORMAL} so-domainstats"
         if docker ps |  grep -q so-domainstats; then
                 ok
         else
