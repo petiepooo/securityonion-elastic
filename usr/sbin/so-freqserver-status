@@ -18,7 +18,7 @@
 . /usr/sbin/so-common-status
 
 if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
-        echo -ne "   ${BLUE}*${NORMAL} so-freqserver"
+        echo -ne "  ${BLUE}*${NORMAL} so-freqserver"
         if docker ps |  grep -q so-freqserver; then
                 ok
         else
