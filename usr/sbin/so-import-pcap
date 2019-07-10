@@ -127,6 +127,20 @@ fi
 CONF="/etc/nsm/securityonion.conf"
 source $CONF
 
+# check to see if another instance of so-import-pcap is already writing IDS alerts 
+LOCK="/var/lock/so-import-pcap-ids"
+if [ -f $LOCK ] ; then
+	echo -n "- waiting for another instance of so-import-pcap to finish writing IDS alerts..."
+	while [ -f $LOCK ]; do 
+		sleep 1s
+		echo -n "."
+	done
+	echo
+fi
+
+# create a new lock file before writing IDS alerts to prevent others from trying to write at same time
+touch $LOCK
+
 # generate IDS alerts and write them to standard pipeline for consumption via Sguil agents
 if [ "$ENGINE" = "snort" ]; then
 	echo "- analyzing traffic with Snort."
@@ -136,7 +150,11 @@ else
 	/usr/bin/suricata --user sguil --group sguil -c /etc/nsm/$SENSORNAME/suricata.yaml -l /nsm/sensor_data/$SENSORNAME --runmode single -k none -r $PCAP >/dev/null 2>&1
 fi
 
+# remove lock file to allow others to write IDS alerts
+rm $LOCK
+
 # generate Bro logs and write them to a unique subdirectory in /nsm/import/bro/
+# since each run writes to a unique subdirectory, there is no need for a lock file
 BRODIR="/nsm/import/bro"
 echo "- analyzing traffic with Bro."
 mkdir -p $BRODIR
@@ -160,6 +178,7 @@ if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
 			sleep 1s
 			echo -n "."
 		done
+		echo
 	fi
 
 	# create a new lock file before writing to pcap store to prevent others from trying to write at same time
