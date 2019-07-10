@@ -148,8 +148,23 @@ cd $BROLOGDIR
 cd - >/dev/null
 
 source $SENSORCONF
+
 # split traffic into daily directories so that sguil's pcap_agent can find it
 if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
+
+	# check to see if another instance of so-import-pcap is already writing to pcap store
+	LOCK="/var/lock/so-import-pcap"
+	if [ -f $LOCK ] ; then
+		echo -n "- waiting for another instance of so-import-pcap to release its lock on the pcap store..."
+		while [ -f $LOCK ]; do 
+			sleep 1s
+			echo -n "."
+		done
+	fi
+
+	# create a new lock file before writing to pcap store to prevent others from trying to write at same time
+	touch $LOCK
+
 	START=`/usr/bin/capinfos $PCAP -a |grep "First packet time:" | awk '{print $4}'`
 	END=`/usr/bin/capinfos $PCAP -e |grep "Last packet time:" | awk '{print $4}'`
 	ENDNEXT=`date +%Y-%m-%d --date="$END 1 day"`
@@ -178,6 +193,10 @@ if [ "$PCAP_AGENT_ENABLED" = "yes" ] ; then
 
 		CURRENT=`date +%Y-%m-%d --date="$CURRENT 1 day"`
 	done
+
+	# remove lock file to allow others to write to the pcap store
+	rm $LOCK
+
 fi
 
 # remove temp files
