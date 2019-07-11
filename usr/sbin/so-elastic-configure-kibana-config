@@ -47,7 +47,7 @@ else
 
 	# Check to see if Kibana is available
 	wait_step=0
-	until curl -s -XGET http://localhost:5601 > /dev/null ; do
+	until curl localhost:5601/nonexistenturl 2>&1 |grep -q "Not Found" ; do
 		wait_step=$(( ${wait_step} + 1 ))
 		echo "Waiting on Kibana...Attempt #$wait_step"
 		if [ ${wait_step} -gt ${MAX_WAIT} ]; then
