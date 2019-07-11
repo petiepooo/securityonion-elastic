@@ -22,9 +22,12 @@
 echo
 
 function load_dashboards {
-	# Check to see if Kibana is available
+
+	# Check to see if Kibana is available, but don't wait more than 240 seconds
 	max_wait=240
-	until curl -s -XGET http://localhost:5601/ > /dev/null ; do
+
+	# If Kibana is fully initialized, requesting a non-existent URL should result in a "Not Found" error
+	until curl localhost:5601/nonexistenturl 2>&1 |grep -q "Not Found" ; do
 		wait_step=$(( ${wait_step} + 1 ))
 		if [ ${wait_step} -gt ${max_wait} ]; then
 			echo "ERROR: Kibana not available for more than ${max_wait} seconds."
@@ -33,7 +36,7 @@ function load_dashboards {
 		sleep 1s;
 	done
 
-	# Give Kibana a few more seconds to fully initialize
+	# Give Kibana a few more seconds just in case
 	for i in `seq 1 5`; do echo -n "."; sleep 1s; done
 
 	# Load dashboards, visualizations, index pattern(s), etc.
