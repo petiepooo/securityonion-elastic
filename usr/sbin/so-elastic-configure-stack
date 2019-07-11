@@ -138,6 +138,18 @@ LS_YAML_BAK="/etc/logstash/logstash.yml.bak"
 if [ ! -f "$LS_YAML" ]; then
         # If no config, create it
         cp -av $SRC/$LS_YAML $LS_YAML
+	# securityonion-elastic: decrease logstash pipeline.workers depending on config #1547
+	# https://github.com/Security-Onion-Solutions/security-onion/issues/1547
+	# If Evaluation Mode, set pipeline.workers=1
+	# Else, set it to half of the total number of CPU cores
+	PIPELINE_WORKERS=1
+	if ! grep -qs "^type=standalone$" /opt/bro/etc/node.cfg; then	
+		CORES=`grep -c ^processor /proc/cpuinfo`
+		if [ $CORES -gt 2 ]; then
+			PIPELINE_WORKERS=$((CORES / 2))
+		fi
+	fi
+	sed -i "s|.*pipeline.workers: .*$|pipeline.workers: $PIPELINE_WORKERS|g" $LS_YAML
 else
         # If config exists, back it up, write the new config file, and then migrate custom settings
         cp -av $LS_YAML $LS_YAML_BAK
