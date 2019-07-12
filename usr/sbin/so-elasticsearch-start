@@ -59,6 +59,10 @@ if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
                 echo "Already started!"
         else
 		docker rm so-elasticsearch >/dev/null 2>&1
+		
+		# Elasticsearch needs to be able to write to /etc/elasticsearch
+		chown elasticsearch:elasticsearch /etc/elasticsearch
+
 		# Publish ports to $ELASTICSEARCH_PUBLISH_IP (127.0.0.1 by default)
                 docker run --name=so-elasticsearch \
                         --detach \
