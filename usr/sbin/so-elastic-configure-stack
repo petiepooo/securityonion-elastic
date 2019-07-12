@@ -270,6 +270,8 @@ else
         # migrate certain settings
         grep "^elasticsearch.requestTimeout:" $KIB_YAML_BAK >> $KIB_YAML
 fi
+chown kibana:kibana $KIB_YAML
+chmod 640 $KIB_YAML
 echo "Done!"
 
 header "Configuring Elastalert"
