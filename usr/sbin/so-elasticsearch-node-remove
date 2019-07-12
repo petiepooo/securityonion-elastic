@@ -22,8 +22,8 @@ header "Security Onion Elasticsearch Node Removal"
 
 RESULTS=0
 function list_nodes(){
-  for i in $(curl $ELASTICSEARCH_AUTH -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings | jq  .persistent.search.remote | jq 'keys' | jq .[] | sed 's/"//g'); do
-    if curl $ELASTICSEARCH_AUTH -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings | jq -r '[ .persistent.search.remote | to_entries[] | select(.key | startswith("'$i'")) | .value = .value.seeds ] | from_entries | .[] | .[]' | grep -q 9300; then
+  for i in $(curl ${ELASTICSEARCH_AUTH} -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings | jq  .persistent.search.remote | jq 'keys' | jq .[] | sed 's/"//g'); do
+    if curl ${ELASTICSEARCH_AUTH} -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings | jq -r '[ .persistent.search.remote | to_entries[] | select(.key | startswith("'$i'")) | .value = .value.seeds ] | from_entries | .[] | .[]' | grep -q 9300; then
         : #do nothing
     else
 	let RESULTS=$RESULTS+1
@@ -35,7 +35,7 @@ function list_nodes(){
 function remove_node(){
   echo "Removing node..."
   echo
-  curl $ELASTICSEARCH_AUTH -XPUT -H 'Content-Type: application/json' ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -d '{"persistent":{"search":{"remote":{"'$node'":{"skip_unavailable":null,"seeds":null}}}}}'
+  curl ${ELASTICSEARCH_AUTH} -XPUT -H 'Content-Type: application/json' ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -d '{"persistent":{"search":{"remote":{"'$node'":{"skip_unavailable":null,"seeds":null}}}}}'
 }
 
 # If Elasticsearch is not enabled, then exit immediately

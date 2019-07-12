@@ -29,7 +29,7 @@ else
 	MAX_WAIT=240
 
 	# Check to see if Elasticsearch is available
-	until curl $ELASTICSEARCH_AUTH -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/health > /dev/null ; do
+	until curl ${ELASTICSEARCH_AUTH} -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/health > /dev/null ; do
 		wait_step=$(( ${wait_step} + 1 ))
 		if [ ${wait_step} -gt ${MAX_WAIT} ]; then
 			echo "ERROR: Elasticsearch not available for more than ${MAX_WAIT} seconds."
@@ -43,7 +43,7 @@ else
 	# 1. In the case of a new installation, KIBANA_VERSION is explicitly set to "UNKNOWN"
 	# 2. In the case of a recent Kibana image upgrade, KIBANA_VERSION will be set to the previous version
 	# Therefore, we need to get the current version from Elasticsearch
-	KIBANA_VERSION=$(curl $ELASTICSEARCH_AUTH -s http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT | jq .version.number | sed 's/"//g')
+	KIBANA_VERSION=$(curl ${ELASTICSEARCH_AUTH} -s http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT | jq .version.number | sed 's/"//g')
 
 	# Check to see if Kibana is available
 	wait_step=0
@@ -72,7 +72,7 @@ else
 	HOSTNAME=${HOST_ORIG,,}
 	echo
 	echo "Applying cross cluster search config..."
-	curl $ELASTICSEARCH_AUTH -s -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings \
+	curl ${ELASTICSEARCH_AUTH} -s -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings \
 	     -H 'Content-Type: application/json' \
 	     -d "{\"persistent\": {\"search\": {\"remote\": {\"$HOSTNAME\": {\"seeds\": [\"127.0.0.1:9300\"]}}}}}"
 	echo
@@ -80,12 +80,12 @@ else
 	# Apply Kibana template
 	echo
 	echo "Applying Kibana template..."
-	curl $ELASTICSEARCH_AUTH -s -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/kibana \
+	curl ${ELASTICSEARCH_AUTH} -s -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/kibana \
 	     -H 'Content-Type: application/json' \
 	     -d'{"index_patterns" : ".kibana", "settings": { "number_of_shards" : 1, "number_of_replicas" : 0 }, "mappings" : { "search": {"properties": {"hits": {"type": "integer"}, "version": {"type": "integer"}}}}}'
 	echo
 
-	curl $ELASTICSEARCH_AUTH -s -XPUT "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/.kibana/_settings" \
+	curl ${ELASTICSEARCH_AUTH} -s -XPUT "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/.kibana/_settings" \
 	     -H 'Content-Type: application/json' \
 	     -d'{"index" : {"number_of_replicas" : 0}}'
 	echo

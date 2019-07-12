@@ -58,7 +58,7 @@ if [ $SKIP -ne 1 ]; then
 
 	# List indices
 	echo
-	curl $ELASTICSEARCH_AUTH -XGET "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v&pretty"
+	curl ${ELASTICSEARCH_AUTH} -XGET "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v&pretty"
 	echo
 
 	# Inform user we are about to delete all data
@@ -85,10 +85,10 @@ echo
 
 # Delete data
 echo "Deleting data..."
-INDXS=$(curl $ELASTICSEARCH_AUTH -s -XGET ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v | egrep 'logstash|elastalert' | awk '{ print $3 }')
+INDXS=$(curl ${ELASTICSEARCH_AUTH} -s -XGET ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cat/indices?v | egrep 'logstash|elastalert' | awk '{ print $3 }')
 for INDX in ${INDXS}
 do
-    curl $ELASTICSEARCH_AUTH -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${INDX}" > /dev/null 2>&1
+    curl ${ELASTICSEARCH_AUTH} -XDELETE "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/${INDX}" > /dev/null 2>&1
 done
 
 # Start syslog-ng

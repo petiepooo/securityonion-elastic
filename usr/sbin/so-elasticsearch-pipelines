@@ -28,7 +28,7 @@ echo -n "Waiting for ElasticSearch..."
 COUNT=0
 ELASTICSEARCH_CONNECTED="no"
 while [[ "$COUNT" -le 240 ]]; do
-	curl $ELASTICSEARCH_AUTH --output /dev/null --silent --head --fail http://"$ELASTICSEARCH_HOST":"$ELASTICSEARCH_PORT"
+	curl ${ELASTICSEARCH_AUTH} --output /dev/null --silent --head --fail http://"$ELASTICSEARCH_HOST":"$ELASTICSEARCH_PORT"
 	if [ $? -eq 0 ]; then
 		ELASTICSEARCH_CONNECTED="yes"
 		echo "connected!"
@@ -48,23 +48,23 @@ fi
 cd ${ELASTICSEARCH_INGEST_PIPELINES}
 
 echo "Temporarily increasing script.max_compilations.rate..."
-curl $ELASTICSEARCH_AUTH -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -H 'Content-Type: application/json' -d'{ "transient" : { "script.max_compilations_rate" : "100000/1m" } }'
+curl ${ELASTICSEARCH_AUTH} -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -H 'Content-Type: application/json' -d'{ "transient" : { "script.max_compilations_rate" : "100000/1m" } }'
 echo; echo
 
 echo "Deleting existing pipelines..."
-for i in *; do echo $i; curl $ELASTICSEARCH_AUTH -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_ingest/pipeline/$i -H 'Content-Type: application/json' ; echo; done
+for i in *; do echo $i; curl ${ELASTICSEARCH_AUTH} -XDELETE http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_ingest/pipeline/$i -H 'Content-Type: application/json' ; echo; done
 echo; echo
 
 echo "List of current pipelines (should be none)"
-curl $ELASTICSEARCH_AUTH -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_ingest/pipeline/
+curl ${ELASTICSEARCH_AUTH} -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_ingest/pipeline/
 echo; echo
 
 echo "Loading pipelines..."
-for i in *; do echo $i; curl $ELASTICSEARCH_AUTH -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_ingest/pipeline/$i -H 'Content-Type: application/json' -d@$i; echo; done
+for i in *; do echo $i; curl ${ELASTICSEARCH_AUTH} -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_ingest/pipeline/$i -H 'Content-Type: application/json' -d@$i; echo; done
 echo
 
 echo "Reverting script.max_compilations.rate..."
-curl $ELASTICSEARCH_AUTH -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -H 'Content-Type: application/json' -d'{ "transient" : { "script.max_compilations_rate" : "75/5m" } }'
+curl ${ELASTICSEARCH_AUTH} -XPUT http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings -H 'Content-Type: application/json' -d'{ "transient" : { "script.max_compilations_rate" : "75/5m" } }'
 echo; echo
 
 cd - >/dev/null

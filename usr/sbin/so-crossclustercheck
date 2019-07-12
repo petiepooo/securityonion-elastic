@@ -27,4 +27,4 @@ source ${CONF}
 
 . /usr/sbin/so-elastic-common
 
-curl $ELASTICSEARCH_AUTH -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings
+curl ${ELASTICSEARCH_AUTH} -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings

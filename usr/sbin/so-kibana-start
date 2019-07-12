@@ -31,7 +31,7 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
                 COUNT=0
                 ELASTICSEARCH_CONNECTED="no"
                 while [[ "$COUNT" -le 240 ]]; do
-                        curl $ELASTICSEARCH_AUTH --output /dev/null --silent --head --fail http://"$ELASTICSEARCH_HOST":"$ELASTICSEARCH_PORT"
+                        curl ${ELASTICSEARCH_AUTH} --output /dev/null --silent --head --fail http://"$ELASTICSEARCH_HOST":"$ELASTICSEARCH_PORT"
                         if [ $? -eq 0 ]; then
                                 ELASTICSEARCH_CONNECTED="yes"
                                 echo "connected!"
@@ -65,7 +65,7 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
 			docker network connect --alias kibana $DOCKERNET so-kibana
 
                         # Compare current version of ES with previously stored version.
-                        CURRENT_KIBANA_VERSION=$(curl $ELASTICSEARCH_AUTH -s "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT" | jq .version.number | sed 's/"//g')
+                        CURRENT_KIBANA_VERSION=$(curl ${ELASTICSEARCH_AUTH} -s "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT" | jq .version.number | sed 's/"//g')
                         if [ "$CURRENT_KIBANA_VERSION" != "$KIBANA_VERSION" ]; then
 				echo "Configuring Kibana, please wait..."
                                 /usr/sbin/so-elastic-configure-kibana > /dev/null 2>&1

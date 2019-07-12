@@ -18,4 +18,4 @@
 source /etc/nsm/securityonion.conf
 source /usr/sbin/so-elastic-common
 
-curl $ELASTICSEARCH_AUTH -XGET http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cluster/settings 2>/dev/null
+curl ${ELASTICSEARCH_AUTH} -XGET http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cluster/settings 2>/dev/null
