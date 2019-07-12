@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# Copyright 2014,2015,2016,2017,2018,2019 Security Onion Solutions, LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+if [ "$ELASTICSEARCH_ENABLED" != "yes" ]; then
+	echo "Elasticsearch is not enabled!"
+	exit
+fi
+
+if [ -f $ELASTICSEARCH_ACCOUNTS ]; then
+	echo "Elastic authentication has already been enabled!"
+	exit
+
+fi
+
+KIBANA_YML="/etc/kibana/kibana.yml"
+if grep -q "^elasticsearch.username" $KIBANA_YML; then
+	echo "Kibana has already been configured for authentication."
+	exit
+fi
+
+echo "This program will enable Elastic authentication."
+echo "If you proceed, you will no longer be able to login to Kibana using any existing Kibana accounts."
+echo "When this program completes, it will give you a new username/password for Kibana."
+echo "Once logged into Kibana using this new username/password, you can then create additional users under Management --> Users."
+echo
+echo "Would you like to continue?"
+echo
+echo "Press Enter to continue or Ctrl-c to cancel."
+read input
+
+# Create the file and lock it down
+touch $ELASTICSEARCH_ACCOUNTS
+chmod 640 $ELASTICSEARCH_ACCOUNTS
+chown elasticsearch:elasticsearch $ELASTICSEARCH_ACCOUNTS
+
+# Enable Elastic authentication and store initial passwords
+echo y | docker exec -i so-elasticsearch bin/elasticsearch-setup-passwords auto > $ELASTICSEARCH_ACCOUNTS
+
+# Configure Kibana to authenticate
+KIBANA_PASSWORD=$(grep "PASSWORD kibana = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
+sed -i "s|^#elasticsearch.username:.*$|elasticsearch.username: kibana|g" $KIBANA_YML
+sed -i "s|^#elasticsearch.password:.*$|elasticsearch.password: $KIBANA_PASSWORD|g" $KIBANA_YML
+/usr/sbin/so-kibana-restart
+
+# Tell user how to login
+ELASTICSEARCH_PASSWORD=$(grep "PASSWORD elastic = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
+echo "Kibana should be restarting now."
+echo "When Kibana prompts you to authenticate, use the following credentials."
+echo
+echo "Username: elastic"
+echo "Password: $ELASTICSEARCH_PASSWORD"
