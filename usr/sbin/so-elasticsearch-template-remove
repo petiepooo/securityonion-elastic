@@ -92,13 +92,13 @@ function remove_template(){
           exit 0
   fi
   echo
-  if curl -s -XDELETE ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/$TEMPLATE | grep "acknowledged"; then
+  if curl $ELASTICSEARCH_AUTH -s -XDELETE ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/$TEMPLATE | grep "acknowledged"; then
 	  echo
 	  echo "Template successfully removed."
           echo
   else
 	  echo	
-	  curl -s -XDELETE ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/$TEMPLATE
+	  curl $ELASTICSEARCH_AUTH -s -XDELETE ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_template/$TEMPLATE
           echo
   fi
 }

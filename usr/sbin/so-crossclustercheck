@@ -25,4 +25,6 @@ fi
 # Import config
 source ${CONF}
 
-curl -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings
+. /usr/sbin/so-elastic-common
+
+curl $ELASTICSEARCH_AUTH -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings

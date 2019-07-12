@@ -16,18 +16,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 source /etc/nsm/securityonion.conf
+source /usr/sbin/so-elastic-common
 
 # If Elasticsearch is not enabled, then exit immediately
 [ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit
 
 if [ -z "$1" ]; then
 	echo "Latest document:"
-	curl -s -XPOST "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/logstash-*/doc/_search?pretty" \
+	curl $ELASTICSEARCH_AUTH -s -XPOST "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/logstash-*/doc/_search?pretty" \
 		-H 'Content-Type: application/json' \
 		-d'{ "sort": { "@timestamp" : "desc" }, "size":1 }' | sed 's/\\t/\t/g'
 else
 	echo "Latest event_type:\"$1\" document:"
-	curl -s -XPOST "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/logstash-*/doc/_search?pretty" \
+	curl $ELASTICSEARCH_AUTH -s -XPOST "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/logstash-*/doc/_search?pretty" \
 		-H 'Content-Type: application/json' \
 		-d"{ \"query\": { \"term\": { \"event_type\": \"$1\" } }, \"sort\": { \"@timestamp\" : \"desc\" }, \"size\":1 }" | sed 's/\\t/\t/g'
 fi
@@ -41,4 +42,4 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 fi
 
 echo "Elasticsearch indices:"
-curl -s -XGET "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cat/indices/*logstash-*?v"
+curl $ELASTICSEARCH_AUTH -s -XGET "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cat/indices/*logstash-*?v"

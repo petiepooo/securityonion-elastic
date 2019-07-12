@@ -25,7 +25,7 @@ if [ "${ELASTALERT_ENABLED}" = "yes" ]; then
 
 	# We need to wait for ElastAlert to initialize all its indices (elastalert_status_past is the last one)
 	MAX_WAIT=240
-	while curl -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/elastalert_status_past | grep -q "no such index" ; do
+	while curl $ELASTICSEARCH_AUTH -s -XGET http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/elastalert_status_past | grep -q "no such index" ; do
 		wait_step=$(( ${wait_step} + 1 ))
 		if [ ${wait_step} -gt ${MAX_WAIT} ]; then
 			echo "ERROR: Elasticsearch not available for more than ${MAX_WAIT} seconds."
@@ -35,7 +35,7 @@ if [ "${ELASTALERT_ENABLED}" = "yes" ]; then
 	done
 	
 	# Disable replicas so that ES status will show green
-        curl -s -XPUT "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/elastalert*/_settings" \
+        curl $ELASTICSEARCH_AUTH -s -XPUT "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/elastalert*/_settings" \
              -H 'Content-Type: application/json' \
              -d'{"index" : {"number_of_replicas" : 0}}'
 	echo

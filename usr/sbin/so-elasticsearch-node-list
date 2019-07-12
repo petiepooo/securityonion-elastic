@@ -22,7 +22,7 @@ header "Security Onion Elasticsearch Node List"
 
 RESULTS=0
 function list_nodes(){
-  for i in $(curl -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings | jq  .persistent.search.remote); do
+  for i in $(curl $ELASTICSEARCH_AUTH -s ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/_cluster/settings | jq  .persistent.search.remote); do
       echo $i
   done
 }
