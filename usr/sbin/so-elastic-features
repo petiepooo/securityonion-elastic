@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# Copyright 2014,2015,2016,2017,2018,2019 Security Onion Solutions, LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+# Check for error conditions
+ELASTICDOWNLOAD="/etc/nsm/elasticdownload.conf"
+if grep -q '^DOCKERHUB="securityonionsolutionselas' $ELASTICDOWNLOAD; then
+	echo "Elastic Features have already been enabled in $ELASTICDOWNLOAD!"
+	exit
+fi
+
+echo "Please wait while verifying your system is up to date..."
+apt update
+UPDATES_AVAILABLE=$(so-apt-check 2>&1)
+if [ "$UPDATES_AVAILABLE" != "0;0" ]; then
+	echo
+	echo "Your system is missing some updates!"
+	echo "Please run 'sudo soup' and follow any instructions including rebooting if necessary."
+	echo "Then verify that everything is working correctly before trying to run this again."
+	exit
+fi
+
+cat << EOF
+This program will switch from the open source version of the Elastic Stack to the Features version licensed under the Elastic license.
+If you proceed, then we will download new Docker images and restart services.
+
+Please review the Elastic license:
+https://github.com/elastic/elasticsearch/blob/master/licenses/ELASTIC-LICENSE.txt
+
+Do you accept the Elastic license?
+
+Type ACCEPT to accept the Elastic license and continue or anything else to exit.
+EOF
+
+read INPUT
+if [ $INPUT != "ACCEPT" ]; then
+	exit
+fi
+
+echo "Please wait while switching to Elastic Features."
+
+sed -i 's|^DOCKERHUB="securityonionsolutions|DOCKERHUB="securityonionsolutionselas|g' $ELASTICDOWNLOAD
+soup
+
+echo "Elastic containers should be restarting now."
