@@ -19,8 +19,14 @@
 
 . /etc/nsm/securityonion.conf
 
+# Check for error conditions
 if [ "$ELASTICSEARCH_ENABLED" != "yes" ]; then
 	echo "Elasticsearch is not enabled!"
+	exit
+fi
+
+if [ "$KIBANA_ENABLED" != "yes" ]; then
+	echo "Kibana is not enabled!"
 	exit
 fi
 
@@ -30,21 +36,30 @@ if [ -f $ELASTICSEARCH_ACCOUNTS ]; then
 
 fi
 
+ELASTICDOWNLOAD="/etc/nsm/elasticdownload.conf"
+if ! grep -q '^DOCKERHUB="securityonionsolutionselas' $ELASTICDOWNLOAD; then
+	echo "Elastic Features have not been enabled in $ELASTICDOWNLOAD!"
+	exit
+fi
+
 KIBANA_YML="/etc/kibana/kibana.yml"
 if grep -q "^elasticsearch.username" $KIBANA_YML; then
 	echo "Kibana has already been configured for authentication."
 	exit
 fi
 
-echo "This program will enable Elastic authentication."
-echo "If you proceed, you will no longer be able to login to Kibana using any existing Kibana accounts."
+echo "This program will enable Elastic native authentication."
+echo "If you proceed, then Kibana will start prompting for username/password and none of your existing Kibana accounts will work there."
 echo "When this program completes, it will give you a new username/password for Kibana."
 echo "Once logged into Kibana using this new username/password, you can then create additional users under Management --> Users."
+echo
+echo "Also note that querying the Elasticsearch API (outside of Kibana) will require authentication as well."
 echo
 echo "Would you like to continue?"
 echo
 echo "Press Enter to continue or Ctrl-c to cancel."
 read input
+echo "Please wait while enabling Elastic native authentication."
 
 # Create the file and lock it down
 touch $ELASTICSEARCH_ACCOUNTS
