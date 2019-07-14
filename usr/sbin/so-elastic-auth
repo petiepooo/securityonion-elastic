@@ -39,7 +39,7 @@ fi
 ELASTICDOWNLOAD="/etc/nsm/elasticdownload.conf"
 if ! grep -q '^DOCKERHUB="securityonionsolutionselas' $ELASTICDOWNLOAD; then
 	echo "Elastic Features have not been enabled in $ELASTICDOWNLOAD!"
-	exit
+	. /usr/sbin/so-elastic-features
 fi
 
 KIBANA_YML="/etc/kibana/kibana.yml"
@@ -48,18 +48,25 @@ if grep -q "^elasticsearch.username" $KIBANA_YML; then
 	exit
 fi
 
-echo "This program will enable Elastic native authentication."
-echo "If you proceed, then Kibana will start prompting for username/password and none of your existing Kibana accounts will work there."
-echo "When this program completes, it will give you a new username/password for Kibana."
-echo "Once logged into Kibana using this new username/password, you can then create additional users under Management --> Users."
-echo
-echo "Also note that querying the Elasticsearch API (outside of Kibana) will require authentication as well."
-echo
-echo "Would you like to continue?"
-echo
-echo "Press Enter to continue or Ctrl-c to cancel."
+header "This program will enable Elastic native authentication."
+cat << EOF
+If you proceed, then Kibana will start prompting for username/password and none of your existing Kibana accounts will work there.
+When this program completes, it will give you a new username/password for Kibana.
+Once logged into Kibana using this new username/password, you can then create additional users under Management --> Users.
+
+Also note that querying the Elasticsearch API (outside of Kibana) will require authentication as well.
+
+Would you like to continue?
+
+If so, type AGREE to continue.  Otherwise, just press Enter to cancel.
+EOF
+
 read input
-echo "Please wait while enabling Elastic native authentication."
+if [ "$INPUT" != "AGREE" ]; then
+	exit
+fi
+
+header "Please wait while enabling Elastic native authentication."
 
 # Create the file and lock it down
 touch $ELASTICSEARCH_ACCOUNTS
@@ -75,10 +82,13 @@ sed -i "s|^#elasticsearch.username:.*$|elasticsearch.username: kibana|g" $KIBANA
 sed -i "s|^#elasticsearch.password:.*$|elasticsearch.password: $KIBANA_PASSWORD|g" $KIBANA_YML
 /usr/sbin/so-kibana-restart
 
+header "Elastic native authentication now enabled!"
+
 # Tell user how to login
 ELASTICSEARCH_PASSWORD=$(grep "PASSWORD elastic = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
-echo "Kibana should be restarting now."
-echo "When Kibana prompts you to authenticate, use the following credentials."
-echo
-echo "Username: elastic"
-echo "Password: $ELASTICSEARCH_PASSWORD"
+cat << EOF
+When Kibana prompts you to authenticate, use the following credentials.
+
+Username: elastic
+Password: $ELASTICSEARCH_PASSWORD
+EOF
