@@ -73,6 +73,13 @@ touch $ELASTICSEARCH_ACCOUNTS
 chmod 640 $ELASTICSEARCH_ACCOUNTS
 chown elasticsearch:elasticsearch $ELASTICSEARCH_ACCOUNTS
 
+# Enable Elasticsearch security
+ELASTICSEARCH_YML="/etc/elasticsearch/elasticsearch.yml"
+if ! grep -q "xpack.security.enabled:" $ELASTICSEARCH_YML; then
+	echo "xpack.security.enabled: true" >> $ELASTICSEARCH_YML
+	/usr/sbin/so-elasticsearch-restart
+fi
+
 # Enable Elastic authentication and store initial passwords
 echo y | docker exec -i so-elasticsearch bin/elasticsearch-setup-passwords auto > $ELASTICSEARCH_ACCOUNTS
 
