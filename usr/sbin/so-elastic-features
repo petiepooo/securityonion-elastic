@@ -43,7 +43,7 @@ This program will switch from the open source version of the Elastic Stack to th
 If you proceed, then we will download new Docker images and restart services.
 
 Please review the Elastic license:
-https://github.com/elastic/elasticsearch/blob/master/licenses/ELASTIC-LICENSE.txt
+https://raw.githubusercontent.com/elastic/elasticsearch/master/licenses/ELASTIC-LICENSE.txt
 
 Do you agree to the terms of the Elastic license?
 
