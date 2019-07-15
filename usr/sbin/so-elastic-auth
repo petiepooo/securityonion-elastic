@@ -77,7 +77,14 @@ chown elasticsearch:elasticsearch $ELASTICSEARCH_ACCOUNTS
 ELASTICSEARCH_YML="/etc/elasticsearch/elasticsearch.yml"
 if ! grep -q "xpack.security.enabled:" $ELASTICSEARCH_YML; then
 	echo "xpack.security.enabled: true" >> $ELASTICSEARCH_YML
+	CLUSTER_NAME=$(grep "cluster.name" /etc/elasticsearch/elasticsearch.yml | tail -1 | cut -d\" -f2)
+	rm -f /var/log/elasticsearch/${CLUSTER_NAME}.log
+	echo "Please wait while restarting Elasticsearch..."
 	/usr/sbin/so-elasticsearch-restart
+        until fgrep -q "Cluster health status changed from [RED] to [GREEN]" /var/log/elasticsearch/${CLUSTER_NAME}.log; do
+                echo -n "."
+                sleep 1s
+        done
 fi
 
 # Enable Elastic authentication and store initial passwords
