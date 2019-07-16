@@ -38,7 +38,6 @@ fi
 
 ELASTICDOWNLOAD="/etc/nsm/elasticdownload.conf"
 if ! grep -q '^DOCKERHUB="securityonionsolutionselas' $ELASTICDOWNLOAD; then
-	echo "Elastic Features have not been enabled in $ELASTICDOWNLOAD!"
 	. /usr/sbin/so-elastic-features
 fi
 
