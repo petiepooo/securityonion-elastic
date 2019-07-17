@@ -32,8 +32,15 @@ fi
 
 if [ -f $ELASTICSEARCH_ACCOUNTS ]; then
 	echo "Elastic authentication has already been enabled!"
+	echo "$ELASTICSEARCH_ACCOUNTS already exists."
 	exit
+fi
 
+ELASTICSEARCH_PCAP="/etc/elasticsearch/elasticsearch_pcap"
+if [ -f $ELASTICSEARCH_PCAP ]; then
+	echo "Elastic authentication has already been enabled!"
+	echo "$ELASTICSEARCH_PCAP already exists."
+	exit
 fi
 
 ELASTICDOWNLOAD="/etc/nsm/elasticdownload.conf"
@@ -101,10 +108,44 @@ a2dissite securityonion
 a2ensite securityonion-elastic-auth
 service apache2 restart
 
+# Create so_pcap role with minimal privileges for capme to query elasticsearch
+ELASTICSEARCH_PASSWORD=$(grep "PASSWORD elastic = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
+curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_xpack/security/role/so_pcap" -H 'Content-Type: application/json' -d'
+{
+  "indices": [
+    {
+      "names": [ "*" ],
+      "privileges": ["read", "view_index_metadata"]
+    }
+  ]
+}
+'
+
+# Create so_pcap user and give it the so_pcap role
+SO_PCAP_PASSWORD_1=$(mkpasswd -s 0)
+SO_PCAP_PASSWORD_2=$(mkpasswd -s 0)
+SO_PCAP_PASSWORD="${SO_PCAP_PASSWORD_1}${SO_PCAP_PASSWORD_2}"
+curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_xpack/security/user/so_pcap" -H 'Content-Type: application/json' -d"
+{
+  \"password\" : \"$SO_PCAP_PASSWORD\",
+  \"roles\" : [ \"so_pcap\" ]
+}
+"
+
+# Create /etc/elasticsearch/elasticsearch_pcap and lock it down
+touch $ELASTICSEARCH_PCAP
+chmod 640 $ELASTICSEARCH_PCAP
+chown www-data:www-data $ELASTICSEARCH_PCAP
+cat << EOF >> $ELASTICSEARCH_PCAP
+<?php
+\$elasticsearch_pcap_username = 'so_pcap';
+\$elasticsearch_pcap_password = '$SO_PCAP_PASSWORD';
+?>
+EOF
+
 header "Elastic native authentication now enabled!"
 
 # Tell user how to login
-ELASTICSEARCH_PASSWORD=$(grep "PASSWORD elastic = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
 cat << EOF
 When Kibana prompts you to authenticate, use the following credentials.
 
