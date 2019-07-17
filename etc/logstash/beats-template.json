@@ -28,15 +28,6 @@
           }
         },
         {
-          "user_data": {
-            "mapping": {
-              "type": "keyword"
-            },
-            "match_mapping_type": "string",
-            "path_match": "user_data.*"
-          }
-        },
-        {
           "strings_as_keyword": {
             "mapping": {
               "ignore_above": 1024,
@@ -287,7 +278,8 @@
           }
         },
         "user_data": {
-          "type": "object"
+          "type": "object",
+          "dynamic": "true"
         },
         "version": {
           "type": "keyword"
