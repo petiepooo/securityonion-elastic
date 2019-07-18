@@ -120,6 +120,7 @@ curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEAR
   ]
 }
 '
+echo
 
 echo "Creating so_pcap user and giving it the so_pcap role..."
 SO_PCAP_PASSWORD_1=$(mkpasswd -s 0)
@@ -131,6 +132,7 @@ curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEAR
   \"roles\" : [ \"so_pcap\" ]
 }
 "
+echo
 
 echo "Configuring CapMe for so_pcap user..."
 touch $ELASTICSEARCH_PCAP
@@ -154,18 +156,21 @@ curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEAR
   ]
 }
 '
+echo
 
-mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -N -e 'select username from user_info where username != "auto" and password != "LOCKED";' | while read USER; do
+echo "Exporting list of Sguil user accounts and creating corresponding Elastic accounts with role set as so_user_read_only..."
+mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -N -e 'select username from user_info where username != "auto" and password != "LOCKED";' | while read USERNAME; do
 	PASSWORD_1=$(mkpasswd -s 0)
 	PASSWORD_2=$(mkpasswd -s 0)
 	PASSWORD="${PASSWORD_1}${PASSWORD_2}"
-	echo "Creating Elastic user account for $USER with password $PASSWORD and setting role as so_user_read_only..."
-	curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_xpack/security/user/$USER" -H 'Content-Type: application/json' -d"
+	echo "Username: $USERNAME Password: $PASSWORD"
+	curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_xpack/security/user/$USERNAME" -H 'Content-Type: application/json' -d"
 {
   \"password\" : \"$PASSWORD\",
   \"roles\" : [ \"so_user_read_only\" ]
 }
 "
+	echo
 
 done
 
