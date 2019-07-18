@@ -159,6 +159,7 @@ curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEAR
 echo
 
 echo "Exporting list of Sguil user accounts and creating corresponding Elastic accounts with role set as so_user_read_only..."
+echo
 mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -N -e 'select username from user_info where username != "auto" and password != "LOCKED";' | while read USERNAME; do
 	PASSWORD_1=$(mkpasswd -s 0)
 	PASSWORD_2=$(mkpasswd -s 0)
@@ -171,7 +172,7 @@ mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -N -e 'select use
 }
 "
 	echo
-
+	echo
 done
 
 header "Elastic native authentication now enabled!"
