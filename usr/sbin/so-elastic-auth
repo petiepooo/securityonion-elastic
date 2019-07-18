@@ -56,9 +56,8 @@ fi
 
 header "This program will enable Elastic native authentication."
 cat << EOF
-If you proceed, then Kibana will start prompting for username/password and none of your existing Kibana accounts will work there.
-When this program completes, it will give you a new username/password for Kibana.
-Once logged into Kibana using this new username/password, you can then create additional users under Management --> Users.
+If you proceed, then Kibana will start prompting for username/password and none of your existing Kibana passwords will work there.
+When this program completes, it will give you a new superuser username/password for Kibana.
 
 Also note that querying the Elasticsearch API (outside of Kibana) will require authentication as well.
 
@@ -97,18 +96,19 @@ fi
 echo y | docker exec -i so-elasticsearch bin/elasticsearch-setup-passwords auto > $ELASTICSEARCH_ACCOUNTS
 
 # Configure Kibana to authenticate
+echo "Configuring Kibana authentication..."
 KIBANA_PASSWORD=$(grep "PASSWORD kibana = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
 sed -i "s|^#elasticsearch.username:.*$|elasticsearch.username: kibana|g" $KIBANA_YML
 sed -i "s|^#elasticsearch.password:.*$|elasticsearch.password: $KIBANA_PASSWORD|g" $KIBANA_YML
 /usr/sbin/so-kibana-restart
 
 # Since Kibana native auth is now enabled, we can disable SSO auth in Apache
-cp -av /opt/elastic/src/etc/apache2/sites-available/securityonion-elastic-auth.conf /etc/apache2/sites-available/
-a2dissite securityonion
-a2ensite securityonion-elastic-auth
+cp /opt/elastic/src/etc/apache2/sites-available/securityonion-elastic-auth.conf /etc/apache2/sites-available/
+a2dissite securityonion >/dev/null
+a2ensite securityonion-elastic-auth >/dev/null
 service apache2 restart
 
-# Create so_pcap role with minimal privileges for capme to query elasticsearch
+echo "Creating so_pcap role..."
 ELASTICSEARCH_PASSWORD=$(grep "PASSWORD elastic = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
 curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_xpack/security/role/so_pcap" -H 'Content-Type: application/json' -d'
 {
@@ -121,7 +121,7 @@ curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEAR
 }
 '
 
-# Create so_pcap user and give it the so_pcap role
+echo "Creating so_pcap user and giving it the so_pcap role..."
 SO_PCAP_PASSWORD_1=$(mkpasswd -s 0)
 SO_PCAP_PASSWORD_2=$(mkpasswd -s 0)
 SO_PCAP_PASSWORD="${SO_PCAP_PASSWORD_1}${SO_PCAP_PASSWORD_2}"
@@ -132,7 +132,7 @@ curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEAR
 }
 "
 
-# Create /etc/elasticsearch/elasticsearch_pcap and lock it down
+echo "Configuring CapMe for so_pcap user..."
 touch $ELASTICSEARCH_PCAP
 chmod 640 $ELASTICSEARCH_PCAP
 chown www-data:www-data $ELASTICSEARCH_PCAP
@@ -143,12 +143,40 @@ cat << EOF >> $ELASTICSEARCH_PCAP
 ?>
 EOF
 
+echo "Creating so_user_read_only role..."
+curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_xpack/security/role/so_user_read_only" -H 'Content-Type: application/json' -d'
+{
+  "indices": [
+    {
+      "names": [ "*" ],
+      "privileges": ["read", "view_index_metadata"]
+    }
+  ]
+}
+'
+
+mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -N -e 'select username from user_info where username != "auto" and password != "LOCKED";' | while read USER; do
+	PASSWORD_1=$(mkpasswd -s 0)
+	PASSWORD_2=$(mkpasswd -s 0)
+	PASSWORD="${PASSWORD_1}${PASSWORD_2}"
+	echo "Creating Elastic user account for $USER with password $PASSWORD and setting role as so_user_read_only..."
+	curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_xpack/security/user/$USER" -H 'Content-Type: application/json' -d"
+{
+  \"password\" : \"$PASSWORD\",
+  \"roles\" : [ \"so_user_read_only\" ]
+}
+"
+
+done
+
 header "Elastic native authentication now enabled!"
 
 # Tell user how to login
 cat << EOF
-When Kibana prompts you to authenticate, use the following credentials.
+When Kibana prompts you to authenticate, use the following superuser credentials.
 
 Username: elastic
 Password: $ELASTICSEARCH_PASSWORD
+
+Once logged in to this superuser account, you can then manage other accounts by going to Management --> Users.
 EOF
