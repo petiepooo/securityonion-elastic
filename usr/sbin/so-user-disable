@@ -15,4 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+source /usr/sbin/so-elastic-common
+
+if [ -f /etc/elasticsearch/elasticsearch_accounts ]; then
+	echo "Since you have Elastic auth enabled, Elastic/Kibana accounts can be managed in Kibana via Management-->Users."
+	echo
+	echo "If you want to disable a Sguil/Squert account, press Enter to continue or Ctrl-c to cancel."
+	read input
+fi
+
 /usr/sbin/nsm_server_user-disable

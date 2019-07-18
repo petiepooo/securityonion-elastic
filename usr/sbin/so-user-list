@@ -15,4 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+source /usr/sbin/so-elastic-common
+
+header "Sguil user accounts"
 /usr/sbin/nsm_server_user-list
+
+if [ -f /etc/elasticsearch/elasticsearch_accounts ]; then
+	echo
+	header "Elastic user accounts"
+	so-elasticsearch-query _xpack/security/user 2>/dev/null| jq '.' |grep username |cut -d\" -f4
+fi
