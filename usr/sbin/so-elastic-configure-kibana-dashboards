@@ -27,7 +27,7 @@ function load_dashboards {
 	max_wait=240
 
 	# If Kibana is fully initialized, requesting a non-existent URL should result in a "Not Found" error
-	until curl localhost:5601/nonexistenturl 2>&1 |grep -q "Not Found" ; do
+	until curl ${ELASTICSEARCH_AUTH} localhost:5601/nonexistenturl 2>&1 |grep -q "Not Found" ; do
 		wait_step=$(( ${wait_step} + 1 ))
 		if [ ${wait_step} -gt ${max_wait} ]; then
 			echo "ERROR: Kibana not available for more than ${max_wait} seconds."
@@ -41,7 +41,7 @@ function load_dashboards {
 
 	# Load dashboards, visualizations, index pattern(s), etc.
 	for i in /opt/elastic/src/kibana/dashboards/*.json; do
-		curl -XPOST localhost:5601/api/kibana/dashboards/import?force=true -H 'kbn-xsrf:true' -H 'Content-type:application/json' -d @$i >> /var/log/nsm/so-elastic-configure-kibana-dashboards.log 2>&1 &
+		curl ${ELASTICSEARCH_AUTH} -XPOST localhost:5601/api/kibana/dashboards/import?force=true -H 'kbn-xsrf:true' -H 'Content-type:application/json' -d @$i >> /var/log/nsm/so-elastic-configure-kibana-dashboards.log 2>&1 &
 		echo -n "."
 	done
 

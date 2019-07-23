@@ -47,7 +47,7 @@ else
 
 	# Check to see if Kibana is available
 	wait_step=0
-	until curl localhost:5601/nonexistenturl 2>&1 |grep -q "Not Found" ; do
+	until curl ${ELASTICSEARCH_AUTH} localhost:5601/nonexistenturl 2>&1 |grep -q "Not Found" ; do
 		wait_step=$(( ${wait_step} + 1 ))
 		echo "Waiting on Kibana...Attempt #$wait_step"
 		if [ ${wait_step} -gt ${MAX_WAIT} ]; then
@@ -60,7 +60,7 @@ else
 	# Apply Kibana config
 	echo
 	echo "Applying Kibana config..."
-	curl -s -XPOST http://localhost:5601/api/saved_objects/config/${KIBANA_VERSION}?overwrite=true \
+	curl ${ELASTICSEARCH_AUTH} -s -XPOST http://localhost:5601/api/saved_objects/config/${KIBANA_VERSION}?overwrite=true \
 	    -H "Content-Type: application/json" \
 	    -H "kbn-xsrf: $KIBANA_VERSION" \
 	    -d@$SRC/kibana/config.json
