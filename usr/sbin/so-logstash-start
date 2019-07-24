@@ -200,6 +200,18 @@ EOF
 			service redis-server start >/dev/null
 		fi
 
+		# If Elastic auth is enabled, then make sure Logstash is configured to authenticate to Elasticsearch
+		if [ -f $ELASTICSEARCH_ACCOUNTS ]; then
+		        LOGSTASH_PASSWORD=$(grep "PASSWORD logstash_internal = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
+			for i in /etc/logstash/conf.d.available/9???_output_*.conf; do
+			        if ! grep -q "logstash_internal" $i; then
+			                sed -i "s|elasticsearch {|elasticsearch {\n      user => logstash_internal\n      password => \"$LOGSTASH_PASSWORD\"|" $i
+		        	        chown logstash:logstash $i
+			                chmod 640 $i
+			        fi
+			done
+		fi
+
 		# Publish ports to $LOGSTASH_PUBLISH_IP but control them with iptables rules in DOCKER-USER
                 docker run --name=so-logstash \
                         --detach \

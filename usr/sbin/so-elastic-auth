@@ -136,23 +136,18 @@ echo; echo
 
 echo "Creating logstash_internal user and giving it the logstash_writer role..."
 LOGSTASH_PASSWORD=$(cat /dev/urandom | base64 | head -c 20)
+echo "PASSWORD logstash_internal = $LOGSTASH_PASSWORD" >> $ELASTICSEARCH_ACCOUNTS
+echo "" >> $ELASTICSEARCH_ACCOUNTS
 curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_xpack/security/user/logstash_internal" -H 'Content-Type: application/json' -d"
 {
   \"password\" : \"$LOGSTASH_PASSWORD\",
-  \"roles\" : [ \"logstash_writer\"],
-  \"full_name\" : \"Internal Logstash User\"
+  \"roles\" : [ \"logstash_writer\"]
 }
 "
 echo; echo
 
-echo "Configuring Logstash to authenticate to Elasticsearch..."
-for i in /etc/logstash/conf.d.available/9???_output_*.conf; do
-	if ! grep -q "password" $i; then
-		sed -i "s|elasticsearch {|elasticsearch {\n      user => logstash_internal\n      password => $LOGSTASH_PASSWORD|" $i
-		chown logstash:logstash $i
-		chmod 640 $i
-	fi
-done
+# If logstash is running, then we need to restart it so that it picks up credentials to authenticate to Elasticsearch
+/usr/sbin/so-logstash-restart
 
 echo "Creating so_pcap role..."
 curl -uelastic:$ELASTICSEARCH_PASSWORD -X POST "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_xpack/security/role/so_pcap" -H 'Content-Type: application/json' -d'
@@ -216,10 +211,13 @@ mysql --defaults-file=/etc/mysql/debian.cnf -Dsecurityonion_db -N -e 'select use
 done
 
 header "Elastic native authentication now enabled!"
-
-# Tell user how to login
 cat << EOF
-When Kibana prompts you to authenticate, use the following superuser credentials.
+Kibana is restarting and may take a few seconds to fully initialize.
+
+If you can't reach the Kibana page after a minute or two, check the Kibana log at:
+/var/log/kibana/kibana.log
+
+Once you reach the Kibana page and it prompts you to authenticate, use the following superuser credentials.
 
 Username: elastic
 Password: $ELASTICSEARCH_PASSWORD
