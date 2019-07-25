@@ -87,6 +87,27 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                         rm -f /etc/logstash/conf.d/8008_postprocess_dns_whois_age.conf
                 fi
 
+                if [ "$LOGSTASH_MINIMAL" = "yes" ]; then
+			# NIDS alerts parsed by Logstash
+			# Bro JSON logs parsed by elasticsearch ingest node
+
+			# add pipelines to elasticsearch
+			/usr/sbin/so-elasticsearch-pipelines > /var/log/nsm/so-elasticsearch-pipelines.log 2>/dev/null
+
+			# create a new config directory for minimal config
+			LOGSTASH_CONFD="/etc/logstash/conf.d.minimal/"
+			if ! [ -d $LOGSTASH_CONFD ]; then
+				mkdir -p $LOGSTASH_CONFD
+				ln -sf ../conf.d.available/0000_input_syslogng.conf 				$LOGSTASH_CONFD/0000_input_syslogng.conf
+				ln -sf ../conf.d.available/1001_preprocess_syslogng.conf 			$LOGSTASH_CONFD/1001_preprocess_syslogng.conf
+				ln -sf ../conf.d.available/1033_preprocess_snort.conf 				$LOGSTASH_CONFD/1033_preprocess_snort.conf
+				ln -sf ../conf.d.available/8999_postprocess_rename_type.conf 			$LOGSTASH_CONFD/8999_postprocess_rename_type.conf
+				ln -sf ../conf.d.available/9033_output_snort.conf 				$LOGSTASH_CONFD/9033_output_snort.conf
+				cp /etc/logstash/conf.d.available/9000_output_bro.conf 				$LOGSTASH_CONFD/9000_output_bro.conf
+		                sed -i 's|elasticsearch {|elasticsearch {\n      pipeline => "%{event_type}"|' 	$LOGSTASH_CONFD/9000_output_bro.conf
+			fi
+		fi				
+
                 if [ "$LOGSTASH_OUTPUT_INGEST" = "yes" ]; then
 			# move parsing from logstash to elasticsearch ingest node
 
@@ -203,7 +224,7 @@ EOF
 		# If Elastic auth is enabled, then make sure Logstash is configured to authenticate to Elasticsearch
 		if [ -f $ELASTICSEARCH_ACCOUNTS ]; then
 		        LOGSTASH_PASSWORD=$(grep "PASSWORD logstash_internal = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
-			for i in /etc/logstash/conf.d.available/9???_output_*.conf; do
+			for i in $LOGSTASH_CONFD/9???_output_*.conf; do
 			        if ! grep -q "logstash_internal" $i; then
 			                sed -i "s|elasticsearch {|elasticsearch {\n      user => logstash_internal\n      password => \"$LOGSTASH_PASSWORD\"|" $i
 		        	        chown logstash:logstash $i
