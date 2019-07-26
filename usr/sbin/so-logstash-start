@@ -185,7 +185,9 @@ EOF
 			# create a symbolic link for each input
 			cd /etc/logstash/conf.d.available
 			for i in 0???_input_*.conf; do
-				ln -sf ../conf.d.available/$i /etc/logstash/conf.d.redis.output/$i
+				if ! [ -f /etc/logstash/conf.d.redis.output/$i ]; then
+					ln -sf ../conf.d.available/$i /etc/logstash/conf.d.redis.output/$i
+				fi
 			done
 			cd - >/dev/null
 
