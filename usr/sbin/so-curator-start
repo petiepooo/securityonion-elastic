@@ -29,7 +29,7 @@ if [ "$CURATOR_ENABLED" = "yes" ]; then
 		# If Elastic auth is enabled, then make sure Curator is configured to authenticate to Elasticsearch
 		if [ -f $ELASTICSEARCH_ACCOUNTS ]; then
 			ELASTIC_PASSWORD=$(grep "PASSWORD elastic = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
-			sed -i "s|^  http_auth: .*$|  http_auth: elastic:$ELASTIC_PASSWORD|" $CONFIG
+			sed -i "s|^  http_auth:.*$|  http_auth: elastic:$ELASTIC_PASSWORD|" $CONFIG
 			chown curator:curator $CONFIG
 			chmod 640 $CONFIG
 		fi

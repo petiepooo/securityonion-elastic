@@ -59,7 +59,7 @@ cat << EOF
 If you choose to proceed, we will do the following:
 
 - configure Elasticsearch for authentication
-- configure Kibana and Logstash to authenticate to Elasticsearch
+- configure Logstash, Kibana, ElastAlert, and Curator to authenticate to Elasticsearch
 - configure Kibana to natively prompt for username/password
 - create an Elastic superuser username/password
 - enumerate all existing Sguil user accounts and create corresponding Elastic accounts for them
@@ -104,6 +104,12 @@ fi
 
 # Enable Elastic authentication and store initial passwords
 echo y | docker exec -i so-elasticsearch bin/elasticsearch-setup-passwords auto > $ELASTICSEARCH_ACCOUNTS
+
+echo "Restarting ElastAlert..."
+/usr/sbin/so-elastalert-restart
+
+echo "Restarting Curator..."
+/usr/sbin/so-curator-restart
 
 echo "Configuring Kibana authentication..."
 KIBANA_PASSWORD=$(grep "PASSWORD kibana = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
