@@ -88,6 +88,10 @@ else
 	# disovery.zen.ping settings
 	# https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-discovery-zen.html
 	grep "^discovery.zen.ping.*:" $ES_YAML_BAK >> $ES_YAML
+
+	# xpack.security.enabled
+	grep "^xpack.security.enabled:" $ES_YAML_BAK >> $ES_YAML
+	
 fi
 
 # Get total installed memory
@@ -269,6 +273,8 @@ else
 
         # migrate certain settings
         grep "^elasticsearch.requestTimeout:" $KIB_YAML_BAK >> $KIB_YAML
+        grep "^elasticsearch.username:" $KIB_YAML_BAK >> $KIB_YAML
+        grep "^elasticsearch.password:" $KIB_YAML_BAK >> $KIB_YAML
 fi
 chown kibana:kibana $KIB_YAML
 chmod 640 $KIB_YAML
