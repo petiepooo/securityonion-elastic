@@ -111,10 +111,7 @@ echo "Restarting ElastAlert..."
 echo "Restarting Curator..."
 /usr/sbin/so-curator-restart
 
-echo "Configuring Kibana authentication..."
-KIBANA_PASSWORD=$(grep "PASSWORD kibana = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
-sed -i "s|^#elasticsearch.username:.*$|elasticsearch.username: kibana|g" $KIBANA_YML
-sed -i "s|^#elasticsearch.password:.*$|elasticsearch.password: $KIBANA_PASSWORD|g" $KIBANA_YML
+echo "Restarting Kibana..."
 /usr/sbin/so-kibana-restart
 
 # Since Kibana native auth is now enabled, we can disable SSO auth in Apache

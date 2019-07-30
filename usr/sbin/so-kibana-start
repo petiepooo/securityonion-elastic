@@ -51,6 +51,16 @@ if [ "$KIBANA_ENABLED" = "yes" ]; then
                 if docker ps | grep -q so-kibana; then
                         echo "Already started!"
                 else
+
+			if [ -f $ELASTICSEARCH_ACCOUNTS ]; then
+				CONFIG="/etc/kibana/kibana.yml"
+				KIBANA_PASSWORD=$(grep "PASSWORD kibana = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
+				chown kibana:kibana $CONFIG
+				chmod 640 $CONFIG
+				sed -i "s|^#elasticsearch.username:.*$|elasticsearch.username: kibana|g" $CONFIG
+				sed -i "s|^#elasticsearch.password:.*$|elasticsearch.password: $KIBANA_PASSWORD|g" $CONFIG
+			fi
+
 			# Publish ports to localhost 127.0.0.1 ONLY
                         docker run --name=so-kibana \
                                 --detach \
