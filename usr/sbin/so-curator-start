@@ -28,10 +28,10 @@ if [ "$CURATOR_ENABLED" = "yes" ]; then
 		CONFIG="/etc/curator/config/curator.yml"
 		# If Elastic auth is enabled, then make sure Curator is configured to authenticate to Elasticsearch
 		if [ -f $ELASTICSEARCH_ACCOUNTS ]; then
-			ELASTIC_PASSWORD=$(grep "PASSWORD elastic = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
-			sed -i "s|^  http_auth:.*$|  http_auth: elastic:$ELASTIC_PASSWORD|" $CONFIG
 			chown curator:curator $CONFIG
 			chmod 640 $CONFIG
+			ELASTIC_PASSWORD=$(grep "PASSWORD elastic = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
+			sed -i "s|^  http_auth:.*$|  http_auth: elastic:$ELASTIC_PASSWORD|" $CONFIG
 		fi
 
 		docker rm so-curator >/dev/null 2>&1

@@ -33,11 +33,11 @@ if [ "$ELASTALERT_ENABLED" = "yes" ]; then
 
 		# If Elastic auth is enabled, then make sure elastalert is configured to authenticate to Elasticsearch
 		if [ -f $ELASTICSEARCH_ACCOUNTS ]; then
+			chown elastalert:elastalert $CONFIG
+			chmod 640 $CONFIG
 			ELASTIC_PASSWORD=$(grep "PASSWORD elastic = " $ELASTICSEARCH_ACCOUNTS | awk '{print $4}')
 			sed -i "s|^#es_username: someusername$|es_username: elastic|" $CONFIG
 			sed -i "s|^#es_password: somepassword$|es_password: $ELASTIC_PASSWORD|" $CONFIG
-			chown elastalert:elastalert $CONFIG
-			chmod 640 $CONFIG
                 fi
 
 		docker rm so-elastalert >/dev/null 2>&1
