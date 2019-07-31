@@ -29,6 +29,7 @@
     { "rename": 	{ "field": "message2.orig_cc", 		"target_field": "original_country_code","ignore_missing": true 	} },
     { "rename": 	{ "field": "message2.resp_cc", 		"target_field": "respond_country_code",	"ignore_missing": true 	} },
     { "rename": 	{ "field": "message2.sensorname", 	"target_field": "sensor_name",		"ignore_missing": true 	} },
+    { "script":		{ "lang": "painless", "source":	"ctx.total_bytes = (ctx.original_bytes + ctx.respond_bytes)", "ignore_failure": true } },
     { "pipeline": 	{ "name": "bro_common"											} }
   ]
 }
