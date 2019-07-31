@@ -1,8 +1,8 @@
 {
   "description" : "bro_common",
   "processors" : [
-    { "geoip":	{ "field": "destination_ip",	"target_field": "destination_geo",      "database_file": "GeoLite2-City.mmdb", 	"ignore_missing": true  } },
-    { "geoip":	{ "field": "source_ip",		"target_field": "source_geo",           "database_file": "GeoLite2-City.mmdb", 	"ignore_missing": true  } },
+    { "geoip":	{ "field": "destination_ip",	"target_field": "destination_geo",      "database_file": "GeoLite2-City.mmdb","ignore_missing": true, "properties": ["ip", "country_iso_code", "country_name", "continent_name", "region_iso_code", "region_name", "city_name", "timezone", "location"]  	} },
+    { "geoip":	{ "field": "source_ip",		"target_field": "source_geo",           "database_file": "GeoLite2-City.mmdb","ignore_missing": true, "properties": ["ip", "country_iso_code", "country_name", "continent_name", "region_iso_code", "region_name", "city_name", "timezone", "location"]  	} },
     { "rename":	{ "field": "type",		"target_field": "event_type",		"ignore_missing": true						} },
     { "rename":	{ "field": "@timestamp",	"target_field": "timestamp",		"ignore_missing": true						} },
     { "date":	{ "field": "message2.ts",	"target_field": "@timestamp",		"formats": ["ISO8601", "UNIX"], "ignore_failure": true		} },
