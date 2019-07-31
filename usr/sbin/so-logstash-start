@@ -63,6 +63,26 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
                 echo "Already started!"
         else
 		docker rm so-logstash >/dev/null 2>&1
+
+		LS_JVM="/etc/logstash/jvm.options"
+		# Add Xss option for Java Execution Engine if necessary
+		if ! grep -q "Xss" $LS_JVM; then
+			echo "" >> $LS_JVM
+			echo "# Avoid StackOverflowError when enabling Java Execution Engine" >> $LS_JVM
+			echo "# https://github.com/elastic/logstash/issues/10131" >> $LS_JVM
+			echo "-Xss16M" >> $LS_JVM
+		fi
+		# Add -Djruby.regexp.interruptible=true option if necessary
+		if ! grep -q "-Djruby.regexp.interruptible=true" $LS_JVM; then
+			echo "" >> $LS_JVM
+			echo "# Make sure joni regexp interruptability is enabled" >> $LS_JVM
+			echo "-Djruby.regexp.interruptible=true" >> $LS_JVM
+		fi
+		# Remove UseParNewGC option if necessary
+		if grep -q "-XX:+UseParNewGC" $LS_JVM; then
+			sed -i '/-XX:+UseParNewGC/d' $LS_JVM
+		fi
+
                 if [ -d $CUSTOM_CONF ]; then
 			rsync $CUSTOM_CONF/*.conf /etc/logstash/conf.d >/dev/null 2>&1
                         rsync $CUSTOM_CONF/*.json /etc/logstash/ >/dev/null 2>&1

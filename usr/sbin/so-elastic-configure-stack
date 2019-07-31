@@ -178,13 +178,6 @@ if [ -f $LS_JVM ]; then
 	sed -i 's|-Xms1600m|-Xms2000m|g' $LS_JVM
 	sed -i 's|-Xmx1600m|-Xmx2000m|g' $LS_JVM
 
-	# Add Xss option for Java Execution Engine if necessary
-	if ! grep -q "Xss" $LS_JVM; then
-		echo "" >> $LS_JVM
-		echo "# Avoid StackOverflowError when enabling Java Execution Engine" >> $LS_JVM
-		echo "# https://github.com/elastic/logstash/issues/10131" >> $LS_JVM
-		echo "-Xss16M" >> $LS_JVM
-	fi
 else
 	# If the file doesn't already exist, copy it into place and set heap appropriately
 	cp -av $SRC/etc/logstash/jvm.options $LS_JVM

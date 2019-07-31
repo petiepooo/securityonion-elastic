@@ -6,10 +6,6 @@
 -Xms1g
 -Xmx1g
 
-# Avoid StackOverflowError when enabling Java Execution Engine
-# https://github.com/elastic/logstash/issues/10131
--Xss16M
-
 ################################################################
 ## Expert settings
 ################################################################
@@ -21,7 +17,6 @@
 ################################################################
 
 ## GC configuration
--XX:+UseParNewGC
 -XX:+UseConcMarkSweepGC
 -XX:CMSInitiatingOccupancyFraction=75
 -XX:+UseCMSInitiatingOccupancyOnly
@@ -54,6 +49,8 @@
 -Djruby.compile.invokedynamic=true
 # Force Compilation
 -Djruby.jit.threshold=0
+# Make sure joni regexp interruptability is enabled
+-Djruby.regexp.interruptible=true
 
 ## heap dumps
 
