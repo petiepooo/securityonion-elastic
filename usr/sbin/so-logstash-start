@@ -73,13 +73,13 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 			echo "-Xss16M" >> $LS_JVM
 		fi
 		# Add -Djruby.regexp.interruptible=true option if necessary
-		if ! grep -q "-Djruby.regexp.interruptible=true" $LS_JVM; then
+		if ! grep -q "Djruby.regexp.interruptible=true" $LS_JVM; then
 			echo "" >> $LS_JVM
 			echo "# Make sure joni regexp interruptability is enabled" >> $LS_JVM
 			echo "-Djruby.regexp.interruptible=true" >> $LS_JVM
 		fi
 		# Remove UseParNewGC option if necessary
-		if grep -q "-XX:+UseParNewGC" $LS_JVM; then
+		if grep -q "XX:+UseParNewGC" $LS_JVM; then
 			sed -i '/-XX:+UseParNewGC/d' $LS_JVM
 		fi
 
