@@ -21,8 +21,6 @@
 
 LOGSTASH_CONFD="/etc/logstash/conf.d"
 CUSTOM_CONF="/etc/logstash/custom"
-INPUT_REDIS_CONF="/etc/logstash/conf.d/0900_input_redis.conf"
-OUTPUT_REDIS_CONF="/etc/logstash/conf.d.redis.output/9999_output_redis.conf"
 LOG="/var/log/logstash/logstash.log"
 
 #########################################
@@ -178,6 +176,7 @@ EOF
                 if [ "$LOGSTASH_INPUT_REDIS" = "yes" ]; then
 			# this is a storage node consuming from redis
 			# need to add an input if it doesn't already exist
+			INPUT_REDIS_CONF="$LOGSTASH_CONFD/0900_input_redis.conf"
 			if ! [ -f $INPUT_REDIS_CONF ]; then
 cat << EOF >> $INPUT_REDIS_CONF
 input {
@@ -201,6 +200,7 @@ EOF
 			# create a new config directory for these files
 			LOGSTASH_CONFD="/etc/logstash/conf.d.redis.output/"
 			mkdir -p $LOGSTASH_CONFD
+			OUTPUT_REDIS_CONF="$LOGSTASH_CONFD/9999_output_redis.conf"
 
 			# create a symbolic link for each input
 			cd /etc/logstash/conf.d.available
