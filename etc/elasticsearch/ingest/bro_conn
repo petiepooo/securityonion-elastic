@@ -30,6 +30,19 @@
     { "rename": 	{ "field": "message2.resp_cc", 		"target_field": "respond_country_code",	"ignore_missing": true 	} },
     { "rename": 	{ "field": "message2.sensorname", 	"target_field": "sensor_name",		"ignore_missing": true 	} },
     { "script":		{ "lang": "painless", "source":	"ctx.total_bytes = (ctx.original_bytes + ctx.respond_bytes)", "ignore_failure": true } },
-    { "pipeline": 	{ "name": "bro_common"											} }
+    { "set": { "if": "ctx.connection_state == 'S0'", 	"field": "connection_state_description", "value": "Connection attempt seen, no reply" } },
+    { "set": { "if": "ctx.connection_state == 'S1'", 	"field": "connection_state_description", "value": "Connection established, not terminated" } },
+    { "set": { "if": "ctx.connection_state == 'S2'", 	"field": "connection_state_description", "value": "Connection established and close attempt by originator seen (but no reply from responder)" } },
+    { "set": { "if": "ctx.connection_state == 'S3'", 	"field": "connection_state_description", "value": "Connection established and close attempt by responder seen (but no reply from originator)" } },
+    { "set": { "if": "ctx.connection_state == 'SF'", 	"field": "connection_state_description", "value": "Normal SYN/FIN completion" } },
+    { "set": { "if": "ctx.connection_state == 'REJ'", 	"field": "connection_state_description", "value": "Connection attempt rejected" } },
+    { "set": { "if": "ctx.connection_state == 'RSTO'", 	"field": "connection_state_description", "value": "Connection established, originator aborted (sent a RST)" } },
+    { "set": { "if": "ctx.connection_state == 'RSTR'", 	"field": "connection_state_description", "value": "Established, responder aborted" } },
+    { "set": { "if": "ctx.connection_state == 'RSTOS0'","field": "connection_state_description", "value": "Originator sent a SYN followed by a RST, we never saw a SYN-ACK from the responder" } },
+    { "set": { "if": "ctx.connection_state == 'RSTRH'", "field": "connection_state_description", "value": "Responder sent a SYN ACK followed by a RST, we never saw a SYN from the (purported) originator" } },
+    { "set": { "if": "ctx.connection_state == 'SH'", 	"field": "connection_state_description", "value": "Originator sent a SYN followed by a FIN, we never saw a SYN ACK from the responder (hence the connection was 'half' open)" } },
+    { "set": { "if": "ctx.connection_state == 'SHR'", 	"field": "connection_state_description", "value": "Responder sent a SYN ACK followed by a FIN, we never saw a SYN from the originator" } },
+    { "set": { "if": "ctx.connection_state == 'OTH'", 	"field": "connection_state_description", "value": "No SYN seen, just midstream traffic (a 'partial connection' that was not later closed)" } },
+    { "pipeline": 	{ "name": "bro_common" } }
   ]
 }
