@@ -2,6 +2,8 @@
   "description" : "sguild_nids",
   "processors" : [
     { "dissect": { "field": "message",		"pattern" : "%{} %{} %{}  Alert Received: %{} %{priority} %{classification} %{interface} {%{alerttime}} %{} %{} {%{alert}} %{source_ip} %{destination_ip} %{protocol} %{source_port} %{destination_port} %{gid} %{sid} %{rev} ", "ignore_failure": true } },
+    { "dissect": { "field": "alert",		"pattern" : "%{} %{category} ", "ignore_failure": true } },
+    { "lowercase": { "field": "category",	"ignore_failure": true } },
     { "set": 	{ "field": "event_type", 	"value": "snort" 											} },
     { "remove": { "field": "type",												"ignore_missing": true	} },
     { "geoip":  { "field": "destination_ip",    "target_field": "destination_geo",      "database_file": "GeoLite2-City.mmdb","ignore_missing": true, "properties": ["ip", "country_iso_code", "country_name", "continent_name", "region_iso_code", "region_name", "city_name", "timezone", "location"]         } },
