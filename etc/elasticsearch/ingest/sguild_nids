@@ -2,6 +2,9 @@
   "description" : "sguild_nids",
   "processors" : [
     { "dissect": { "field": "message",		"pattern" : "%{} %{} %{}  Alert Received: %{} %{priority} %{classification} %{interface} {%{alerttime}} %{} %{} {%{alert}} %{source_ip} %{destination_ip} %{protocol} %{source_port} %{destination_port} %{gid} %{sid} %{rev} ", "ignore_failure": true } },
+    { "set": 	{ "if": "ctx.priority == '1'",	"field": "severity", "value": "High" } },
+    { "set": 	{ "if": "ctx.priority == '2'",	"field": "severity", "value": "Medium" } },
+    { "set": 	{ "if": "ctx.priority == '3'",	"field": "severity", "value": "Low" } },
     { "dissect": { "field": "alert",		"pattern" : "%{} %{category} ", "ignore_failure": true } },
     { "lowercase": { "field": "category",	"ignore_failure": true } },
     { "set": 	{ "field": "event_type", 	"value": "snort" 											} },
