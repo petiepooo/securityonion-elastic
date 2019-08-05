@@ -124,6 +124,8 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 				ln -sf ../conf.d.available/9033_output_snort.conf 				$LOGSTASH_CONFD/9033_output_snort.conf
 				cp /etc/logstash/conf.d.available/9000_output_bro.conf 				$LOGSTASH_CONFD/9000_output_bro.conf
 		                sed -i 's|elasticsearch {|elasticsearch {\n      pipeline => "%{event_type}"|' 	$LOGSTASH_CONFD/9000_output_bro.conf
+				cp /etc/logstash/conf.d.available/9600_output_ossec.conf			$LOGSTASH_CONFD/9600_output_ossec.conf
+		                sed -i 's|elasticsearch {|elasticsearch {\n      pipeline => "%{event_type}"|' 	$LOGSTASH_CONFD/9600_output_ossec.conf
 			fi
 		fi				
 
