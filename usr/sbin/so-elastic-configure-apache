@@ -19,7 +19,14 @@
 
 header "Configuring Apache"
 
-cp -av $SRC/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/
+# Is Elastic auth enabled?
+if [ -f /etc/elasticsearch/elasticsearch_accounts ]; then
+	# If Elastic auth is enabled, copy the simple apache config into  place
+	cp -av $SRC/etc/apache2/sites-available/securityonion-elastic-auth.conf /etc/apache2/sites-available/securityonion.conf
+else
+	# Otherwise, copy the full SSO config into place
+	cp -av $SRC/etc/apache2/sites-available/securityonion.conf /etc/apache2/sites-available/securityonion.conf
+fi
 
 # Enable necessary Apache2 modules
 if ! [ -f /etc/apache2/mods-enabled/auth_form.load ]; then

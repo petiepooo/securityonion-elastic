@@ -115,9 +115,7 @@ echo "Restarting Kibana..."
 /usr/sbin/so-kibana-restart
 
 # Since Kibana native auth is now enabled, we can disable SSO auth in Apache
-cp /opt/elastic/src/etc/apache2/sites-available/securityonion-elastic-auth.conf /etc/apache2/sites-available/
-a2dissite securityonion >/dev/null
-a2ensite securityonion-elastic-auth >/dev/null
+cp /opt/elastic/src/etc/apache2/sites-available/securityonion-elastic-auth.conf /etc/apache2/sites-available/securityonion.conf
 service apache2 restart >/dev/null
 echo
 
