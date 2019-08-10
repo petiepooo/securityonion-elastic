@@ -1,0 +1,11 @@
+{
+  "description" : "common_nids",
+  "processors" : [
+    { "set": 		{ "if": "ctx.priority == '1'",	"field": "severity", "value": "High" 								} },
+    { "set": 		{ "if": "ctx.priority == '2'",	"field": "severity", "value": "Medium" 								} },
+    { "set": 		{ "if": "ctx.priority == '3'",	"field": "severity", "value": "Low" 								} },
+    { "dissect": 	{ "field": "alert",		"pattern" : "%{} %{category} ", 					"ignore_failure": true 	} },
+    { "lowercase": 	{ "field": "category",											"ignore_failure": true	} },
+    { "pipeline":       { "name": "common"														} }
+  ]
+}

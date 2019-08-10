@@ -8,15 +8,10 @@
 		"ignore_failure": true
 	}
     },
-    { "set": 		{ "if": "ctx.priority == '1'",	"field": "severity", "value": "High" 								} },
-    { "set": 		{ "if": "ctx.priority == '2'",	"field": "severity", "value": "Medium" 								} },
-    { "set": 		{ "if": "ctx.priority == '3'",	"field": "severity", "value": "Low" 								} },
-    { "dissect": 	{ "field": "alert",		"pattern" : "%{} %{category} ", 					"ignore_failure": true 	} },
-    { "lowercase": 	{ "field": "category",											"ignore_failure": true	} },
-    { "set": 		{ "field": "type", 		"value": "snort" 										} },
-    { "rename":		{ "field": "@timestamp",        "target_field": "timestamp",						"ignore_missing": true	} },
-    { "date":   	{ "field": "alerttime",		"target_field": "@timestamp",	"formats": ["yyyy-MM-dd HH:mm:ss"], 	"ignore_failure": true 	} },
-    { "remove": 	{ "field": "alerttime", 										"ignore_missing": true	} },
-    { "pipeline":       { "name": "common"														} }
+    { "set":		{ "field": "type", "value": "snort" 												} },
+    { "rename":		{ "field": "@timestamp",	"target_field": "timestamp",						"ignore_missing": true  } },
+    { "date":		{ "field": "alerttime",		"target_field": "@timestamp",	"formats": ["yyyy-MM-dd HH:mm:ss"],	"ignore_failure": true  } },
+    { "remove":		{ "field": "alerttime",											"ignore_missing": true  } },
+    { "pipeline": 	{ "name": "common_nids" 													} }
   ]
 }

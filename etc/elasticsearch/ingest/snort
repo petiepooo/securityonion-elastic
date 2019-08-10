@@ -1,0 +1,13 @@
+{
+  "description" : "snort",
+  "processors" : [
+    { 
+	"dissect": {
+		"field": "message",
+		"pattern" : "[%{gid}:%{sid}:%{rev}] %{alert} [Classification: %{classification}] [Priority: %{priority}]: <%{interface}> {%{protocol}} %{source_ip}:%{source_port} -> %{destination_ip}:%{destination_port}",
+		"ignore_failure": true
+	}
+    },
+    { "pipeline": { "name": "common_nids" } }
+  ]
+}
