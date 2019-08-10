@@ -21,7 +21,7 @@ header "Configuring Apache"
 
 # Is Elastic auth enabled?
 if [ -f /etc/elasticsearch/elasticsearch_accounts ]; then
-	# If Elastic auth is enabled, copy the simple apache config into  place
+	# If Elastic auth is enabled, copy the simple apache config into place
 	cp -av $SRC/etc/apache2/sites-available/securityonion-elastic-auth.conf /etc/apache2/sites-available/securityonion.conf
 else
 	# Otherwise, copy the full SSO config into place
