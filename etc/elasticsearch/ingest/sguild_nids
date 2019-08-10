@@ -8,6 +8,9 @@
 		"ignore_failure": true
 	}
     },
+    { "set":		{ "if": "ctx.protocol == '1'",	"field": "protocol", "value": "ICMP" 								} },
+    { "set":		{ "if": "ctx.protocol == '6'",	"field": "protocol", "value": "TCP" 								} },
+    { "set":		{ "if": "ctx.protocol == '17'",	"field": "protocol", "value": "UDP" 								} },
     { "remove":		{ "if": "ctx.source_port == '{}'",  	"field": "source_port"									} },
     { "remove":		{ "if": "ctx.destination_port == '{}'", "field": "destination_port"								} },
     { "set":		{ "field": "type", "value": "snort" 												} },
