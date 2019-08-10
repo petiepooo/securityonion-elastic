@@ -8,6 +8,8 @@
 		"ignore_failure": true
 	}
     },
+    { "remove":		{ "if": "ctx.source_port == '{}'",  	"field": "source_port"									} },
+    { "remove":		{ "if": "ctx.destination_port == '{}'", "field": "destination_port"								} },
     { "set":		{ "field": "type", "value": "snort" 												} },
     { "rename":		{ "field": "@timestamp",	"target_field": "timestamp",						"ignore_missing": true  } },
     { "date":		{ "field": "alerttime",		"target_field": "@timestamp",	"formats": ["yyyy-MM-dd HH:mm:ss"],	"ignore_failure": true  } },
