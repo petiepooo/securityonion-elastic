@@ -118,13 +118,12 @@ if [ "$LOGSTASH_ENABLED" = "yes" ]; then
 				mkdir -p $LOGSTASH_CONFD
 				ln -sf ../conf.d.available/0000_input_syslogng.conf 				$LOGSTASH_CONFD/0000_input_syslogng.conf
 				ln -sf ../conf.d.available/1001_preprocess_syslogng.conf 			$LOGSTASH_CONFD/1001_preprocess_syslogng.conf
-				ln -sf ../conf.d.available/1033_preprocess_snort.conf 				$LOGSTASH_CONFD/1033_preprocess_snort.conf
-				ln -sf ../conf.d.available/8001_postprocess_common_ip_augmentation.conf		$LOGSTASH_CONFD/8001_postprocess_common_ip_augmentation.conf
 				ln -sf ../conf.d.available/8999_postprocess_rename_type.conf 			$LOGSTASH_CONFD/8999_postprocess_rename_type.conf
-				ln -sf ../conf.d.available/9033_output_snort.conf 				$LOGSTASH_CONFD/9033_output_snort.conf
 				ln -sf ../conf.d.available/9034_output_syslog.conf 				$LOGSTASH_CONFD/9034_output_syslog.conf
 				cp /etc/logstash/conf.d.available/9000_output_bro.conf 				$LOGSTASH_CONFD/9000_output_bro.conf
 		                sed -i 's|elasticsearch {|elasticsearch {\n      pipeline => "%{event_type}"|' 	$LOGSTASH_CONFD/9000_output_bro.conf
+				cp /etc/logstash/conf.d.available/9033_output_snort.conf.conf 			$LOGSTASH_CONFD/9033_output_snort.conf
+		                sed -i 's|elasticsearch {|elasticsearch {\n      pipeline => "%{event_type}"|' 	$LOGSTASH_CONFD/9033_output_snort.conf
 				cp /etc/logstash/conf.d.available/9600_output_ossec.conf			$LOGSTASH_CONFD/9600_output_ossec.conf
 		                sed -i 's|elasticsearch {|elasticsearch {\n      pipeline => "%{event_type}"|' 	$LOGSTASH_CONFD/9600_output_ossec.conf
 			fi
