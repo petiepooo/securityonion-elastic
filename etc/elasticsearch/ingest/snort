@@ -5,7 +5,7 @@
 	"dissect": {
 		"field": "message",
 		"pattern" : "[%{gid}:%{sid}:%{rev}] %{alert} [Classification: %{classification}] [Priority: %{priority}]: <%{interface}> {%{protocol}} %{source_ip_port} -> %{destination_ip_port}",
-		"ignore_failure": true
+		"on_failure": [ { "drop" : { } } ]
 	}
     },
     { "split": { "field": "source_ip_port", 		"separator": ":", 			"ignore_failure": true 	} },
