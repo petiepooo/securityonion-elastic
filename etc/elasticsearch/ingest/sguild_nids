@@ -5,7 +5,7 @@
 	"dissect": {
 		"field": "message",
 		"pattern" : "%{} %{} %{}  Alert Received: %{} %{priority} %{classification} %{interface} {%{alerttime}} %{} %{} {%{alert}} %{source_ip} %{destination_ip} %{protocol} %{source_port} %{destination_port} %{gid} %{sid} %{rev} ",
-		"ignore_failure": true
+		"on_failure": [ { "drop" : { } } ]
 	}
     },
     { "set":		{ "if": "ctx.protocol == '1'",	"field": "protocol", "value": "ICMP" 								} },
