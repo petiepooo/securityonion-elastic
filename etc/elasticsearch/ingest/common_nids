@@ -1,10 +1,12 @@
 {
   "description" : "common_nids",
   "processors" : [
-    { "set": 		{ "if": "ctx.priority == '1'",	"field": "severity", "value": "High" 								} },
-    { "set": 		{ "if": "ctx.priority == '2'",	"field": "severity", "value": "Medium" 								} },
-    { "set": 		{ "if": "ctx.priority == '3'",	"field": "severity", "value": "Low" 								} },
-    { "dissect": 	{ "field": "alert",		"pattern" : "%{} %{category} ", 					"ignore_failure": true 	} },
+    { "set": 		{ "if": "ctx.priority == '1'",		"field": "severity", "value": "High" 							} },
+    { "set": 		{ "if": "ctx.priority == '2'",		"field": "severity", "value": "Medium" 							} },
+    { "set": 		{ "if": "ctx.priority == '3'",		"field": "severity", "value": "Low" 							} },
+    { "dissect": 	{ "field": "alert",			"pattern" : "%{rule_type} %{category} ",			"ignore_failure": true 	} },
+    { "set": 		{ "if": "ctx.rule_type == 'GPL'",	"field": "rule_type", "value": "Snort GPL"						} },
+    { "set": 		{ "if": "ctx.rule_type == 'ET'",	"field": "rule_type", "value": "Emerging Threats"					} },
     { "lowercase": 	{ "field": "category",											"ignore_failure": true	} },
     { "pipeline":       { "name": "common"														} }
   ]
