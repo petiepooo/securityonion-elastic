@@ -8,9 +8,12 @@
 		"on_failure": [ { "drop" : { } } ]
 	}
     },
-    { "set":		{ "if": "ctx.protocol == '1'",	"field": "protocol", "value": "ICMP" 								} },
-    { "set":		{ "if": "ctx.protocol == '6'",	"field": "protocol", "value": "TCP" 								} },
-    { "set":		{ "if": "ctx.protocol == '17'",	"field": "protocol", "value": "UDP" 								} },
+    { "set":		{ "if": "ctx.protocol == '1'",		"field": "protocol", "value": "ICMP"							} },
+    { "set":		{ "if": "ctx.protocol == '6'",		"field": "protocol", "value": "TCP" 							} },
+    { "set":		{ "if": "ctx.protocol == '17'",		"field": "protocol", "value": "UDP" 							} },
+    { "remove":		{ "if": "ctx.source_ip == '{}'",  	"field": "source_ip"									} },
+    { "remove":		{ "if": "ctx.destination_ip == '{}'", 	"field": "destination_ip"								} },
+    { "remove":		{ "if": "ctx.protocol == '{}'", 	"field": "protocol"									} },
     { "remove":		{ "if": "ctx.source_port == '{}'",  	"field": "source_port"									} },
     { "remove":		{ "if": "ctx.destination_port == '{}'", "field": "destination_port"								} },
     { "set":		{ "field": "type", "value": "snort" 												} },
