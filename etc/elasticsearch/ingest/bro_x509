@@ -39,6 +39,6 @@
     { "rename": 	{ "field": "message2.basic_constraints.ca", 		"target_field": "basic_constraints_ca",			"ignore_missing": true 	} },
     { "dot_expander": 	{ "field": "basic_constraints.path_length",		"path": "message2", 					"ignore_failure": true 	} },
     { "rename": 	{ "field": "message2.basic_constraints.path_length", 	"target_field": "basic_constraints_path_length",	"ignore_missing": true 	} },
-    { "pipeline":       { "name": "bro_common"                                                                                   				} }
+    { "pipeline":       { "name": "bro_common_ssl"                                                                                   				} }
   ]
 }

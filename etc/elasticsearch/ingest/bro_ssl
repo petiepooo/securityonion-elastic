@@ -28,6 +28,6 @@
     { "rename": 	{ "field": "message2.validation_status","target_field": "validation_status",	"ignore_missing": true 	} },
     { "rename": 	{ "field": "message2.ja3", 		"target_field": "ja3",			"ignore_missing": true 	} },
     { "rename": 	{ "field": "message2.ja3s", 		"target_field": "ja3s",			"ignore_missing": true 	} },
-    { "pipeline":       { "name": "bro_common"                                                                                   } }
+    { "pipeline":       { "name":  "bro_common_ssl"                                                                             } }
   ]
 }
