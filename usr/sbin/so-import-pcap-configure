@@ -313,7 +313,7 @@ if ! grep -q "LOGSTASH_OUTPUT_INGEST" /etc/nsm/securityonion.conf; then
 	sed -i 's|30s|1s|g' /etc/logstash/*-template.json
 	LS_HEAP_SIZE="200m"
 	sed -i "s/^-Xms.*/-Xms$LS_HEAP_SIZE/" /etc/logstash/jvm.options
-	sed -i "s/^-Xmx.*/-Xmx$ES_HEAP_SIZE/" /etc/logstash/jvm.options
+	sed -i "s/^-Xmx.*/-Xmx$LS_HEAP_SIZE/" /etc/logstash/jvm.options
 	/usr/sbin/so-logstash-start >/dev/null 2>&1
 	echo -n "- initializing Elasticsearch and Logstash (this may take a few minutes)..."
 	until fgrep -qs "adding template [logstash-" /var/log/elasticsearch/${CLUSTER_NAME}.log; do
