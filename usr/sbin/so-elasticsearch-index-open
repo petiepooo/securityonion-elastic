@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# Copyright 2014,2015,2016,2017,2018,2019 Security Onion Solutions, LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+# Check for error conditions
+if [ "$ELASTICSEARCH_ENABLED" != "yes" ]; then
+	echo "Elasticsearch is not enabled!"
+	exit
+fi
+
+echo
+echo "Temporarily disabling Curator cron job to prevent it from closing the index on its next run..."
+echo
+
+sed -i 's|^*|#*|' /etc/cron.d/curator-close
+
+curl -XPOST $ELASTICSEARCH_AUTH $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/$@/_open
+
+echo
+echo
+echo "When you are done reviewing the $@ index, you can close it again with 'sudo so-elasticsearch-index-close'."
+echo "Keep in mind, when reviewing this index, Curator will not be managing open indices."
+echo
