@@ -21,5 +21,6 @@
 CURATOR_DEL="/etc/curator/action/delete.yml"
 
 if [ -f $CURATOR_DEL ]; then
+        sed -i "s/Delete indices when.* value (in GB) is exceeded./Delete indices when $LOG_SIZE_LIMIT value (in GB) is exceeded./" $CURATOR_DEL
         sed -i "s/disk_space:.*/disk_space: $LOG_SIZE_LIMIT/" $CURATOR_DEL
 fi
